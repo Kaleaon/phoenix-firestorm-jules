@@ -71,46 +71,84 @@ The UI is built using a custom C++ toolkit, with its core components located in 
 
 The layout of the UI is defined using an XML-based system called **XUI**. The XUI files are located in the `indra/newview/skins` directory. Each XUI file corresponds to a specific UI element, such as a floater or a panel, and defines its structure, layout, and appearance.
 
-Here is an example snippet from an XUI file (`floater_im_container.xml`), which defines the main instant messaging window:
+#### C++ UI Component Example: LLButton
 
-```xml
-<multi_floater
- can_close="true"
- can_minimize="true"
- can_resize="true"
- height="210"
- min_height="210"
- layout="topleft"
- name="floater_im_box"
- help_topic="floater_im_box"
- save_rect="true"
- save_visibility="true"
- single_instance="true"
- reuse_instance="true"
- title="CONVERSATIONS"
- bottom="-50"
- left="5"
- width="450"
- min_width="38">
-    ...
-    <button
-     follows="top|left"
-     height="25"
-     image_hover_unselected="Toolbar_Middle_Over"
-     image_overlay="Conv_toolbar_plus"
-     image_selected="Toolbar_Middle_Selected"
-     image_unselected="Toolbar_Middle_Off"
-     layout="topleft"
-     top="1"
-     left_pad="2"
-     name="add_btn"
-     tool_tip="Start a new conversation"
-     width="31"/>
-    ...
-</multi_floater>
+The `LLButton` class (defined in `indra/llui/llbutton.h` and `llbutton.cpp`) is a fundamental UI component. Here is an example of how a button might be created and configured programmatically in C++:
+
+```cpp
+// This code snippet is a hypothetical example of how to create a button programmatically.
+// In practice, most UI elements are created from XUI files.
+
+// 1. Include the necessary header files.
+#include "llbutton.h"
+#include "lluictrlfactory.h"
+#include "llviewerwindow.h"
+
+void createMyButton(LLView* parent_view)
+{
+    // 2. Define the parameters for the button using the LLButton::Params struct.
+    // This struct provides a convenient way to set the button's properties.
+    LLButton::Params button_params;
+    button_params.name = "my_button";
+    button_params.label = "Click Me";
+    button_params.rect = LLRect(10, 10, 100, 25); // x, y, width, height
+    button_params.commit_callback.set(&onMyButtonClick); // Set the callback function for when the button is clicked.
+
+    // 3. Create the button using the LLUICtrlFactory.
+    // The factory is responsible for creating all UI controls.
+    LLButton* my_button = LLUICtrlFactory::create<LLButton>(button_params);
+
+    // 4. Add the button to a parent view.
+    // All UI controls must be part of a view hierarchy.
+    parent_view->addChild(my_button);
+}
+
+// 5. Define the callback function that will be executed when the button is clicked.
+void onMyButtonClick(LLUICtrl* ctrl, const LLSD& userdata)
+{
+    LL_INFOS() << "My button was clicked!" << LL_ENDL;
+}
 ```
 
-This example illustrates how XUI is used to define the properties and layout of UI elements. The C++ code in `indra/llui` then parses these XML files to create and manage the UI at runtime.
+**Code Explanation:**
+
+1.  **Headers:** The necessary header files are included for the `LLButton` class, the UI control factory, and the main viewer window.
+2.  **Parameters:** The `LLButton::Params` struct is used to define the properties of the button, such as its name, label, position, and size. A callback function (`onMyButtonClick`) is set to be called when the button is clicked.
+3.  **Factory:** The `LLUICtrlFactory` is used to create an instance of the `LLButton` class with the specified parameters. This factory pattern is used throughout the viewer to create UI controls.
+4.  **Hierarchy:** The newly created button is added as a child of a parent view. The UI is organized as a hierarchy of views, with the main viewer window at the root.
+5.  **Callback:** The `onMyButtonClick` function is the event handler that is called when the button is clicked. It receives a pointer to the control that was clicked and a user data parameter (which is not used in this example).
+
+#### XUI Layout Example
+
+In practice, most UI elements in Firestorm are defined in XUI files rather than being created programmatically. Here is an example of how the same button might be defined in an XUI file:
+
+```xml
+<!-- This is an example of a button definition in an XUI file. -->
+<button
+    name="my_button"
+    label="Click Me"
+    rect="10,10,100,25"
+    follows="left|top"
+    image_unselected="PushButton_Off"
+    image_selected="PushButton_On"
+    image_hover_unselected="PushButton_Over"
+    image_disabled="PushButton_Disabled"
+    mouse_down_sound="UISndClick"
+    mouse_up_sound="UISndClickRelease"
+    commit_callback="MyCallback.Fire"
+    />
+```
+
+**XUI Explanation:**
+
+*   **`<button>`:** This tag defines a button control. The attributes of the tag correspond to the properties of the `LLButton` class.
+*   **`name`:** A unique name for the button, used to identify it in the C++ code.
+*   **`label`:** The text that will be displayed on the button.
+*   **`rect`:** The position and size of the button (x, y, width, height).
+*   **`follows`:** Specifies how the button should resize when its parent view is resized.
+*   **`image_*`:** These attributes specify the image files to be used for the different states of the button (e.g., normal, selected, hover, disabled). These images are located in the `textures` directory of the current skin.
+*   **`mouse_*_sound`:** These attributes specify the sound files to be played when the button is clicked.
+*   **`commit_callback`:** This attribute specifies the name of a callback function that will be called when the button is clicked. The `MyCallback.Fire` syntax is a convention used in the Firestorm codebase to refer to a specific callback function.
 
 ### 2.2. Skinning and Theming
 
@@ -158,6 +196,66 @@ Firestorm utilizes a **deferred rendering** pipeline, which is a modern and effi
 
 3.  **Post-Processing:** After the lighting pass, a series of post-processing effects are applied to the final image to enhance its visual quality.
 
+#### G-Buffer Layout
+
+The G-buffer consists of several render targets, each storing different information about the scene. Here is an example of a fragment shader that writes to the G-buffer (`diffuseF.glsl`):
+
+```glsl
+// This shader runs for each pixel of a diffuse object and writes its properties to the G-buffer.
+
+// Declare the output variables for the G-buffer.
+// gl_FragData[0] -> Diffuse color
+// gl_FragData[1] -> Specular color and shininess
+// gl_FragData[2] -> Normal vector and other flags
+// gl_FragData[3] -> Emissive color
+out vec4 frag_data[4];
+
+// Input variables from the vertex shader.
+in vec3 vary_normal;
+in vec4 vertex_color;
+in vec2 vary_texcoord0;
+in vec3 vary_position;
+
+// Uniform for the diffuse texture map.
+uniform sampler2D diffuseMap;
+
+// Function to encode the normal vector and other flags into a vec4.
+vec4 encodeNormal(vec3 n, float env, float gbuffer_flag);
+
+void main()
+{
+    // Calculate the diffuse color by multiplying the vertex color with the texture color.
+    vec3 col = vertex_color.rgb * texture(diffuseMap, vary_texcoord0.xy).rgb;
+
+    // Write the diffuse color to the first render target of the G-buffer.
+    // The alpha channel is unused.
+    frag_data[0] = vec4(col, 0.0);
+
+    // Write the specular properties to the second render target.
+    // The alpha channel of the vertex color is used to store the shininess (specular exponent).
+    frag_data[1] = vertex_color.aaaa;
+
+    // Normalize the normal vector.
+    vec3 nvn = normalize(vary_normal);
+
+    // Encode the normal vector and other flags and write them to the third render target.
+    frag_data[2] = encodeNormal(nvn.xyz, vertex_color.a, GBUFFER_FLAG_HAS_ATMOS);
+
+    // If the material has an emissive component, write it to the fourth render target.
+#if defined(HAS_EMISSIVE)
+    frag_data[3] = vec4(0, 0, 0, 0);
+#endif
+}
+```
+
+**Code Explanation:**
+
+*   **`out vec4 frag_data[4]`:** This declares an array of four `vec4` output variables, which correspond to the four render targets of the G-buffer.
+*   **`frag_data[0]`:** Stores the diffuse color of the material.
+*   **`frag_data[1]`:** Stores the specular properties. The shininess is packed into the alpha channel.
+*   **`frag_data[2]`:** Stores the surface normal, encoded into a `vec4` to pack additional information.
+*   **`frag_data[3]`:** Stores the emissive color, if the material has one.
+
 ### 3.3. Physically Based Rendering (PBR)
 
 Firestorm supports **Physically Based Rendering (PBR)** for materials, which is a modern rendering technique that aims to simulate the physical properties of light and materials more accurately. This results in more realistic and consistent lighting across different lighting conditions.
@@ -191,11 +289,118 @@ Firestorm's rendering engine includes a rich set of features for lighting, shado
     *   **Dynamic Shadows:** The viewer can render dynamic shadows for avatars and objects, using techniques like shadow mapping.
     *   **Ambient Occlusion (SSAO):** Screen-Space Ambient Occlusion is used to add realistic contact shadows and enhance the sense of depth in the scene.
 
+#### Lighting and Shadow Calculation
+
+The lighting and shadow calculations are performed in a separate pass after the G-buffer has been populated. Here is an example of the fragment shader for the main directional light (`sunLightF.glsl`):
+
+```glsl
+// This shader calculates the shadow contribution for the main directional light (sun)
+// and up to two spot lights.
+
+out vec4 frag_color;
+
+// Input from the vertex shader (screen-space coordinates).
+in vec2 vary_fragcoord;
+
+// Uniforms for the light direction and shadow bias.
+uniform vec3 sun_dir;
+uniform float shadow_bias;
+
+// Functions to sample the position and normal from the G-buffer.
+vec4 getPosition(vec2 pos_screen);
+vec4 getNorm(vec2 pos_screen);
+
+// Functions to sample the shadow maps for directional and spot lights.
+float sampleDirectionalShadow(vec3 pos, vec3 norm, vec2 pos_screen);
+float sampleSpotShadow(vec3 pos, vec3 norm, int index, vec2 pos_screen);
+
+void main()
+{
+    // Get the screen-space position of the current fragment.
+    vec2 pos_screen = vary_fragcoord.xy;
+
+    // Sample the position and normal from the G-buffer.
+    vec4 pos        = getPosition(pos_screen);
+    vec4 norm       = getNorm(pos_screen);
+
+    // Calculate the shadow values for the directional and spot lights.
+    vec4 col;
+    col.r = sampleDirectionalShadow(pos.xyz, norm.xyz, pos_screen);
+    col.g = 1.0f; // Unused
+    col.b = sampleSpotShadow(pos.xyz, norm.xyz, 0, pos_screen);
+    col.a = sampleSpotShadow(pos.xyz, norm.xyz, 1, pos_screen);
+
+    // Output the shadow values, clamped to the [0, 1] range.
+    frag_color = clamp(col, vec4(0), vec4(1));
+}
+```
+
+**Code Explanation:**
+
+*   **G-Buffer Sampling:** The shader first retrieves the world-space position and normal of the current pixel by sampling the G-buffer.
+*   **Shadow Sampling:** It then calls the `sampleDirectionalShadow()` and `sampleSpotShadow()` functions to determine the amount of shadow at that pixel. These functions perform a lookup into the shadow maps that were rendered in a previous pass.
+*   **Output:** The shader outputs a `vec4` color where each component represents the shadow value for a different light source. This information is then used in a final pass to modulate the lighting contribution of each light.
+
 *   **Post-Processing Effects:**
     *   **Anti-Aliasing:** Support for both SMAA (Subpixel Morphological Anti-Aliasing) and FXAA (Fast Approximate Anti-Aliasing) to reduce jagged edges.
     *   **Depth of Field (DoF):** A high-quality depth of field effect that simulates the focusing properties of a real camera.
     *   **Glow:** A bloom effect that creates a soft glow around bright objects.
     *   **Color Correction:** Tools for adjusting the brightness, contrast, and color balance of the final image.
+
+#### Post-Processing Example: FXAA
+
+FXAA (Fast Approximate Anti-Aliasing) is a post-processing effect that smooths out jagged edges in the final rendered image. Here is the main function from the FXAA fragment shader (`fxaaF.glsl`):
+
+```glsl
+// This is the main function of the FXAA fragment shader.
+
+uniform sampler2D diffuseMap; // The input texture to be anti-aliased.
+uniform sampler2D depthMap;   // The depth buffer.
+
+uniform vec2 rcp_screen_res;  // Reciprocal of the screen resolution.
+uniform vec4 rcp_frame_opt;
+uniform vec4 rcp_frame_opt2;
+
+in vec2 vary_fragcoord;
+in vec2 vary_tc;
+
+// The main FXAA function, which performs the anti-aliasing.
+vec4 FxaaPixelShader(...);
+
+void main()
+{
+    // Call the FxaaPixelShader function to perform the anti-aliasing.
+    vec4 diff = FxaaPixelShader(
+        vary_tc,            // pos
+        vec4(vary_fragcoord.xy, 0, 0), // fxaaConsolePosPos
+        diffuseMap,         // tex
+        diffuseMap,
+        diffuseMap,
+        rcp_screen_res,     // fxaaQualityRcpFrame
+        vec4(0,0,0,0),      // fxaaConsoleRcpFrameOpt
+        rcp_frame_opt,      // fxaaConsoleRcpFrameOpt2
+        rcp_frame_opt2,     // fxaaConsole360RcpFrameOpt2
+        0.75,               // fxaaQualitySubpix
+        0.07,               // fxaaQualityEdgeThreshold
+        0.03,               // fxaaQualityEdgeThresholdMin
+        8.0,                // fxaaConsoleEdgeSharpness
+        0.125,              // fxaaConsoleEdgeThreshold
+        0.05,               // fxaaConsoleEdgeThresholdMin
+        vec4(0,0,0,0)       // fxaaConsole360ConstDir
+    );
+
+    // Output the anti-aliased color.
+    frag_color = diff;
+
+    // Write the original depth value to the depth buffer.
+    gl_FragDepth = texture(depthMap, vary_fragcoord.xy).r;
+}
+```
+
+**Code Explanation:**
+
+*   **`FxaaPixelShader(...)`:** This function contains the core logic of the FXAA algorithm. It takes the input texture and a number of quality parameters as input, and returns the anti-aliased color.
+*   **`main()`:** The `main` function simply calls the `FxaaPixelShader` with the appropriate parameters and outputs the result. It also writes the original depth value to the depth buffer to ensure that the depth test works correctly in subsequent rendering passes.
 
 ## 4. Audio System
 
@@ -208,6 +413,54 @@ The primary audio engine used by Firestorm is **FMOD Studio**. This is a profess
 The viewer also includes an alternative audio engine implementation based on **OpenAL** (`llaudioengine_openal.cpp`), which can be used as a fallback or on platforms where FMOD Studio is not available.
 
 The `llaudioengine.h` header file provides a common interface for the audio engine, abstracting away the details of the underlying implementation.
+
+#### Audio Engine Initialization
+
+The `LLAudioEngine_FMODSTUDIO::init()` method is responsible for initializing the FMOD Studio audio engine. Here is a simplified code snippet showing the key steps:
+
+```cpp
+// This is a simplified example of the audio engine initialization process.
+
+bool LLAudioEngine_FMODSTUDIO::init(void* userdata, const std::string &app_title)
+{
+    FMOD_RESULT result;
+
+    // 1. Create the FMOD Studio system object.
+    result = FMOD::System_Create(&mSystem);
+    if (Check_FMOD_Error(result, "FMOD::System_Create"))
+        return false;
+
+    // 2. Set the number of software channels.
+    // This determines the maximum number of sounds that can be played simultaneously.
+    result = mSystem->setSoftwareChannels(LL_MAX_AUDIO_CHANNELS + EXTRA_SOUND_CHANNELS);
+    Check_FMOD_Error(result, "FMOD::System::setSoftwareChannels");
+
+    // 3. Set advanced settings, such as the resampling method.
+    FMOD_ADVANCEDSETTINGS settings = { };
+    settings.cbSize = sizeof(FMOD_ADVANCEDSETTINGS);
+    settings.resamplerMethod = FMOD_DSP_RESAMPLER_LINEAR;
+    result = mSystem->setAdvancedSettings(&settings);
+    Check_FMOD_Error(result, "FMOD::System::setAdvancedSettings");
+
+    // 4. Initialize the FMOD Studio system.
+    U32 fmod_flags = FMOD_INIT_NORMAL | FMOD_INIT_3D_RIGHTHANDED;
+    result = mSystem->init(LL_MAX_AUDIO_CHANNELS + EXTRA_SOUND_CHANNELS, fmod_flags, 0);
+    if (Check_FMOD_Error(result, "Error initializing FMOD Studio"))
+    {
+        return false;
+    }
+
+    mInited = true;
+    return true;
+}
+```
+
+**Code Explanation:**
+
+1.  **`FMOD::System_Create()`:** This function creates an instance of the FMOD Studio system object, which is the main entry point for the audio engine.
+2.  **`setSoftwareChannels()`:** This sets the maximum number of sounds that can be played simultaneously.
+3.  **`setAdvancedSettings()`:** This allows for the configuration of advanced settings, such as the resampling method, which affects the quality of the audio.
+4.  **`init()`:** This function initializes the FMOD Studio system with the specified flags. The `FMOD_INIT_3D_RIGHTHANDED` flag is important for ensuring that the 3D audio is correctly positioned in the viewer's right-handed coordinate system.
 
 ### 4.2. Sound Effects and Streaming Music
 
@@ -224,6 +477,43 @@ The viewer supports various audio formats, including WAV, MP3, and Ogg Vorbis.
 In-world voice chat is a key feature of the Firestorm viewer, allowing users to communicate with each other using their microphones. The voice chat system is powered by **Vivox**, a third-party service that provides high-quality, low-latency voice communication.
 
 The `llvoicevivox.cpp` file contains the integration code for the Vivox SDK. The viewer also has an implementation for **WebRTC** (`llvoicewebrtc.cpp`), which is a modern, open-standard for real-time communication. This suggests that the viewer may be transitioning to or offering WebRTC as an alternative to Vivox.
+
+#### Voice Chat Integration
+
+The `LLVivoxVoiceClient` class manages the connection to the Vivox service. Here is a simplified overview of the process of joining a voice channel:
+
+```cpp
+// This is a simplified, high-level overview of the voice chat connection process.
+
+void LLVivoxVoiceClient::joinVoiceChannel(const std::string& channel_uri)
+{
+    // 1. Start and launch the Vivox daemon process.
+    // This process handles the low-level communication with the Vivox servers.
+    startAndLaunchDaemon();
+
+    // 2. Provision the voice account with the Vivox service.
+    // This involves authenticating the user and getting the necessary credentials.
+    provisionVoiceAccount();
+
+    // 3. Establish a connection to the Vivox service.
+    establishVoiceConnection();
+
+    // 4. Log in to the Vivox account.
+    loginToVivox();
+
+    // 5. Create and join the voice channel.
+    // The channel is identified by a URI.
+    addAndJoinSession(channel_uri);
+}
+```
+
+**Code Explanation:**
+
+1.  **`startAndLaunchDaemon()`:** This function starts the `SLVoice` daemon process, which is a separate executable that handles the low-level communication with the Vivox servers.
+2.  **`provisionVoiceAccount()`:** This function sends a request to the Second Life servers to provision a voice account for the user. This is necessary to get the username and password required to log in to the Vivox service.
+3.  **`establishVoiceConnection()`:** This function establishes a connection to the Vivox service and creates a "connector" object that is used to interact with the service.
+4.  **`loginToVivox()`:** This function sends a login request to the Vivox service with the user's credentials.
+5.  **`addAndJoinSession()`:** This function creates and joins a voice channel. The channel is identified by a URI, which is typically provided by the Second Life server.
 
 The voice chat system supports:
 
@@ -245,6 +535,50 @@ The primary communication protocol used for real-time interaction with the virtu
 *   **Chat and IM:** Sending and receiving text-based communication.
 
 The messaging system is defined by a set of message templates, which specify the structure of each message type. The `llmessagetemplate.cpp` file is responsible for managing these templates. The `llcircuit.cpp` file manages the UDP connection to the simulator, which is known as a "circuit".
+
+#### Message Handling
+
+Incoming messages from the server are processed by the `LLDispatcher` class (defined in `indra/llmessage/lldispatcher.h` and `lldispatcher.cpp`). This class maintains a map of message names to handler functions. When a message is received, the dispatcher looks up the appropriate handler and calls it.
+
+Here is a simplified example of how the dispatcher works:
+
+```cpp
+// This is a simplified example of the message dispatching process.
+
+class LLDispatcher
+{
+public:
+    // Dispatches a message to the appropriate handler.
+    bool dispatch(const key_t& name, const LLUUID& invoice, const sparam_t& strings) const
+    {
+        // 1. Find the handler for the given message name in the map.
+        dispatch_map_t::const_iterator it = mHandlers.find(name);
+        if (it != mHandlers.end())
+        {
+            // 2. If a handler is found, call it with the message data.
+            LLDispatchHandler* func = (*it).second;
+            return (*func)(this, name, invoice, strings);
+        }
+        return false;
+    }
+
+    // Adds a handler for a specific message name.
+    LLDispatchHandler* addHandler(const key_t& name, LLDispatchHandler* func)
+    {
+        mHandlers[name] = func;
+    }
+
+private:
+    // A map of message names to handler functions.
+    dispatch_map_t mHandlers;
+};
+```
+
+**Code Explanation:**
+
+1.  **`dispatch()`:** This method is the core of the dispatcher. It takes the message name, an invoice UUID, and a list of parameters as input. It then looks up the handler for the given message name in the `mHandlers` map.
+2.  **Handler Execution:** If a handler is found, it is called with the message data. The handler is responsible for processing the message and taking the appropriate action.
+3.  **`addHandler()`:** This method is used to register a handler for a specific message name. This is typically done during the viewer's initialization process.
 
 ### 5.2. Asset Fetching
 
