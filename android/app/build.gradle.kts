@@ -13,16 +13,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "0.0.1"
-
-        externalNativeBuild {
-            cmake {
-                cppFlags += listOf("-std=c++17")
-            }
-        }
-
-        ndk {
-            abiFilters += listOf("arm64-v8a")
-        }
     }
 
     buildTypes {
@@ -31,13 +21,6 @@ android {
         }
         debug {
             // keep defaults
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
         }
     }
 
