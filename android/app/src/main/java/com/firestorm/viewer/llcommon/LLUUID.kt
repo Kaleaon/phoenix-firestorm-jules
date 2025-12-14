@@ -1,6 +1,5 @@
 package com.firestorm.viewer.llcommon
 
-import java.security.MessageDigest
 import java.util.UUID
 
 /**
@@ -50,10 +49,11 @@ class LLUUID private constructor(private val data: ByteArray) {
      * Matches C++ LLUUID::combine().
      */
     fun combine(other: LLUUID): LLUUID {
-        val md5 = MessageDigest.getInstance("MD5")
+        val md5 = LLMD5()
         md5.update(this.data)
         md5.update(other.data)
-        return LLUUID(md5.digest())
+        md5.finalizeDigest()
+        return LLUUID(md5.rawDigest())
     }
 
     /** Sum of 8 little-endian 16-bit words (matches typical viewer behavior). */

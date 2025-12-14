@@ -2,6 +2,7 @@ package com.firestorm.viewer
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.firestorm.viewer.llcommon.LLMD5
 import com.firestorm.viewer.llcommon.LLUUID
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +17,10 @@ class MainActivity : AppCompatActivity() {
         val id = LLUUID.random()
         check(LLUUID.fromString(id.asString()) == id)
 
-        title = "Firestorm ($version) ${id.asString().take(8)}"
+        val md5 = LLMD5()
+        md5.update(id.asString())
+        md5.finalizeDigest()
+
+        title = "Firestorm ($version) ${id.asString().take(8)} ${md5.hexDigest().take(6)}"
     }
 }
