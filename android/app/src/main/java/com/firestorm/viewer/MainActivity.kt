@@ -3,6 +3,7 @@ package com.firestorm.viewer
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.firestorm.viewer.llcommon.LLMD5
+import com.firestorm.viewer.llcommon.LLTimer
 import com.firestorm.viewer.llcommon.LLUUID
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
         md5.update(id.asString())
         md5.finalizeDigest()
 
-        title = "Firestorm ($version) ${id.asString().take(8)} ${md5.hexDigest().take(6)}"
+        // Kotlin port: LLTimer (see llcommon/LLTimer.kt)
+        LLTimer.initClass()
+        val uptime = LLTimer.getElapsedSeconds()
+
+        title = "Firestorm ($version) ${id.asString().take(8)} ${md5.hexDigest().take(6)} t=${"%.2f".format(uptime)}"
     }
 }
