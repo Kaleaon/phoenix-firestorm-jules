@@ -129,3 +129,8 @@ firestorm.code-workspace
 .github/release.yaml
 
 checks.json
+
+# Android / Gradle
+android/local.properties
+android/.gradle/
+android/**/build/
