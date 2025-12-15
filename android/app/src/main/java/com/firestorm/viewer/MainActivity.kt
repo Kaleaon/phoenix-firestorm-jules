@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.firestorm.viewer.llcommon.LLMD5
 import com.firestorm.viewer.llcommon.LLTimer
+import com.firestorm.viewer.llcommon.LLStringUtil
 import com.firestorm.viewer.llcommon.LLUUID
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         LLTimer.initClass()
         val uptime = LLTimer.getElapsedSeconds()
 
-        title = "Firestorm ($version) ${id.asString().take(8)} ${md5.hexDigest().take(6)} t=${"%.2f".format(uptime)}"
+        // Kotlin port: LLStringUtil (subset of llstring.*)
+        val tokens = LLStringUtil.getTokens("""~/\"sub dir\"/myfile.txt""", dropDelims = "/", keepDelims = "/", quotes = "\"", escapes = "\\")
+        check(tokens.isNotEmpty())
+
+        title = "Firestorm ($version) ${id.asString().take(8)} ${md5.hexDigest().take(6)} t=${"%.2f".format(uptime)} tok=${tokens.size}"
     }
 }
