@@ -15,8 +15,10 @@ a:hover {color:#ff7900;text-decoration:underline;}
 #infobox #submitbtn input.pressed {color:#888;border:none;background:url(../../btn_purplepill_bg.png) top right no-repeat;}
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
-<body> <div id="infobox"> <img src="../../unabletoconnect.png" alt="Unable to connect"><br/>
-		<p> Second Life에서 로그인 서버에 대한 보안 연결을 설정할 수 없습니다.
+<body> <div id="infobox" role="status" aria-live="polite"> <svg class="error-icon" aria-hidden="true" viewBox="0 0 64 64" width="64" height="64" style="margin-bottom: 12px; vertical-align: middle;">
+		<circle cx="32" cy="32" r="28" fill="#1e1e1e" stroke="#c12626" stroke-width="3"/>
+		<path d="M32 16 v20 M32 42 v4" stroke="#e9f1f8" stroke-width="4" stroke-linecap="round"/>
+	</svg><br/>		<p> Second Life에서 로그인 서버에 대한 보안 연결을 설정할 수 없습니다.
 		</p>
 		<p> 인터넷 연결을 확인하십시오. 사용 중인 컴퓨터 또는 네트워크가 방화벽이나 프록시에 의해 보호된 경우 Second Life가 네트워크에 액세스할 수 있도록 허가되었는지 확인하십시오.
 		</p> <div id="submitbtn">
