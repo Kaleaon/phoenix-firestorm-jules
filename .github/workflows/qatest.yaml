@@ -93,46 +93,42 @@ jobs:
       - name: Verify viewer-automation-main is Up-To-Date (Windows)
         if: matrix.os == 'windows'
         shell: pwsh
-        continue-on-error: true
         run: |
+          $ErrorActionPreference = 'Stop'
           cd ${{ matrix.install-path }}
           Write-Host "Checking for repository updates..."
 
           # Check if .git directory exists
-          if (Test-Path -Path ".git") {
-            try {
-              # Save local changes instead of discarding them
-              git stash push -m "Automated stash before update $(Get-Date)"
-              Write-Host "Local changes saved (if any)"
+          if (-Not (Test-Path -Path ".git")) {
+            Write-Host "❌ Error: Not a Git repository at ${{ matrix.install-path }}!"
+            exit 1
+          }
 
-              # Update the repository
-              git pull
-              Write-Host "✅ Repository updated successfully"
+          # Save local changes instead of discarding them
+          git stash push -m "Automated stash before update $(Get-Date)"
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Error: Failed to stash local changes!"
+            exit 1
+          }
+          Write-Host "Local changes saved (if any)"
 
-              # Try to restore local changes if any were stashed
-              $stashList = git stash list
-              if ($stashList -match "Automated stash before update") {
-                try {
-                  git stash pop
-                  Write-Host "✅ Local changes restored successfully"
-                } catch {
-                  Write-Host "⚠️ Conflict when restoring local changes"
-                  # Save the conflicted state in a new branch for later review
-                  $branchName = "conflict-recovery-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-                  git checkout -b $branchName
-                  Write-Host "✅ Created branch '$branchName' with conflicted state"
+          # Update the repository
+          git pull
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Error: git pull failed!"
+            exit 1
+          }
+          Write-Host "✅ Repository updated successfully"
 
-                  # For test execution, revert to a clean state
-                  git reset --hard HEAD
-                  Write-Host "✅ Reset to clean state for test execution"
-                }
-              }
-            } catch {
-              Write-Host "⚠️ Could not update repository: $_"
-              Write-Host "Continuing with existing files..."
+          # Try to restore local changes if any were stashed
+          $stashList = git stash list
+          if ($stashList -match "Automated stash before update") {
+            git stash pop
+            if ($LASTEXITCODE -ne 0) {
+              Write-Host "❌ Error: Failed to restore stashed local changes!"
+              exit 1
             }
-          } else {
-            Write-Host "⚠️ Not a Git repository, using existing files"
+            Write-Host "✅ Local changes restored successfully"
           }
 
       - name: Verify Python Installation (Windows)
@@ -338,40 +334,29 @@ jobs:
       - name: Verify viewer-automation-main is Up-To-Date (Mac)
         if: matrix.os == 'mac'
         shell: bash
-        continue-on-error: true
         run: |
+          set -e
           cd ${{ matrix.install-path }}
           echo "Checking for repository updates..."
 
           # Check if .git directory exists
-          if [ -d ".git" ]; then
-            # Save local changes instead of discarding them
-            git stash push -m "Automated stash before update $(date)"
-            echo "Local changes saved (if any)"
+          if [ ! -d ".git" ]; then
+            echo "❌ Error: Not a Git repository at ${{ matrix.install-path }}!"
+            exit 1
+          fi
 
-            # Update the repository
-            git pull || echo "⚠️ Could not update repository"
-            echo "✅ Repository updated (or attempted update)"
+          # Save local changes instead of discarding them
+          git stash push -m "Automated stash before update $(date)"
+          echo "Local changes saved (if any)"
 
-            # Try to restore local changes if any were stashed
-            if git stash list | grep -q "Automated stash before update"; then
-              # Try to pop the stash, but be prepared for conflicts
-              if ! git stash pop; then
-                echo "⚠️ Conflict when restoring local changes"
-                # Save the conflicted state in a new branch for later review
-                branch_name="conflict-recovery-$(date +%Y%m%d-%H%M%S)"
-                git checkout -b "$branch_name"
-                echo "✅ Created branch '$branch_name' with conflicted state"
+          # Update the repository
+          git pull
+          echo "✅ Repository updated successfully"
 
-                # For test execution, revert to a clean state
-                git reset --hard HEAD
-                echo "✅ Reset to clean state for test execution"
-              else
-                echo "✅ Local changes restored successfully"
-              fi
-            fi
-          else
-            echo "⚠️ Not a Git repository, using existing files"
+          # Try to restore local changes if any were stashed
+          if git stash list | grep -q "Automated stash before update"; then
+            git stash pop
+            echo "✅ Local changes restored successfully"
           fi
 
       - name: Verify Python Installation (Mac)
