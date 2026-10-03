@@ -135,6 +135,8 @@ jobs:
         env:
           AUTOBUILD_VCS_BRANCH: ${{ steps.which-branch.outputs.branch }}
           RUNNER_OS: ${{ runner.os }}
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
           # set up things the viewer's build.sh script expects
           set -x
@@ -200,15 +202,18 @@ jobs:
           ## Useful for diagnosing Windows LLProcess/LLLeap test failures
           ##export APR_LOG="${RUNNER_TEMP}/apr.log"
           export arch=$(uname | cut -b-6)
-          # Surprise! GH Windows runner's MINGW6 is a $arch value we've never
+          # Surprise! GH Windows runner's MINGW6/MSYS_N is a $arch value we've never
           # seen before, so numerous tests don't know about it.
-          [[ "$arch" == "MINGW6" ]] && arch=CYGWIN
+          [[ "$RUNNER_OS" == "Windows" || "$arch" == "MINGW6" || "$arch" == "MSYS_N" || "$arch" == MINGW* || "$arch" == MSYS* ]] && arch=CYGWIN
           export AUTOBUILD="$(which autobuild)"
+          if [[ "$RUNNER_OS" == "Windows" ]] && [[ ! -x "$AUTOBUILD" ]] && [[ -x "${AUTOBUILD}.exe" ]]; then
+            export AUTOBUILD="${AUTOBUILD}.exe"
+          fi
 
           # determine the viewer channel from the branch or tag name
           # trigger an EDU build by including "edu" in the tag
-          edu=${{ github.ref_type == 'tag' && contains(github.ref_name, 'edu') }}
-          echo "ref_type=${{ github.ref_type }}, ref_name=${{ github.ref_name }}, edu='$edu'"
+          edu=$([[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" == *edu* ]] && echo "true" || echo "false")
+          echo "ref_type=$GITHUB_REF_TYPE, ref_name=$GITHUB_REF_NAME, edu='$edu'"
           branch=$AUTOBUILD_VCS_BRANCH
           if [[ "$edu" == "true" ]]
           then

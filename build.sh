@@ -291,6 +291,9 @@ begin_section "autobuild initialize"
 AUTOBUILD="$(native_path "$AUTOBUILD")"
 # set "$autobuild" to cygwin path form for use locally in this script
 autobuild="$(shell_path "$AUTOBUILD")"
+if [ ! -x "$autobuild" ] && [ -x "${autobuild}.exe" ]; then
+    autobuild="${autobuild}.exe"
+fi
 if [ ! -x "$autobuild" ]
 then
   record_failure "AUTOBUILD not executable: '$autobuild'"
