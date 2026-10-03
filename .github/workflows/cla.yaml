@@ -14,7 +14,7 @@ jobs:
     name: Check CLA
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
       statuses: write
       issues: write
@@ -31,4 +31,4 @@ jobs:
           path-to-signatures: signatures.json
           remote-organization-name: ${{ secrets.SHARED_CLA_TOKEN && 'secondlife' || '' }}
           remote-repository-name: ${{ secrets.SHARED_CLA_TOKEN && 'cla-signatures' || '' }}
-          allowlist: callum@mbp.localdomain,rye@lindenlab.com
+          allowlist: callum@mbp.localdomain,rye@lindenlab.com,*[bot]*,*google-labs*
