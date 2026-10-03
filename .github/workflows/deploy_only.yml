@@ -29,6 +29,8 @@ jobs:
     permissions:
       actions: read
       contents: read
+      id-token: write
+      attestations: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -87,6 +89,11 @@ jobs:
           FS_VIEWER_RELEASE_TYPE: ${{ github.event.inputs.viewer_release_type }}
           FS_VERSION_MGR_KEY: ${{ secrets.FS_VERSION_MGR_KEY }}
         run: python ./fsutils/download_list.py ./to_deploy -w ${{ env.FS_BUILD_WEBHOOK_URL }}
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'to_deploy/${{ env.FS_RELEASE_FOLDER }}/**'
 
       - name: Setup rclone and download the folder
         uses: beqjanus/setup-rclone@main

@@ -93,6 +93,15 @@ def run_cmd(cmd):
 
 #using the md5sum command get the md5 for the file
 
+def get_sha256(filepath):
+    sha256_hash = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for byte_block in iter(lambda: f.read(65536), b""):
+            sha256_hash.update(byte_block)
+    sha256_val = sha256_hash.hexdigest()
+    print(f"generating sha256sum for {filepath} as {sha256_val}")
+    return sha256_val
+
 def get_md5(mdfile):
     md5sum = run_cmd(f"md5sum {mdfile}")
     #split md5sum on space
@@ -362,6 +371,78 @@ def gather_build_info(build_type_info, config):
         print(f"Created build info: {build_type_info}")
     return build_type_info
 
+def generate_sha256_manifest(build_info):
+    build_type_dir = build_info["build_type_fullpath"]
+    sha256sums_path = os.path.join(build_type_dir, "SHA256SUMS")
+    sha256_entries = []
+
+    platform_manifests = {}
+
+    for platform_folder in build_info.get("os_folders", []):
+        platform_dir = os.path.join(build_type_dir, platform_folder)
+        if os.path.exists(platform_dir):
+            platform_manifests[platform_folder] = []
+
+    if "downloadable_artifacts" in build_info:
+        for file_key, artifact in build_info["downloadable_artifacts"].items():
+            full_file = artifact.get("file_path")
+            if full_file and os.path.isfile(full_file):
+                sha256_val = get_sha256(full_file)
+                artifact["sha256"] = sha256_val
+                rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
+                sha256_entries.append((sha256_val, rel_path))
+
+                for platform_folder in build_info.get("os_folders", []):
+                    platform_dir = os.path.join(build_type_dir, platform_folder)
+                    try:
+                        if os.path.commonpath([full_file, platform_dir]) == platform_dir:
+                            file_rel_platform = os.path.relpath(full_file, platform_dir).replace('\\', '/')
+                            if platform_folder not in platform_manifests:
+                                platform_manifests[platform_folder] = []
+                            if not any(e[1] == file_rel_platform for e in platform_manifests[platform_folder]):
+                                platform_manifests[platform_folder].append((sha256_val, file_rel_platform))
+                    except ValueError:
+                        pass
+
+    for root, dirs, files in os.walk(build_type_dir):
+        if "symbols" in root.split(os.sep):
+            continue
+        for file in files:
+            if file == "SHA256SUMS":
+                continue
+            full_file = os.path.join(root, file)
+            rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
+            if not any(entry[1] == rel_path for entry in sha256_entries):
+                sha256_val = get_sha256(full_file)
+                sha256_entries.append((sha256_val, rel_path))
+
+                for platform_folder in build_info.get("os_folders", []):
+                    platform_dir = os.path.join(build_type_dir, platform_folder)
+                    try:
+                        if os.path.commonpath([full_file, platform_dir]) == platform_dir:
+                            file_rel_platform = os.path.relpath(full_file, platform_dir).replace('\\', '/')
+                            if platform_folder not in platform_manifests:
+                                platform_manifests[platform_folder] = []
+                            if not any(e[1] == file_rel_platform for e in platform_manifests[platform_folder]):
+                                platform_manifests[platform_folder].append((sha256_val, file_rel_platform))
+                    except ValueError:
+                        pass
+
+    sha256_entries.sort(key=lambda x: x[1])
+    with open(sha256sums_path, "w", encoding="utf-8") as f:
+        for sha256_val, rel_path in sha256_entries:
+            f.write(f"{sha256_val}  {rel_path}\n")
+    print(f"Generated SHA256SUMS at {sha256sums_path}")
+
+    for platform_folder, p_entries in platform_manifests.items():
+        if p_entries:
+            p_entries.sort(key=lambda x: x[1])
+            p_sha256sums_path = os.path.join(build_type_dir, platform_folder, "SHA256SUMS")
+            with open(p_sha256sums_path, "w", encoding="utf-8") as f:
+                for sha256_val, file_rel in p_entries:
+                    f.write(f"{sha256_val}  {file_rel}\n")
+            print(f"Generated platform SHA256SUMS at {p_sha256sums_path}")
+
 def create_discord_message(build_info, config):
 # Start with a header line            
     text_summary = f'''
@@ -532,6 +613,7 @@ def main():
             print(f"Processing {build_type_key}")
             restructure_folders(build_type_info, config)
             build_info = gather_build_info(build_type_info, config)
+            generate_sha256_manifest(build_info)
             update_fs_version_mgr(build_info, config)
 
             discord_text = create_discord_message(build_info, config)
