@@ -1,4 +1,8 @@
 name: Build viewer
+
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -18,9 +22,6 @@ on:
       - "*preview"
   schedule:
     - cron: '00 03 * * *' # Run every day at 3am UTC
-
-permissions:
-  contents: read
 
 env:
   AUTOBUILD_VARIABLES_FILE: ${{github.workspace}}/build-variables/variables

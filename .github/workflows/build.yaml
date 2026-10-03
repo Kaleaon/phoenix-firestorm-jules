@@ -1,13 +1,13 @@
 name: Build
 
+permissions:
+  contents: read
+
 on:
   pull_request:
   push:
     branches: ["main", "release/*", "project/*"]
     tags: ["Second_Life*"]
-
-permissions:
-  contents: read
 
 jobs:
   # The whole point of the setup job is that we want to set variables once
