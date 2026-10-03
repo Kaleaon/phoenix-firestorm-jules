@@ -6,10 +6,18 @@ on:
   pull_request_target:
     types: [opened, closed, synchronize]
 
+permissions:
+  contents: read
+
 jobs:
   cla:
     name: Check CLA
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+      issues: write
     steps:
       - name: CLA Assistant
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'

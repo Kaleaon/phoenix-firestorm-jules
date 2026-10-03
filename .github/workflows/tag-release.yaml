@@ -23,6 +23,9 @@ on:
         default: "hippo"
       # TODO - add an input for selecting another sha to build other than head of branch
 
+permissions:
+  contents: read
+
 jobs:
   tag-release:
     runs-on: ubuntu-latest
