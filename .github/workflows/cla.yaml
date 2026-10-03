@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERSONAL_ACCESS_TOKEN: ${{ secrets.SHARED_CLA_TOKEN }}
         with:
-          branch: main
+          branch: master
           path-to-document: https://github.com/secondlife/cla/blob/main/CLA.md
           path-to-signatures: signatures.json
           remote-organization-name: ${{ secrets.SHARED_CLA_TOKEN && 'secondlife' || '' }}
