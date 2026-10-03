@@ -1,5 +1,8 @@
 name: Tag a Build
 
+permissions:
+  contents: read
+
 on:
   # schedule event triggers always run on the default branch
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule

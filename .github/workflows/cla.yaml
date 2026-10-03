@@ -1,5 +1,8 @@
 name: Check CLA
 
+permissions:
+  contents: read
+
 on:
   issue_comment:
     types: [created]
