@@ -6,6 +6,8 @@ on:
     branches: [main, contribute]
     tags: [v*]
 
+permissions:
+  contents: read
 
 jobs:
   pre-commit:
