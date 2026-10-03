@@ -26,9 +26,6 @@ on:
         required: false
         default: 'master'
 
-permissions:
-  contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
