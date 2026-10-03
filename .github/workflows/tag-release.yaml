@@ -27,13 +27,15 @@ jobs:
   tag-release:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
       - name: Setup Env Vars
-        run: |
-          CHANNEL="${{ inputs.channel }}"
-          echo VIEWER_CHANNEL="Second_Life_${CHANNEL:-Develop}" >> ${GITHUB_ENV}
-          NIGHTLY_DATE=$(date --rfc-3339=date)
-          echo NIGHTLY_DATE=${NIGHTLY_DATE} >> ${GITHUB_ENV}
-          echo TAG_ID="$(echo ${{ github.sha }} | cut -c1-8)-${{ inputs.project || '${NIGHTLY_DATE}' }}" >> ${GITHUB_ENV}
+        env:
+          INPUT_CHANNEL: ${{ inputs.channel }}
+          INPUT_PROJECT: ${{ inputs.project }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: python ./fsutils/parse_workflow_inputs.py tag
       - name: Update Tag
         uses: actions/github-script@v7.0.1
         with:
