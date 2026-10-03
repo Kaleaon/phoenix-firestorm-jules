@@ -513,6 +513,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build_matrix
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
     env:
       FS_BUILD_WEBHOOK_URL:
       FS_RELEASE_FOLDER:
@@ -597,6 +601,11 @@ jobs:
           FS_VIEWER_RELEASE_TYPE: ${{ needs.build_matrix.outputs.viewer_release_type }}
           FS_VERSION_MGR_KEY: ${{ secrets.FS_VERSION_MGR_KEY }}
         run: python ./fsutils/download_list.py ${{steps.download.outputs.download-path}} -w ${{ env.FS_BUILD_WEBHOOK_URL }}
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: '${{ steps.download.outputs.download-path }}/${{ env.FS_RELEASE_FOLDER }}/**/*'
 
       - name: Setup rclone and download the folder
         uses: beqjanus/setup-rclone@main
