@@ -1,4 +1,29 @@
-#!/bin/python3
+#!/usr/bin/env python3
+"""\
+@file download_list.py
+@brief Description of download list and artifact manifest processing utilities.
+
+$LicenseInfo:firstyear=2026&license=viewerlgpl$
+Second Life Viewer Source Code
+Copyright (C) 2026, Linden Research, Inc.
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation;
+version 2.1 of the License only.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+Linden Research, Inc., 945 Battery Street, San Francisco, CA  94111  USA
+$/LicenseInfo$
+"""
 import argparse
 import os
 import sys
@@ -81,17 +106,26 @@ def generate_secret(secret_key):
 # iterate over the files in a directory and pass them to a command line subshell
 def get_files(path):
     files = []
-    for root, dirs, filenames in os.walk(path):        
+    for root, dirs, filenames in os.walk(path):
         for filename in filenames:
             files.append(filename)
     print(f"Found : {files} on {path}")
-    return files    
+    return files
 
 def run_cmd(cmd):
     # print(cmd)
     return os.popen(cmd).read()
 
 #using the md5sum command get the md5 for the file
+
+def get_sha256(filepath):
+    sha256_hash = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        for byte_block in iter(lambda: f.read(65536), b""):
+            sha256_hash.update(byte_block)
+    sha256_val = sha256_hash.hexdigest()
+    print(f"generating sha256sum for {filepath} as {sha256_val}")
+    return sha256_val
 
 def get_md5(mdfile):
     md5sum = run_cmd(f"md5sum {mdfile}")
@@ -113,7 +147,7 @@ def get_sha256(shafile):
 def generate_sha256sums(build_type_info):
     build_type_dir = build_type_info["build_type_fullpath"]
     sha256_entries = []
-    
+
     for platform_folder in build_type_info.get("os_folders", []):
         build_type_platform_folder = os.path.join(build_type_dir, platform_folder)
         if not os.path.exists(build_type_platform_folder):
@@ -125,7 +159,7 @@ def generate_sha256sums(build_type_info):
                 sha256_val = get_sha256(full_file)
                 rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
                 sha256_entries.append(f"{sha256_val}  {rel_path}")
-                
+
     if sha256_entries:
         manifest_path = os.path.join(build_type_dir, "SHA256SUMS")
         with open(manifest_path, "w", encoding="utf-8") as f:
@@ -175,7 +209,7 @@ def get_build_variables():
 
 def get_hosted_folder_for_build_type(build_type, config):
     return config.build_type_hosted_folder.get(
-        build_type, 
+        build_type,
         config.build_type_hosted_folder.get("Unknown")
         )
 
@@ -303,11 +337,11 @@ def unpack_artifacts(path_to_artifacts_directory, config):
         print(f"Finished unpacking {filename} to {unpack_folder}")
         if build_type not in build_types_found:
             print(f"Creating build_type {build_type} entry in build_types_found")
-            build_types_found[build_type] = { 
+            build_types_found[build_type] = {
                 "build_type": build_type,
                 "build_type_folder": build_folder,
                 "build_type_fullpath": build_type_dir,
-                "os_folders": [], 
+                "os_folders": [],
             }
         if os_folder not in build_types_found[build_type]["os_folders"]:
             build_types_found[build_type]["os_folders"].append(os_folder)
@@ -342,9 +376,9 @@ def restructure_folders(build_type_info, config):
 
 def gather_build_info(build_type_info, config):
     print(f"Gathering build info for build_type {build_type_info}")
-    # While we're at it, let's print the md5 listing 
+    # While we're at it, let's print the md5 listing
     download_root = f"{config.download_root}/{build_type_info['build_type_folder']}"
-    # for each os that we have built for 
+    # for each os that we have built for
     build_type_dir = build_type_info["build_type_fullpath"]
     for platform_folder in build_type_info["os_folders"]:
         print(f"Getting files for {platform_folder} in {build_type_dir}")
@@ -356,7 +390,7 @@ def gather_build_info(build_type_info, config):
                 base_name = os.path.basename(file)
                 file_URI = f"{download_root}/{platform_folder}/{base_name}"
                 md5 = get_md5(full_file)
-                
+
                 if "FirestormOS-" in base_name:
                     grid = "OS"
                 else:
@@ -374,7 +408,7 @@ def gather_build_info(build_type_info, config):
                     build_type_info["downloadable_artifacts"] = {}
 
                 build_type_info["downloadable_artifacts"][f"{file_key}"] = {
-                    "file_path": full_file,         
+                    "file_path": full_file,
                     "file_download_URI": file_URI,
                     "grid": grid,
                     "variant": variant,
@@ -391,13 +425,85 @@ def gather_build_info(build_type_info, config):
         print(f"Created build info: {build_type_info}")
     return build_type_info
 
+def generate_sha256_manifest(build_info):
+    build_type_dir = build_info["build_type_fullpath"]
+    sha256sums_path = os.path.join(build_type_dir, "SHA256SUMS")
+    sha256_entries = []
+
+    platform_manifests = {}
+
+    for platform_folder in build_info.get("os_folders", []):
+        platform_dir = os.path.join(build_type_dir, platform_folder)
+        if os.path.exists(platform_dir):
+            platform_manifests[platform_folder] = []
+
+    if "downloadable_artifacts" in build_info:
+        for file_key, artifact in build_info["downloadable_artifacts"].items():
+            full_file = artifact.get("file_path")
+            if full_file and os.path.isfile(full_file):
+                sha256_val = get_sha256(full_file)
+                artifact["sha256"] = sha256_val
+                rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
+                sha256_entries.append((sha256_val, rel_path))
+
+                for platform_folder in build_info.get("os_folders", []):
+                    platform_dir = os.path.join(build_type_dir, platform_folder)
+                    try:
+                        if os.path.commonpath([full_file, platform_dir]) == platform_dir:
+                            file_rel_platform = os.path.relpath(full_file, platform_dir).replace('\\', '/')
+                            if platform_folder not in platform_manifests:
+                                platform_manifests[platform_folder] = []
+                            if not any(e[1] == file_rel_platform for e in platform_manifests[platform_folder]):
+                                platform_manifests[platform_folder].append((sha256_val, file_rel_platform))
+                    except ValueError:
+                        pass
+
+    for root, dirs, files in os.walk(build_type_dir):
+        if "symbols" in root.split(os.sep):
+            continue
+        for file in files:
+            if file == "SHA256SUMS":
+                continue
+            full_file = os.path.join(root, file)
+            rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
+            if not any(entry[1] == rel_path for entry in sha256_entries):
+                sha256_val = get_sha256(full_file)
+                sha256_entries.append((sha256_val, rel_path))
+
+                for platform_folder in build_info.get("os_folders", []):
+                    platform_dir = os.path.join(build_type_dir, platform_folder)
+                    try:
+                        if os.path.commonpath([full_file, platform_dir]) == platform_dir:
+                            file_rel_platform = os.path.relpath(full_file, platform_dir).replace('\\', '/')
+                            if platform_folder not in platform_manifests:
+                                platform_manifests[platform_folder] = []
+                            if not any(e[1] == file_rel_platform for e in platform_manifests[platform_folder]):
+                                platform_manifests[platform_folder].append((sha256_val, file_rel_platform))
+                    except ValueError:
+                        pass
+
+    sha256_entries.sort(key=lambda x: x[1])
+    with open(sha256sums_path, "w", encoding="utf-8") as f:
+        for sha256_val, rel_path in sha256_entries:
+            f.write(f"{sha256_val}  {rel_path}\n")
+    print(f"Generated SHA256SUMS at {sha256sums_path}")
+
+    for platform_folder, p_entries in platform_manifests.items():
+        if p_entries:
+            p_entries.sort(key=lambda x: x[1])
+            p_sha256sums_path = os.path.join(build_type_dir, platform_folder, "SHA256SUMS")
+            with open(p_sha256sums_path, "w", encoding="utf-8") as f:
+                for sha256_val, file_rel in p_entries:
+                    f.write(f"{sha256_val}  {file_rel}\n")
+            print(f"Generated platform SHA256SUMS at {p_sha256sums_path}")
+
 def create_discord_message(build_info, config):
-# Start with a header line            
+# Start with a header line
     text_summary = f'''
 DOWNLOADS - {build_info["build_type"]}
 -------------------------------------------------------------------------------------------------------
 '''
-# for each platform we potentailly build for 
+# for each platform we potentailly build for
 # Append platform label in printable form
     for platform_folder in config.supported_os_dirs:
         platform_printable = config.platforms_printable[platform_folder]
@@ -433,7 +539,7 @@ def update_fs_version_mgr(build_info, config):
         print("Error: FS_VERSION_MGR_KEY not set")
         sys.exit(1)
 
-    secret_for_api = generate_secret(secret_key)  
+    secret_for_api = generate_secret(secret_key)
     build_type = build_info["build_type"].lower()
     version = os.environ.get('FS_VIEWER_VERSION')
     build_number = os.environ.get('FS_VIEWER_BUILD')
@@ -470,7 +576,7 @@ def update_fs_version_mgr(build_info, config):
 
         try:
             response = requests.post(url, json=payload, headers=headers)
-            
+
             # Manually check for status code instead of raising an exception
             if response.status_code == 200:
                 response_data = response.json()
@@ -487,7 +593,7 @@ def update_fs_version_mgr(build_info, config):
 
         except requests.exceptions.RequestException as e:
             print(f"API request failed: {e}")
-            
+
             # Additional error handling
             if response and response.status_code == 403:
                 print("Status Code:", response.status_code)
@@ -499,7 +605,7 @@ def update_fs_version_mgr(build_info, config):
 
 def split_discord_text_on_separator(discord_text, max_length=2000, separator=None):
     if separator is None:
-        separator = "-" * 103  
+        separator = "-" * 103
 
     # Split the text on the separator lines
     chunks = discord_text.split(separator + '\n')
@@ -553,15 +659,15 @@ def main():
             webhook = DiscordWebhook(url=args.webhook)
 
         # unzip the github artifact for this OS (`dir`) into the folder `dir`
-        # get the .zip files in args.path_to_directory using glob 
+        # get the .zip files in args.path_to_directory using glob
         print(f"Processing artifacts in {args.path_to_directory}")
         build_types_created = unpack_artifacts(args.path_to_directory, config)
         print(f"buuild types created: {build_types_created}")
-        for build_type_key, build_type_info in build_types_created.items():            
+        for build_type_key, build_type_info in build_types_created.items():
             print(f"Processing {build_type_key}")
             restructure_folders(build_type_info, config)
             build_info = gather_build_info(build_type_info, config)
-            generate_sha256sums(build_type_info)
+            generate_sha256_manifest(build_info)
             update_fs_version_mgr(build_info, config)
 
             discord_text = create_discord_message(build_info, config)
@@ -575,7 +681,7 @@ def main():
             print(discord_text)
     except Exception as e:
         print(f"An error occurred: {e}")
-        sys.exit(1)        
+        sys.exit(1)
 
 if __name__ == '__main__':
     import sys
