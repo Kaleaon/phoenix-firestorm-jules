@@ -81,7 +81,8 @@ jobs:
           FS_VIEWER_BUILD: ${{ github.event.inputs.viewer_build }}
           FS_VIEWER_RELEASE_TYPE: ${{ github.event.inputs.viewer_release_type }}
           FS_VERSION_MGR_KEY: ${{ secrets.FS_VERSION_MGR_KEY }}
-        run: python ./fsutils/download_list.py ./to_deploy -w ${{ env.FS_BUILD_WEBHOOK_URL }}
+          FS_BUILD_WEBHOOK_URL: ${{ env.FS_BUILD_WEBHOOK_URL }}
+        run: python ./fsutils/download_list.py ./to_deploy -w "$FS_BUILD_WEBHOOK_URL"
 
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@v1
@@ -94,5 +95,7 @@ jobs:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy files to remote host
-        run: rclone copy ./to_deploy/${{ env.FS_RELEASE_FOLDER }} fs_r2_deploy:viewerdownloads/${{ env.FS_RELEASE_FOLDER }}
+        env:
+          FS_RELEASE_FOLDER: ${{ env.FS_RELEASE_FOLDER }}
+        run: rclone copy "./to_deploy/$FS_RELEASE_FOLDER" "fs_r2_deploy:viewerdownloads/$FS_RELEASE_FOLDER"
 

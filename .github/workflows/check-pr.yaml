@@ -19,3 +19,10 @@ jobs:
             if (description.trim().length < 20) {
               core.setFailed("❌ PR description is too short. Please provide at least 20 characters.");
             }
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run actionlint
+        uses: rhysd/actionlint-action@v1
