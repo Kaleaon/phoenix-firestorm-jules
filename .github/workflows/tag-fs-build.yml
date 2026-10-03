@@ -54,22 +54,14 @@ jobs:
         with:
           fetch-depth: 0  # Necessary to fetch all history for tagging
 
-      # Install jq for JSON Parsing
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
       - name: Get Run Number
         id: get_run_number
-        run: |
-          if [ ${{ github.event_name == 'workflow_run' }} ]; then
-            echo "Triggered by workflow_run event."
-            echo "Using run number of triggering workflow"
-            echo "build_run_number=${{ github.event.inputs.build_run_number  }}"  >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "Triggered by workflow_dispatch event."
-            echo "Using run number of manual dispatch"
-            echo "build_run_number=${{ github.event.inputs.build_run_number  }}"  >> "$GITHUB_OUTPUT"
-          fi
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          INPUT_BUILD_RUN_NUMBER: ${{ github.event.inputs.build_run_number }}
+        run: python ./fsutils/parse_workflow_inputs.py run_number
+
       - name: Download Build Artifacts
         uses: dawidd6/action-download-artifact@v11
         id: download_build_info
@@ -81,52 +73,36 @@ jobs:
           path: build_info
 
       # workout the inputs based on the trigger type
-      - name: Query the json and get input overrides if applicable
+      - name: Query build info and parse workflow inputs
         id: get_inputs
-        run: |        
-            # Parse the JSON file
-            RELEASE_TYPE=$(jq -r '.release_type' build_info/build_info.json)
-            VIEWER_VERSION=$(jq -r '.viewer_version' build_info/build_info.json)
-            VIEWER_BUILD=$(jq -r '.viewer_build' build_info/build_info.json)
-            DRY_RUN=false
-            if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-                echo "Triggered by workflow_dispatch event."
-                echo "Allowing manual inputs to override."
-                if [ "${{ github.event.inputs.release_type }}" != "undefined" ]; then
-                    RELEASE_TYPE=${{ github.event.inputs.release_type }}
-                fi
-                if [ "${{ github.event.inputs.viewer_version }}" != "undefined" ]; then
-                    VIEWER_VERSION=${{ github.event.inputs.viewer_version }}
-                fi
-                if [ "${{ github.event.inputs.viewer_build }}" != "undefined" ]; then
-                    VIEWER_BUILD=${{ github.event.inputs.viewer_build }}
-                fi
-                DRY_RUN=${{ github.event.inputs.dry_run }}
-            fi
-            # Set outputs
-            echo "build_run_number=$BUILD_RUN_NUMBER" >> $GITHUB_OUTPUT
-            echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
-            echo "viewer_version=$VIEWER_VERSION" >> $GITHUB_OUTPUT
-            echo "viewer_build=$VIEWER_BUILD" >> $GITHUB_OUTPUT
-            echo "dry_run=$DRY_RUN" >> $GITHUB_OUTPUT
-        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_RELEASE_TYPE: ${{ github.event.inputs.release_type }}
+          INPUT_VIEWER_VERSION: ${{ github.event.inputs.viewer_version }}
+          INPUT_VIEWER_BUILD: ${{ github.event.inputs.viewer_build }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          BUILD_INFO_FILE: build_info/build_info.json
+        run: python ./fsutils/parse_workflow_inputs.py tag
 
       # Check if Tag Already Exists
       - name: Determine tag
         id: get_tag
+        env:
+          TAG_NAME: ${{ steps.get_inputs.outputs.tag_name }}
         run: |
-          TAG_NAME="Firestorm_${{ steps.get_inputs.outputs.release_type }}_${{ steps.get_inputs.outputs.viewer_version }}.${{ steps.get_inputs.outputs.viewer_build }}"
           echo "Proposed Tag: $TAG_NAME"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Check if tag exists
         id: check_tag
+        env:
+          TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
         run: |          
-          if git rev-parse "${{ steps.get_tag.outputs.tag_name }}" >/dev/null 2>&1; then
-            echo "Tag ${{ steps.get_tag.outputs.tag_name }} already exists."
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists."
             echo "tag_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Tag ${{ steps.get_tag.outputs.tag_name }} does not exist."
+            echo "Tag $TAG_NAME does not exist."
             echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
         shell: bash
@@ -139,9 +115,11 @@ jobs:
           steps.get_inputs.outputs.release_type != 'Profiling' &&
           steps.get_inputs.outputs.dry_run != 'true' &&
           steps.check_tag.outputs.tag_exists == 'false'
+        env:
+          TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
         run: |
-          echo "Creating tag: ${{ steps.get_tag.outputs.tag_name }}"
-          git tag ${{ steps.get_tag.outputs.tag_name }}
+          echo "Creating tag: $TAG_NAME"
+          git tag "$TAG_NAME"
         shell: bash
 
       # Push the Tag to the Repository (Conditional)
@@ -151,17 +129,22 @@ jobs:
           steps.check_tag.outputs.tag_exists == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
         run: |
-          git push origin "${{ steps.get_tag.outputs.tag_name }}"
+          git push origin "$TAG_NAME"
 
       # Tagging Confirmation
       - name: Tagging Confirmation
+        env:
+          DRY_RUN: ${{ steps.get_inputs.outputs.dry_run }}
+          TAG_EXISTS: ${{ steps.check_tag.outputs.tag_exists }}
+          TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
         run: |
-          if [ "${{ steps.get_inputs.outputs.dry_run }}" == "true" ]; then
-            echo "Dry run mode enabled. Tag '${{ steps.check_tag.outputs.tag_exists }}' was not created or pushed."
-          elif [ "${{ steps.check_tag.outputs.tag_exists }}" == "true" ]; then
-            echo "Tag '${{ steps.get_tag.outputs.tag_name }}' already exists. No new tag was created."
+          if [ "$DRY_RUN" == "true" ]; then
+            echo "Dry run mode enabled. Tag '$TAG_EXISTS' was not created or pushed."
+          elif [ "$TAG_EXISTS" == "true" ]; then
+            echo "Tag '$TAG_NAME' already exists. No new tag was created."
           else
-            echo "Tag '${{ steps.get_tag.outputs.tag_name }}' has been created and pushed successfully."
+            echo "Tag '$TAG_NAME' has been created and pushed successfully."
           fi
         shell: bash
