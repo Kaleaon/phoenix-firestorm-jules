@@ -86,7 +86,7 @@ jobs:
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: 'to_deploy/${{ env.FS_RELEASE_FOLDER }}/**'
+          subject-path: 'to_deploy/${{ env.FS_RELEASE_FOLDER }}/**/*'
 
       - name: Setup rclone and download the folder
         uses: beqjanus/setup-rclone@main

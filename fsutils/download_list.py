@@ -137,6 +137,35 @@ def get_md5(mdfile):
     print(f"generating md5sum for {mdfile} as {md5sum}")
     return md5sum
 
+def get_sha256(shafile):
+    sha256_hash = hashlib.sha256()
+    with open(shafile, "rb") as f:
+        for byte_block in iter(lambda: f.read(65536), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
+
+def generate_sha256sums(build_type_info):
+    build_type_dir = build_type_info["build_type_fullpath"]
+    sha256_entries = []
+
+    for platform_folder in build_type_info.get("os_folders", []):
+        build_type_platform_folder = os.path.join(build_type_dir, platform_folder)
+        if not os.path.exists(build_type_platform_folder):
+            continue
+        files = get_files(build_type_platform_folder)
+        for file in sorted(files):
+            full_file = os.path.join(build_type_platform_folder, file)
+            if os.path.isfile(full_file):
+                sha256_val = get_sha256(full_file)
+                rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
+                sha256_entries.append(f"{sha256_val}  {rel_path}")
+
+    if sha256_entries:
+        manifest_path = os.path.join(build_type_dir, "SHA256SUMS")
+        with open(manifest_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(sha256_entries) + "\n")
+        print(f"Generated SHA256SUMS manifest at {manifest_path}")
+
 def unzip_file(zip_file, unzip_dir):
     with zipfile.ZipFile(zip_file, 'r') as zip_ref:
         zip_ref.extractall(unzip_dir)
