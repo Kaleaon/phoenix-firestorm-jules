@@ -45,7 +45,7 @@ class DemoManifest(llmanifest.LLManifest):
             self.end_prefix("dir_1")
 
 
-class Demo_ArchManifest(llmanifest.LLManifest):
+class Demo_Arch_Manifest(llmanifest.LLManifest):
         pass
 
 class TestLLManifest(unittest.TestCase):
@@ -74,7 +74,7 @@ class TestLLManifest(unittest.TestCase):
         self.assertRaises(KeyError, tmp_test)
         ExtantManifest = llmanifest.LLManifestRegistry('ExtantManifest', (llmanifest.LLManifest,), {})
         self.assertEqual(llmanifest.LLManifest.for_platform('extant'), ExtantManifest)
-        self.assertEqual(llmanifest.LLManifest.for_platform('demo', 'Arch'), Demo_ArchManifest)
+        self.assertEqual(llmanifest.LLManifest.for_platform('demo', 'Arch'), Demo_Arch_Manifest)
 
 
     def testprefix(self):

@@ -357,7 +357,7 @@ class LLManifest(object, metaclass=LLManifestRegistry):
         in the file list by path()."""
         self.excludes.append(glob)
 
-    def prefix(self, src='', build='', dst='', src_dst=None):
+    def prefix(self, src='', build='', dst=None, src_dst=None):
         """
         Usage:
 
@@ -398,6 +398,8 @@ class LLManifest(object, metaclass=LLManifestRegistry):
         if src_dst is not None:
             src = src_dst
             dst = src_dst
+        elif dst is None:
+            dst = src
         self.src_prefix.append(src)
         self.artwork_prefix.append(src)
         self.build_prefix.append(build)
@@ -544,13 +546,19 @@ class LLManifest(object, metaclass=LLManifestRegistry):
         Runs an external command.
         Raises ManifestError exception if the command returns a nonzero status.
         """
-        print("Running command:", shlex.join(command))
+        if isinstance(command, str):
+            cmd_str = command
+            if 'shell' not in kwds:
+                kwds['shell'] = True
+        else:
+            cmd_str = shlex.join(command)
+        print("Running command:", cmd_str)
         sys.stdout.flush()
         try:
-            subprocess.check_call(command, **kwds)
-        except subprocess.CalledProcessError as err:
+            return subprocess.check_output(command, **kwds, text=True)
+        except (subprocess.CalledProcessError, OSError) as err:
             raise ManifestError( "Command %s returned non-zero status (%s)"
-                                % (command, err.returncode) )
+                                % (command, getattr(err, 'returncode', err)) )
 
     # <FS:Ansariel> Added for compatibility reasons
     def run_command_shell(self, command):
