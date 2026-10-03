@@ -1,0 +1,13 @@
+self-hosted-runner:
+  labels:
+    - qa-windows-atlas
+    - qa-dan-asus
+    - qa-mac-atlas
+
+paths:
+  .github/workflows/build_viewer.yml:
+    ignore:
+      - 'property "container_image" is not defined in object type'
+  .github/workflows/stale.yaml:
+    ignore:
+      - 'cannot be filtered by object filtering'
