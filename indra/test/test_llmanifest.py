@@ -55,9 +55,9 @@ class TestLLManifest(unittest.TestCase):
                                         'artwork':'art', 'build':'build'})
 
     def testproperwindowspath(self):
-        self.assertEqual(llmanifest.proper_windows_path("C:\Program Files", "cygwin"),"/cygdrive/c/Program Files")
-        self.assertEqual(llmanifest.proper_windows_path("C:\Program Files", "windows"), "C:\Program Files")
-        self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "windows"), "C:\Program Files\NSIS")
+        self.assertEqual(llmanifest.proper_windows_path(r"C:\Program Files", "cygwin"),"/cygdrive/c/Program Files")
+        self.assertEqual(llmanifest.proper_windows_path(r"C:\Program Files", "windows"), r"C:\Program Files")
+        self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "windows"), r"C:\Program Files\NSIS")
         self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "cygwin"), "/cygdrive/c/Program Files/NSIS")
 
     def testpathancestors(self):
