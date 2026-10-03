@@ -11,3 +11,10 @@ paths:
   .github/workflows/stale.yaml:
     ignore:
       - 'cannot be filtered by object filtering'
+  .github/workflows/*.yml:
+    ignore:
+      - 'shellcheck reported issue in this script'
+  .github/workflows/*.yaml:
+    ignore:
+      - 'shellcheck reported issue in this script'
+
