@@ -27,6 +27,10 @@ Build instructions for each operating system can be found using the links below 
 
 Help make Firestorm better! You can get involved with improvements by filing bugs and suggesting enhancements via [JIRA](https://jira.firestormviewer.org) or [creating pull requests](CONTRIBUTING.md).
 
+## Companion & Mobile Reference Frame
+
+For mobile, web, and lightweight companion interface work across Second Life and OpenSim, UI design tokens and layouts align with **[Linkpoint Design](https://github.com/Kaleaon/linkpoint-design)** (`docs/DESIGN_LANGUAGE.md`).
+
 ## Community respect
 
 This section is guided by the [TPV Policy](https://secondlife.com/corporate/third-party-viewers) and the [Second Life Code of Conduct](https://github.com/secondlife/viewer?tab=coc-ov-file).
