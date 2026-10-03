@@ -6,6 +6,9 @@ on:
     branches: ["main", "release/*", "project/*"]
     tags: ["Second_Life*"]
 
+permissions:
+  contents: read
+
 jobs:
   # The whole point of the setup job is that we want to set variables once
   # that will be consumed by multiple subsequent jobs.
@@ -423,6 +426,8 @@ jobs:
   release:
     needs: [setup, build, sign-and-package-windows, sign-and-package-mac]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: needs.setup.outputs.release_run
     steps:
       - uses: actions/download-artifact@v5
