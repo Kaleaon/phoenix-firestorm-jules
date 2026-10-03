@@ -34,9 +34,6 @@ on:
         #   required: false
         #   default: 'master'
 
-permissions:
-  contents: read
-
 jobs:
   find-setup-files:
     runs-on: windows-latest
