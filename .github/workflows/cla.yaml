@@ -6,6 +6,11 @@ on:
   pull_request_target:
     types: [opened, closed, synchronize]
 
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+
 jobs:
   cla:
     name: Check CLA
@@ -23,4 +28,4 @@ jobs:
           path-to-signatures: signatures.json
           remote-organization-name: ${{ secrets.SHARED_CLA_TOKEN && 'secondlife' || '' }}
           remote-repository-name: ${{ secrets.SHARED_CLA_TOKEN && 'cla-signatures' || '' }}
-          allowlist: callum@mbp.localdomain,rye@lindenlab.com
+          allowlist: callum@mbp.localdomain,rye@lindenlab.com,*[bot]*,*google-labs*
