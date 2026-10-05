@@ -26,9 +26,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PERSONAL_ACCESS_TOKEN: ${{ secrets.SHARED_CLA_TOKEN }}
         with:
-          branch: master
+          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref_name }}
           path-to-document: https://github.com/secondlife/cla/blob/main/CLA.md
           path-to-signatures: signatures.json
           remote-organization-name: ${{ secrets.SHARED_CLA_TOKEN && 'secondlife' || '' }}
           remote-repository-name: ${{ secrets.SHARED_CLA_TOKEN && 'cla-signatures' || '' }}
-          allowlist: Kaleaon,*Kaleaon*,web-flow,*web-flow*,callum@mbp.localdomain,rye@lindenlab.com,*[bot]*,*google-labs*,*stitch*,*jules*
+          allowlist: Kaleaon,*Kaleaon*,web-flow,*web-flow*,callum@mbp.localdomain,rye@lindenlab.com,*[bot]*,*google-labs*,*stitch*,*jules*,google-labs-stitch[bot],google-labs-jules[bot]
