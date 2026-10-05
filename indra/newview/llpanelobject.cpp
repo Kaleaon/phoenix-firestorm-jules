@@ -2148,7 +2148,7 @@ void LLPanelObject::sendRotation(bool btn_down)
         new_rot *= DEG_TO_RAD;
 
         LLQuaternion rotation;
-        rotation.setQuat(new_rot.mV[VX], new_rot.mV[VY], new_rot.mV[VZ]);
+        rotation.setEulerAngles(new_rot.mV[VX], new_rot.mV[VY], new_rot.mV[VZ]);
 
         if (mRootObject != mObject)
         {
@@ -3042,7 +3042,7 @@ bool get_vector_from_clipboard(LLVector3* value)
     S32 count = sscanf(stringVec.c_str(), "<%f, %f, %f>", vec.mV + 0, vec.mV + 1, vec.mV + 2);
     if (count == 3)
     {
-        value->setVec(vec);
+        value->set(vec);
         return true;
     }
 

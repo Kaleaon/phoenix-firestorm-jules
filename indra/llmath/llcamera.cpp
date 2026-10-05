@@ -510,7 +510,7 @@ void LLCamera::calcRegionFrustumPlanes(const LLVector3& shift, F32 far_clip_dist
     {
         if (mPlaneMask[i] != 0xff)
         {
-            n.setVec(mAgentPlanes[i][0], mAgentPlanes[i][1], mAgentPlanes[i][2]);
+            n.set(mAgentPlanes[i][0], mAgentPlanes[i][1], mAgentPlanes[i][2]);
 
             if(i != 5)
             {
@@ -520,7 +520,7 @@ void LLCamera::calcRegionFrustumPlanes(const LLVector3& shift, F32 far_clip_dist
             {
                 d = far_w;
             }
-            mRegionPlanes[i].setVec(n, d);
+            mRegionPlanes[i].set(n, d);
         }
     }
 }

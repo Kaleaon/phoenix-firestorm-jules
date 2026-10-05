@@ -134,9 +134,9 @@ bool LLTargetingMotion::onUpdate(F32 time, U8* joint_mask)
     LLQuaternion cur_torso_rot = mTorsoJoint->getWorldRotation();
 
     LLVector3 right_hand_at = LLVector3(0.f, -1.f, 0.f) * mRightHandJoint->getWorldRotation();
-    left.setVec(skyward % right_hand_at);
+    left.set(skyward % right_hand_at);
     left.normVec();
-    up.setVec(right_hand_at % left);
+    up.set(right_hand_at % left);
     up.normVec();
     LLQuaternion right_hand_rot(right_hand_at, left, up);
 

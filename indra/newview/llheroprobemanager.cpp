@@ -202,7 +202,7 @@ void LLHeroProbeManager::update()
             LLVector3 reject  = offset - project;
             LLVector3 point   = (reject - project) + hero_pos;
 
-            mCurrentClipPlane.setVec(hero_pos, face_normal);
+            mCurrentClipPlane.set(hero_pos, face_normal);
             mMirrorPosition = hero_pos;
             // mMirrorNormal   = face_normal; // <FS:Beq/> no need to assign back
 

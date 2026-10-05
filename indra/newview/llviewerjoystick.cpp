@@ -941,7 +941,7 @@ void LLViewerJoystick::moveObjects(bool reset)
         if (sDelta[0] || sDelta[1] || sDelta[2])
         {
             upd_type |= UPD_POSITION;
-            v.setVec(sDelta[0], sDelta[1], sDelta[2]);
+            v.set(sDelta[0], sDelta[1], sDelta[2]);
         }
 
         if (sDelta[3] || sDelta[4] || sDelta[5])

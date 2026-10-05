@@ -91,16 +91,6 @@ public:
     const LLQuaternion& setAngleAxis(F32 angle, const LLVector4 &vec);  // Sets Quaternion to axis_angle2quat(angle, vec)
     const LLQuaternion& setEulerAngles(F32 roll, F32 pitch, F32 yaw);   // Sets Quaternion to euler2quat(pitch, yaw, roll)
 
-    const LLQuaternion& setQuatInit(F32 x, F32 y, F32 z, F32 w);    // deprecated
-    const LLQuaternion& setQuat(const LLQuaternion &quat);          // deprecated
-    const LLQuaternion& setQuat(const F32 *q);                      // deprecated
-    const LLQuaternion& setQuat(const LLMatrix3 &mat);              // deprecated
-    const LLQuaternion& setQuat(const LLMatrix4 &mat);              // deprecated
-    const LLQuaternion& setQuat(F32 angle, F32 x, F32 y, F32 z);    // deprecated
-    const LLQuaternion& setQuat(F32 angle, const LLVector3 &vec);   // deprecated
-    const LLQuaternion& setQuat(F32 angle, const LLVector4 &vec);   // deprecated
-    const LLQuaternion& setQuat(F32 roll, F32 pitch, F32 yaw);      // deprecated
-
     LLMatrix4   getMatrix4(void) const;                         // Returns the Matrix4 equivalent of Quaternion
     LLMatrix3   getMatrix3(void) const;                         // Returns the Matrix3 equivalent of Quaternion
     void        getAngleAxis(F32* angle, F32* x, F32* y, F32* z) const; // returns rotation in radians about axis x,y,z
@@ -305,40 +295,6 @@ inline const LLQuaternion&  LLQuaternion::set(const LLQuaternion &quat)
 }
 
 inline const LLQuaternion&  LLQuaternion::set(const F32 *q)
-{
-    mQ[VX] = q[VX];
-    mQ[VY] = q[VY];
-    mQ[VZ] = q[VZ];
-    mQ[VS] = q[VW];
-    normalize();
-    return (*this);
-}
-
-
-// deprecated
-inline const LLQuaternion&  LLQuaternion::setQuatInit(F32 x, F32 y, F32 z, F32 w)
-{
-    mQ[VX] = x;
-    mQ[VY] = y;
-    mQ[VZ] = z;
-    mQ[VS] = w;
-    normalize();
-    return (*this);
-}
-
-// deprecated
-inline const LLQuaternion&  LLQuaternion::setQuat(const LLQuaternion &quat)
-{
-    mQ[VX] = quat.mQ[VX];
-    mQ[VY] = quat.mQ[VY];
-    mQ[VZ] = quat.mQ[VZ];
-    mQ[VW] = quat.mQ[VW];
-    normalize();
-    return (*this);
-}
-
-// deprecated
-inline const LLQuaternion&  LLQuaternion::setQuat(const F32 *q)
 {
     mQ[VX] = q[VX];
     mQ[VY] = q[VY];

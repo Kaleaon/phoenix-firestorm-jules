@@ -3839,7 +3839,7 @@ void LLModelPreview::setPreviewTarget(F32 distance)
     mCameraZoom = 1.f;
     mCameraPitch = 0.f;
     mCameraYaw = 0.f;
-    mCameraOffset.clearVec();
+    mCameraOffset.clear();
 }
 
 void LLModelPreview::clearBuffers()

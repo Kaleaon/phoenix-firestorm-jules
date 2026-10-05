@@ -525,7 +525,7 @@ bool LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
     // Compute unit vectors for arrow hit and a plane through that vector
     bool axis_exists = getManipAxis(object, mManipPart, axis_f);        // TODO: move this
 
-    axis_d.setVec(axis_f);
+    axis_d.set(axis_f);
 
     LLSelectMgr::getInstance()->updateSelectionCenter();
     LLVector3d current_pos_global = gAgent.getPosGlobalFromAgent(getPivotPoint());
@@ -650,7 +650,7 @@ bool LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
                 break;
             }
             cursor_point_agent = (cursor_point_grid * mGridRotation) + mGridOrigin;
-            relative_move.setVec(cursor_point_agent - gAgent.getPosAgentFromGlobal(mDragSelectionStartGlobal));
+            relative_move.set(cursor_point_agent - gAgent.getPosAgentFromGlobal(mDragSelectionStartGlobal));
             mInSnapRegime = true;
         }
         else
@@ -668,9 +668,9 @@ bool LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
     if (!axis_exists)
     {
         axis_magnitude = relative_move.normVec();
-        axis_d.setVec(relative_move);
+        axis_d.set(relative_move);
         axis_d.normVec();
-        axis_f.setVec(axis_d);
+        axis_f.set(axis_d);
     }
 
     LLVector3d clamped_relative_move = axis_magnitude * axis_d; // scalar multiply
@@ -1005,8 +1005,8 @@ void LLManipTranslate::highlightManipulators(S32 x, S32 y)
     {
         ManipulatorHandle& manipulator = *it;
         {
-            manip_start_2d.setVec(manipulator.mStartPosition.mV[VX] * half_width, manipulator.mStartPosition.mV[VY] * half_height);
-            manip_end_2d.setVec(manipulator.mEndPosition.mV[VX] * half_width, manipulator.mEndPosition.mV[VY] * half_height);
+            manip_start_2d.set(manipulator.mStartPosition.mV[VX] * half_width, manipulator.mStartPosition.mV[VY] * half_height);
+            manip_end_2d.set(manipulator.mEndPosition.mV[VX] * half_width, manipulator.mEndPosition.mV[VY] * half_height);
             manip_dir = manip_end_2d - manip_start_2d;
 
             mouse_delta = mousePos - manip_start_2d;
@@ -1155,18 +1155,18 @@ void LLManipTranslate::renderSnapGuides()
         switch (mManipPart)
         {
         case LL_X_ARROW:
-            normal.setVec(1,0,0);
-            inner_color.setVec(0,1,1,line_alpha);
+            normal.set(1,0,0);
+            inner_color.set(0,1,1,line_alpha);
             mManipPart = LL_YZ_PLANE;
             break;
         case LL_Y_ARROW:
-            normal.setVec(0,1,0);
-            inner_color.setVec(1,0,1,line_alpha);
+            normal.set(0,1,0);
+            inner_color.set(1,0,1,line_alpha);
             mManipPart = LL_XZ_PLANE;
             break;
         case LL_Z_ARROW:
-            normal.setVec(0,0,1);
-            inner_color.setVec(1,1,0,line_alpha);
+            normal.set(0,0,1);
+            inner_color.set(1,1,0,line_alpha);
             mManipPart = LL_XY_PLANE;
             break;
         default:
@@ -1303,8 +1303,8 @@ void LLManipTranslate::renderSnapGuides()
                 gGL.color4f(line_color.mV[VRED], line_color.mV[VGREEN], line_color.mV[VBLUE], line_color.mV[VALPHA] * 0.2f);
                 gGL.vertex3fv(line_end.mV);
 
-                line_start.setVec(selection_center + (mSnapOffsetAxis * -mSnapOffsetMeters) + (translate_axis * guide_size_meters * 0.5f));
-                line_end.setVec(selection_center + (mSnapOffsetAxis * -mSnapOffsetMeters) - (translate_axis * guide_size_meters * 0.5f));
+                line_start.set(selection_center + (mSnapOffsetAxis * -mSnapOffsetMeters) + (translate_axis * guide_size_meters * 0.5f));
+                line_end.set(selection_center + (mSnapOffsetAxis * -mSnapOffsetMeters) - (translate_axis * guide_size_meters * 0.5f));
                 line_mid = (line_start + line_end) * 0.5f;
 
                 gGL.color4f(line_color.mV[VRED], line_color.mV[VGREEN], line_color.mV[VBLUE], line_color.mV[VALPHA] * 0.2f);
@@ -1504,24 +1504,24 @@ void LLManipTranslate::renderSnapGuides()
             v = grid_center.mV[VZ];
             usc = grid_scale.mV[VY];
             vsc = grid_scale.mV[VZ];
-            inner_color.setVec(0,1,1,line_alpha);
-            normal.setVec(1,0,0);
+            inner_color.set(0,1,1,line_alpha);
+            normal.set(1,0,0);
             break;
         case LL_XZ_PLANE:
             u = grid_center.mV[VX];
             v = grid_center.mV[VZ];
             usc = grid_scale.mV[VX];
             vsc = grid_scale.mV[VZ];
-            inner_color.setVec(1,0,1,line_alpha);
-            normal.setVec(0,1,0);
+            inner_color.set(1,0,1,line_alpha);
+            normal.set(0,1,0);
             break;
         case LL_XY_PLANE:
             u = grid_center.mV[VX];
             v = grid_center.mV[VY];
             usc = grid_scale.mV[VX];
             vsc = grid_scale.mV[VY];
-            inner_color.setVec(1,1,0,line_alpha);
-            normal.setVec(0,0,1);
+            inner_color.set(1,1,0,line_alpha);
+            normal.set(0,0,1);
             break;
         default:
             break;
@@ -1955,13 +1955,13 @@ void LLManipTranslate::renderTranslationHandles()
                 gGL.scalef(mPlaneScales.mV[VX], mPlaneScales.mV[VX], mPlaneScales.mV[VX]);
                 if (mHighlightedPart == LL_YZ_PLANE)
                 {
-                    color1.setVec(0.f, 1.f, 0.f, 1.f);
-                    color2.setVec(0.f, 0.f, 1.f, 1.f);
+                    color1.set(0.f, 1.f, 0.f, 1.f);
+                    color2.set(0.f, 0.f, 1.f, 1.f);
                 }
                 else
                 {
-                    color1.setVec(0.f, 1.f, 0.f, 0.6f);
-                    color2.setVec(0.f, 0.f, 1.f, 0.6f);
+                    color1.set(0.f, 1.f, 0.f, 0.6f);
+                    color2.set(0.f, 0.f, 1.f, 0.6f);
                 }
                 gGL.begin(LLRender::TRIANGLES);
                 {
@@ -2009,13 +2009,13 @@ void LLManipTranslate::renderTranslationHandles()
                 gGL.scalef(mPlaneScales.mV[VY], mPlaneScales.mV[VY], mPlaneScales.mV[VY]);
                 if (mHighlightedPart == LL_XZ_PLANE)
                 {
-                    color1.setVec(0.f, 0.f, 1.f, 1.f);
-                    color2.setVec(1.f, 0.f, 0.f, 1.f);
+                    color1.set(0.f, 0.f, 1.f, 1.f);
+                    color2.set(1.f, 0.f, 0.f, 1.f);
                 }
                 else
                 {
-                    color1.setVec(0.f, 0.f, 1.f, 0.6f);
-                    color2.setVec(1.f, 0.f, 0.f, 0.6f);
+                    color1.set(0.f, 0.f, 1.f, 0.6f);
+                    color2.set(1.f, 0.f, 0.f, 0.6f);
                 }
 
                 gGL.begin(LLRender::TRIANGLES);
@@ -2088,13 +2088,13 @@ void LLManipTranslate::renderTranslationHandles()
                     gGL.scalef(mPlaneScales.mV[VZ], mPlaneScales.mV[VZ], mPlaneScales.mV[VZ]);
                     if (mHighlightedPart == LL_XY_PLANE)
                     {
-                        color1.setVec(1.f, 0.f, 0.f, 1.f);
-                        color2.setVec(0.f, 1.f, 0.f, 1.f);
+                        color1.set(1.f, 0.f, 0.f, 1.f);
+                        color2.set(0.f, 1.f, 0.f, 1.f);
                     }
                     else
                     {
-                        color1.setVec(0.8f, 0.f, 0.f, 0.6f);
-                        color2.setVec(0.f, 0.8f, 0.f, 0.6f);
+                        color1.set(0.8f, 0.f, 0.f, 0.6f);
+                        color2.set(0.f, 0.8f, 0.f, 0.6f);
                     }
 
                     gGL.begin(LLRender::TRIANGLES);
@@ -2187,7 +2187,7 @@ void LLManipTranslate::renderTranslationHandles()
             }
             else
             {
-                camera_axis.setVec(gAgentCamera.getCameraPositionAgent() - first_object->getPositionAgent());
+                camera_axis.set(gAgentCamera.getCameraPositionAgent() - first_object->getPositionAgent());
             }
 
             for (U32 i = 0; i < NUM_AXES*2; i++)

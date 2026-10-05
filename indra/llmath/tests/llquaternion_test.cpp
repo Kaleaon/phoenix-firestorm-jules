@@ -106,7 +106,7 @@ namespace tut
                                         234.764423f == llmat.mMatrix[2][2]);
     }
 
-    //test case for LLQuaternion(F32 x, F32 y, F32 z, F32 w), setQuatInit() and normQuat() fns.
+    //test case for LLQuaternion(F32 x, F32 y, F32 z, F32 w), set() and normQuat() fns.
     template<> template<>
     void llquat_test_object_t::test<4>()
     {
@@ -116,7 +116,7 @@ namespace tut
         F32 w_val = 1.0f;
 
         LLQuaternion res_quat;
-        res_quat.setQuatInit(x_val, y_val, z_val, w_val);
+        res_quat.set(x_val, y_val, z_val, w_val);
         res_quat.normQuat();
 
         ensure("LLQuaternion::normQuat() fn failed",
@@ -130,7 +130,7 @@ namespace tut
         z_val = 0.0f;
         w_val = 0.0f;
 
-        res_quat.setQuatInit(x_val, y_val, z_val, w_val);
+        res_quat.set(x_val, y_val, z_val, w_val);
         res_quat.normQuat();
 
         ensure("LLQuaternion::normQuat() fn. failed.",
@@ -158,7 +158,7 @@ namespace tut
 
         LLQuaternion res_quat;
         LLQuaternion result, result1;
-        result1 = result = res_quat.setQuatInit(x_val, y_val, z_val, w_val);
+        result1 = result = res_quat.set(x_val, y_val, z_val, w_val);
 
         result.conjQuat();
         result1.transQuat();

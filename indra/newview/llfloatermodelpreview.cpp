@@ -487,7 +487,7 @@ void LLFloaterModelPreview::onShowSkinWeightChecked(LLUICtrl* ctrl)
 {
     if (mModelPreview)
     {
-        mModelPreview->mCameraOffset.clearVec();
+        mModelPreview->mCameraOffset.clear();
         onViewOptionChecked(ctrl);
     }
 }

@@ -157,7 +157,7 @@ LLVector3 LLKeyframeMotion::ScaleCurve::getValue(F32 time, F32 duration)
 
     if (mKeys.empty())
     {
-        value.clearVec();
+        value.clear();
         return value;
     }
 
@@ -318,7 +318,7 @@ LLVector3 LLKeyframeMotion::PositionCurve::getValue(F32 time, F32 duration)
 
     if (mKeys.empty())
     {
-        value.clearVec();
+        value.clear();
         return value;
     }
 
@@ -1030,7 +1030,7 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
             norm.normVec();
             break;
         default:
-            norm.clearVec();
+            norm.clear();
             break;
         }
 

@@ -191,7 +191,7 @@ bool ray_sphere(const LLVector3 &ray_point, const LLVector3 &ray_direction,
     }
     else
     {
-        intersection_normal.setVec(0.0f, 0.0f, 0.0f);
+        intersection_normal.set(0.0f, 0.0f, 0.0f);
     }
 
     return true;
@@ -320,7 +320,7 @@ bool ray_cylinder(const LLVector3 &ray_point, const LLVector3 &ray_direction,
         // calculate the normal at intersection
         if (0.0f == cyl_radius)
         {
-            intersection_normal.setVec(0.0f, 0.0f, 0.0f);
+            intersection_normal.set(0.0f, 0.0f, 0.0f);
         }
         else
         {

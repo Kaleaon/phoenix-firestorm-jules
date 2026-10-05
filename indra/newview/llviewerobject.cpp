@@ -910,7 +910,7 @@ void LLViewerObject::constructAndAddReturnable( std::vector<PotentialReturnableO
 {
 
     LLVector3 targetRegionPos;
-    targetRegionPos.setVec( pChild->getPositionGlobal() );
+    targetRegionPos.set( pChild->getPositionGlobal() );
 
     LLBBox childBBox = LLBBox( targetRegionPos, pChild->getRotationRegion(), pChild->getScale() * -0.5f,
                                 pChild->getScale() * 0.5f).getAxisAligned();
@@ -919,8 +919,8 @@ void LLViewerObject::constructAndAddReturnable( std::vector<PotentialReturnableO
     LLVector3 edgeB = targetRegionPos + childBBox.getMaxLocal();
 
     LLVector3d edgeAd, edgeBd;
-    edgeAd.setVec(edgeA);
-    edgeBd.setVec(edgeB);
+    edgeAd.set(edgeA);
+    edgeBd.set(edgeB);
 
     //Only add the box when either of the extents are in a neighboring region
     if ( pTargetRegion->pointInRegionGlobal( edgeAd ) || pTargetRegion->pointInRegionGlobal( edgeBd ) )
@@ -2431,11 +2431,11 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
         LLColor4 color;
         if (update_type == OUT_TERSE_IMPROVED)
         {
-            color.setVec(0.f, 0.f, 1.f, 1.f);
+            color.set(0.f, 0.f, 1.f, 1.f);
         }
         else
         {
-            color.setVec(1.f, 0.f, 0.f, 1.f);
+            color.set(1.f, 0.f, 0.f, 1.f);
         }
         gPipeline.addDebugBlip(getPositionAgent(), color);
         LL_DEBUGS("MessageBlip") << "Update type " << (S32)update_type << " blip for local " << mLocalID << " at " << getPositionAgent() << LL_ENDL;
@@ -4990,7 +4990,7 @@ void LLViewerObject::setPositionGlobal(const LLVector3d &pos_global, bool damped
         {
             // the relative position with the parent is constant, but the parent's position needs to be changed
             LLVector3d position_offset;
-            position_offset.setVec(getPosition()*getParent()->getRotation());
+            position_offset.set(getPosition()*getParent()->getRotation());
             LLVector3d new_pos_global = pos_global - position_offset;
             ((LLViewerObject *)getParent())->setPositionGlobal(new_pos_global);
         }
@@ -7373,7 +7373,7 @@ void LLViewerObject::applyAngularVelocity(F32 dt)
         ang_vel *= 1.f/omega;
 
         // calculate the delta increment based on the object's angular velocity
-        dQ.setQuat(angle, ang_vel);
+        dQ.setAngleAxis(angle, ang_vel);
 
         // accumulate the angular velocity rotations to re-apply in the case of an object update
         mAngularVelocityRot *= dQ;

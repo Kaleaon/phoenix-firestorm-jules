@@ -305,11 +305,11 @@ void RlvSphereEffect::setShaderUniforms(LLGLSLShader* pShader)
     switch (m_eOrigin)
     {
         case ESphereOrigin::Camera:
-            posSphereOrigin.setVec(LLViewerCamera::instance().getOrigin(), 1.0f);
+            posSphereOrigin.set(LLViewerCamera::instance().getOrigin(), 1.0f);
             break;
         case ESphereOrigin::Avatar:
         default:
-            posSphereOrigin.setVec((isAgentAvatarValid()) ? gAgentAvatarp->getRenderPosition() : gAgent.getPositionAgent(), 1.0f);
+            posSphereOrigin.set((isAgentAvatarValid()) ? gAgentAvatarp->getRenderPosition() : gAgent.getPositionAgent(), 1.0f);
             break;
     }
     glm::vec4 posSphereOriginGl(glm::make_vec4(posSphereOrigin.mV));

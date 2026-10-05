@@ -800,7 +800,7 @@ void LLVOVolume::animateTextures()
 
                 LLVector3 scale(scale_s, scale_t, 1.f);
                 LLQuaternion quat;
-                quat.setQuat(rot, 0, 0, -1.f);
+                quat.setAngleAxis(rot, 0, 0, -1.f);
 
                 tex_mat.rotate(quat);
 

@@ -1765,7 +1765,7 @@ void LLFloaterWorldMap::centerOnTarget(bool animate)
     else
     {
         // default behavior = center on agent
-        pos_global.clearVec();
+        pos_global.clear();
     }
 
     F64 map_scale = (F64)mMapView->getScale();

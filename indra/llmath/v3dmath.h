@@ -73,17 +73,12 @@ public:
     bool        abs();                      // sets all values to absolute value of original value (first octant), returns true if changed
 
     inline const LLVector3d&    clear();        // Clears LLVector3d to (0, 0, 0, 1)
-    inline const LLVector3d&    clearVec();     // deprecated
     inline const LLVector3d&    setZero();      // Zero LLVector3d to (0, 0, 0, 0)
     inline const LLVector3d&    zeroVec();      // deprecated
     inline const LLVector3d&    set(const F64 x, const F64 y, const F64 z); // Sets LLVector3d to (x, y, z, 1)
     inline const LLVector3d&    set(const LLVector3d &vec); // Sets LLVector3d to vec
     inline const LLVector3d&    set(const F64 *vec);        // Sets LLVector3d to vec
     inline const LLVector3d&    set(const LLVector3 &vec);
-    inline const LLVector3d&    setVec(const F64 x, const F64 y, const F64 z);  // deprecated
-    inline const LLVector3d&    setVec(const LLVector3d &vec);  // deprecated
-    inline const LLVector3d&    setVec(const F64 *vec);         // deprecated
-    inline const LLVector3d&    setVec(const LLVector3 &vec);   // deprecated
 
     F64     magVec() const;             // deprecated
     F64     magVecSquared() const;      // deprecated
@@ -135,14 +130,6 @@ public:
 typedef LLVector3d LLGlobalVec;
 
 inline const LLVector3d &LLVector3d::set(const LLVector3 &vec)
-{
-    mdV[VX] = vec.mV[VX];
-    mdV[VY] = vec.mV[VY];
-    mdV[VZ] = vec.mV[VZ];
-    return *this;
-}
-
-inline const LLVector3d &LLVector3d::setVec(const LLVector3 &vec)
 {
     mdV[VX] = vec.mV[VX];
     mdV[VY] = vec.mV[VY];
@@ -207,14 +194,6 @@ inline const LLVector3d&    LLVector3d::clear(void)
     return (*this);
 }
 
-inline const LLVector3d&    LLVector3d::clearVec(void)
-{
-    mdV[VX] = 0.f;
-    mdV[VY] = 0.f;
-    mdV[VZ] = 0.f;
-    return (*this);
-}
-
 inline const LLVector3d&    LLVector3d::setZero(void)
 {
     mdV[VX] = 0.f;
@@ -252,30 +231,6 @@ inline const LLVector3d&    LLVector3d::set(const F64 *vec)
     mdV[VX] = vec[0];
     mdV[VY] = vec[1];
     mdV[VZ] = vec[2];
-    return (*this);
-}
-
-inline const LLVector3d&    LLVector3d::setVec(const F64 x, const F64 y, const F64 z)
-{
-    mdV[VX] = x;
-    mdV[VY] = y;
-    mdV[VZ] = z;
-    return (*this);
-}
-
-inline const LLVector3d&    LLVector3d::setVec(const LLVector3d& vec)
-{
-    mdV[VX] = vec.mdV[VX];
-    mdV[VY] = vec.mdV[VY];
-    mdV[VZ] = vec.mdV[VZ];
-    return (*this);
-}
-
-inline const LLVector3d&    LLVector3d::setVec(const F64* vec)
-{
-    mdV[VX] = vec[VX];
-    mdV[VY] = vec[VY];
-    mdV[VZ] = vec[VZ];
     return (*this);
 }
 

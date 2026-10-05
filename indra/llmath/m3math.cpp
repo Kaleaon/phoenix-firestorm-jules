@@ -63,7 +63,7 @@ LLMatrix3::LLMatrix3(const F32 angle, const LLVector3 &vec)
 LLMatrix3::LLMatrix3(const F32 angle, const LLVector3d &vec)
 {
     LLVector3 vec_f;
-    vec_f.setVec(vec);
+    vec_f.set(vec);
     LLQuaternion    quat(angle, vec_f);
     setRot(quat);
 }
@@ -281,7 +281,7 @@ LLQuaternion    LLMatrix3::quaternion() const
         q[j] = (mMatrix[i][j] + mMatrix[j][i]) * s;
         q[k] = (mMatrix[i][k] + mMatrix[k][i]) * s;
 
-        quat.setQuat(q);
+        quat.set(q);
     }
     return quat;
 }

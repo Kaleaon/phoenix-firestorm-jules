@@ -252,7 +252,7 @@ LLFloaterReporter::~LLFloaterReporter()
         closePickTool(this);
     }
 
-    mPosition.setVec(0.0f, 0.0f, 0.0f);
+    mPosition.set(0.0f, 0.0f, 0.0f);
 
     delete mResourceDatap;
 }
@@ -349,7 +349,7 @@ void LLFloaterReporter::getObjectInfo(const LLUUID& object_id)
 */
 // [/RLVa:KB]
                 LLVector3d global_pos;
-                global_pos.setVec(objectp->getPositionRegion());
+                global_pos.set(objectp->getPositionRegion());
                 setPosBox(global_pos);
             }
 
@@ -1051,7 +1051,7 @@ void LLFloaterReporter::uploadDoneCallback(const LLUUID &uuid, void *user_data, 
 
 void LLFloaterReporter::setPosBox(const LLVector3d &pos)
 {
-    mPosition.setVec(pos);
+    mPosition.set(pos);
     std::string pos_string = llformat("{%.1f, %.1f, %.1f}",
         mPosition.mV[VX],
         mPosition.mV[VY],
