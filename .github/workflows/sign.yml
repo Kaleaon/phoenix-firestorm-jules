@@ -1,5 +1,8 @@
 name: Manually Sign Windows Binaries
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -30,9 +33,6 @@ on:
         #   description: 'Branch to deploy from'
         #   required: false
         #   default: 'master'
-
-permissions:
-  contents: read
 
 jobs:
   find-setup-files:

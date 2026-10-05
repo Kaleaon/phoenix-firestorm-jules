@@ -16,9 +16,11 @@ a:hover {color:#ff7900;text-decoration:underline;}
 </style>
 </head>
 <body>
-<div id="infobox">
-	<img src="../../unabletoconnect.png" alt="Connection Error" /><br/>
-		<p>
+<div id="infobox" role="status" aria-live="polite">
+	<svg class="error-icon" aria-hidden="true" viewBox="0 0 64 64" width="64" height="64" style="margin-bottom: 12px; vertical-align: middle;">
+		<circle cx="32" cy="32" r="28" fill="#1e1e1e" stroke="#c12626" stroke-width="3"/>
+		<path d="M32 16 v20 M32 42 v4" stroke="#e9f1f8" stroke-width="4" stroke-linecap="round"/>
+	</svg><br/>		<p>
 			Second Life can't establish a connection to the login server.
 		</p>
 		<p>

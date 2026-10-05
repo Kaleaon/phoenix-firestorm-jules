@@ -45,7 +45,7 @@ class DemoManifest(llmanifest.LLManifest):
             self.end_prefix("dir_1")
 
 
-class Demo_ArchManifest(llmanifest.LLManifest):
+class Demo_Arch_Manifest(llmanifest.LLManifest):
         pass
 
 class TestLLManifest(unittest.TestCase):
@@ -55,9 +55,9 @@ class TestLLManifest(unittest.TestCase):
                                         'artwork':'art', 'build':'build'})
 
     def testproperwindowspath(self):
-        self.assertEqual(llmanifest.proper_windows_path("C:\Program Files", "cygwin"),"/cygdrive/c/Program Files")
-        self.assertEqual(llmanifest.proper_windows_path("C:\Program Files", "windows"), "C:\Program Files")
-        self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "windows"), "C:\Program Files\NSIS")
+        self.assertEqual(llmanifest.proper_windows_path(r"C:\Program Files", "cygwin"),"/cygdrive/c/Program Files")
+        self.assertEqual(llmanifest.proper_windows_path(r"C:\Program Files", "windows"), r"C:\Program Files")
+        self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "windows"), r"C:\Program Files\NSIS")
         self.assertEqual(llmanifest.proper_windows_path("/cygdrive/c/Program Files/NSIS", "cygwin"), "/cygdrive/c/Program Files/NSIS")
 
     def testpathancestors(self):
@@ -74,7 +74,7 @@ class TestLLManifest(unittest.TestCase):
         self.assertRaises(KeyError, tmp_test)
         ExtantManifest = llmanifest.LLManifestRegistry('ExtantManifest', (llmanifest.LLManifest,), {})
         self.assertEqual(llmanifest.LLManifest.for_platform('extant'), ExtantManifest)
-        self.assertEqual(llmanifest.LLManifest.for_platform('demo', 'Arch'), Demo_ArchManifest)
+        self.assertEqual(llmanifest.LLManifest.for_platform('demo', 'Arch'), Demo_Arch_Manifest)
 
 
     def testprefix(self):
