@@ -231,7 +231,7 @@ void LLViewerPartSourceScript::update(const F32 dt)
         else
         {
             // No angular velocity.  Reset our rotation.
-            mRotation.setQuat(0, 0, 0);
+            mRotation.setEulerAngles(0, 0, 0);
         }
 
         if (LLViewerPartSim::getInstance()->aboveParticleLimit())
@@ -346,7 +346,7 @@ void LLViewerPartSourceScript::update(const F32 dt)
             if (mPartSysData.mPattern & LLPartSysData::LL_PART_SRC_PATTERN_DROP)
             {
                 part->mPosAgent = mPosAgent;
-                part->mVelocity.setVec(0.f, 0.f, 0.f);
+                part->mVelocity.set(0.f, 0.f, 0.f);
             }
             else if (mPartSysData.mPattern & LLPartSysData::LL_PART_SRC_PATTERN_EXPLODE)
             {
@@ -423,7 +423,7 @@ void LLViewerPartSourceScript::update(const F32 dt)
             else
             {
                 part->mPosAgent = mPosAgent;
-                part->mVelocity.setVec(0.f, 0.f, 0.f);
+                part->mVelocity.set(0.f, 0.f, 0.f);
                 //LL_WARNS() << "Unknown source pattern " << (S32)mPartSysData.mPattern << LL_ENDL;
             }
 

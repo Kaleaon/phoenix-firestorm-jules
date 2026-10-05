@@ -125,7 +125,7 @@ namespace tut
         ensure_equals("vector3 -> sd -> vector3: 2", vec1, vec3);
 
         sd.clear();
-        vec1.setVec(0., 0., 0.);
+        vec1.set(0., 0., 0.);
         sd = ll_sd_from_vector3(vec1);
         vec2 = ll_vector3_from_sd(sd);
         ensure_equals("vector3 -> sd -> vector3: 3", vec1, vec2);

@@ -5989,7 +5989,7 @@ void LLAppViewer::idle()
     }
     else
     {
-        gWindVec.setVec(0.0f, 0.0f, 0.0f);
+        gWindVec.set(0.0f, 0.0f, 0.0f);
     }
 
     //////////////////////////////////////

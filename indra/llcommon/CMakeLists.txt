@@ -291,6 +291,8 @@ endif ()
 
 list(APPEND llcommon_SOURCE_FILES ${llcommon_HEADER_FILES})
 
+add_subdirectory(/app/Unified-LLSD/cpp ${CMAKE_CURRENT_BINARY_DIR}/llsd_cpp)
+
 add_library (llcommon ${llcommon_SOURCE_FILES})
 
 # <FS:TS> This must be broken out because llcommon is always built as
@@ -305,6 +307,7 @@ endif(NOT WORD_SIZE EQUAL 32)
 
 target_link_libraries(
         llcommon
+        llsd_cpp
         ll::apr
         ll::expat
         ll::zlib-ng

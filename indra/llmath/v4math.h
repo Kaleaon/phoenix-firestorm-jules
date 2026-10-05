@@ -86,7 +86,6 @@ public:
     inline bool isFinite() const;                                   // checks to see if all values of LLVector3 are finite
 
     inline void clear();        // Clears LLVector4 to (0, 0, 0, 1)
-    inline void clearVec();     // deprecated
     inline void zeroVec();      // deprecated
 
     inline void set(F32 x, F32 y, F32 z);           // Sets LLVector4 to (x, y, z, 1)
@@ -96,12 +95,6 @@ public:
     inline void set(const F32 *vec);                // Sets LLVector4 to vec
     inline void set(const glm::vec4& vec); // Sets LLVector4 to vec
     inline void set(const glm::vec3& vec, F32 w = 1.f); // Sets LLVector4 to LLVector3 vec with w defaulted to 1
-
-    inline void setVec(F32 x, F32 y, F32 z);        // deprecated
-    inline void setVec(F32 x, F32 y, F32 z, F32 w); // deprecated
-    inline void setVec(const LLVector4 &vec);       // deprecated
-    inline void setVec(const LLVector3 &vec, F32 w = 1.f); // deprecated
-    inline void setVec(const F32 *vec);             // deprecated
 
     F32 length() const;             // Returns magnitude of LLVector4
     F32 lengthSquared() const;      // Returns magnitude squared of LLVector4
@@ -245,12 +238,6 @@ inline void LLVector4::clear()
 }
 
 // deprecated
-inline void LLVector4::clearVec()
-{
-    clear();
-}
-
-// deprecated
 inline void LLVector4::zeroVec()
 {
     set(0.f, 0.f, 0.f, 0.f);
@@ -303,36 +290,6 @@ inline void LLVector4::set(const glm::vec3& vec, F32 w)
     mV[VY] = vec.y;
     mV[VZ] = vec.z;
     mV[VW] = w;
-}
-
-// deprecated
-inline void LLVector4::setVec(F32 x, F32 y, F32 z)
-{
-    set(x, y, z);
-}
-
-// deprecated
-inline void LLVector4::setVec(F32 x, F32 y, F32 z, F32 w)
-{
-    set(x, y, z, w);
-}
-
-// deprecated
-inline void LLVector4::setVec(const LLVector4& vec)
-{
-    set(vec);
-}
-
-// deprecated
-inline void LLVector4::setVec(const LLVector3& vec, F32 w)
-{
-    set(vec, w);
-}
-
-// deprecated
-inline void LLVector4::setVec(const F32* vec)
-{
-    set(vec);
 }
 
 // LLVector4 Magnitude and Normalization Functions

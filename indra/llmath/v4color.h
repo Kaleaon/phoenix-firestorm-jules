@@ -73,14 +73,6 @@ public:
     const LLColor4& setToBlack(); // zero LLColor4 to (0, 0, 0, 1)
     const LLColor4& setToWhite(); // zero LLColor4 to (0, 0, 0, 1)
 
-    const LLColor4& setVec(F32 r, F32 g, F32 b, F32 a); // deprecated -- use set()
-    const LLColor4& setVec(F32 r, F32 g, F32 b);        // deprecated -- use set()
-    const LLColor4& setVec(const LLColor4& vec);        // deprecated -- use set()
-    const LLColor4& setVec(const LLColor3& vec);        // deprecated -- use set()
-    const LLColor4& setVec(const LLColor3& vec, F32 a); // deprecated -- use set()
-    const LLColor4& setVec(const F32* vec);             // deprecated -- use set()
-    const LLColor4& setVec(const LLColor4U& color4u);   // deprecated -- use set()
-
     const LLColor4& set(F32 r, F32 g, F32 b, F32 a); // Sets LLColor4 to (r, g, b, a)
     const LLColor4& set(F32 r, F32 g, F32 b);        // Sets LLColor4 to (r, g, b) (no change in a)
     const LLColor4& set(const LLColor4& vec);        // Sets LLColor4 to vec
@@ -349,49 +341,6 @@ inline const LLColor4& LLColor4::set(const F64* vec)
     mV[VGREEN] = static_cast<F32>(vec[VGREEN]);
     mV[VBLUE]  = static_cast<F32>(vec[VBLUE]);
     mV[VALPHA] = static_cast<F32>(vec[VALPHA]);
-    return (*this);
-}
-
-// deprecated
-inline const LLColor4& LLColor4::setVec(F32 x, F32 y, F32 z)
-{
-    mV[VRED]   = x;
-    mV[VGREEN] = y;
-    mV[VBLUE]  = z;
-
-    //  no change to alpha!
-    //  mV[VALPHA] = 1.f;
-
-    return (*this);
-}
-
-// deprecated
-inline const LLColor4& LLColor4::setVec(F32 x, F32 y, F32 z, F32 a)
-{
-    mV[VRED]   = x;
-    mV[VGREEN] = y;
-    mV[VBLUE]  = z;
-    mV[VALPHA] = a;
-    return (*this);
-}
-
-// deprecated
-inline const LLColor4& LLColor4::setVec(const LLColor4& vec)
-{
-    mV[VRED]   = vec.mV[VRED];
-    mV[VGREEN] = vec.mV[VGREEN];
-    mV[VBLUE]  = vec.mV[VBLUE];
-    mV[VALPHA] = vec.mV[VALPHA];
-    return (*this);
-}
-
-// deprecated
-inline const LLColor4& LLColor4::setVec(const F32* vec)
-{
-    mV[VRED]   = vec[VRED];
-    mV[VGREEN] = vec[VGREEN];
-    mV[VBLUE]  = vec[VBLUE];
-    mV[VALPHA] = vec[VALPHA];
     return (*this);
 }
 

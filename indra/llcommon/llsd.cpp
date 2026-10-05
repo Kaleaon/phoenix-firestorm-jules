@@ -143,6 +143,7 @@ public:
 
     virtual Boolean asBoolean() const           { return false; }
     virtual Integer asInteger() const           { return 0; }
+    virtual Integer64 asInteger64() const       { return 0; }
     virtual Real    asReal() const              { return 0.0; }
     virtual String  asString() const            { return std::string(); }
     virtual UUID    asUUID() const              { return LLUUID(); }
@@ -266,6 +267,7 @@ namespace
 
         virtual LLSD::Boolean   asBoolean() const   { return mValue != 0; }
         virtual LLSD::Integer   asInteger() const   { return mValue; }
+        virtual LLSD::Integer64 asInteger64() const { return (LLSD::Integer64)mValue; }
         virtual LLSD::Real      asReal() const      { return mValue; }
         virtual LLSD::String    asString() const;
 
@@ -274,6 +276,25 @@ namespace
 
     LLSD::String ImplInteger::asString() const
         { return llformat("%d", mValue); }
+
+
+    class ImplInteger64 final
+        : public ImplBase<LLSD::TypeInteger64, LLSD::Integer64, LLSD::Integer64, LLSD::Integer64&&>
+    {
+    public:
+        ImplInteger64(LLSD::Integer64 v) : Base(v) { }
+
+        virtual LLSD::Boolean   asBoolean() const   { return mValue != 0; }
+        virtual LLSD::Integer   asInteger() const   { return (LLSD::Integer)mValue; }
+        virtual LLSD::Integer64 asInteger64() const { return mValue; }
+        virtual LLSD::Real      asReal() const      { return (LLSD::Real)mValue; }
+        virtual LLSD::String    asString() const;
+
+        virtual LLSD::String asXMLRPCValue() const { return "<i64>" + std::to_string(mValue) + "</i64>"; }
+    };
+
+    LLSD::String ImplInteger64::asString() const
+        { return std::to_string(mValue); }
 
 
     class ImplReal final
@@ -834,6 +855,11 @@ void LLSD::Impl::assign(Impl*& var, LLSD::Integer v)
     reset(var, new ImplInteger(v));
 }
 
+void LLSD::Impl::assign(Impl*& var, LLSD::Integer64 v)
+{
+    reset(var, new ImplInteger64(v));
+}
+
 void LLSD::Impl::assign(Impl*& var, LLSD::Real v)
 {
     reset(var, new ImplReal(v));
@@ -977,6 +1003,7 @@ LLSD::Type LLSD::type() const           { return safe(impl).type(); }
 // Scalar Constructors
 LLSD::LLSD(Boolean v) : impl(0)         { ALLOC_LLSD_OBJECT;    assign(v); }
 LLSD::LLSD(Integer v) : impl(0)         { ALLOC_LLSD_OBJECT;    assign(v); }
+LLSD::LLSD(Integer64 v) : impl(0)       { ALLOC_LLSD_OBJECT;    assign(v); }
 LLSD::LLSD(Real v) : impl(0)            { ALLOC_LLSD_OBJECT;    assign(v); }
 LLSD::LLSD(const UUID& v) : impl(0)     { ALLOC_LLSD_OBJECT;    assign(v); }
 LLSD::LLSD(const String& v) : impl(0)   { ALLOC_LLSD_OBJECT;    assign(v); }
@@ -992,6 +1019,7 @@ LLSD::LLSD(Binary&& v) : impl(0)        { ALLOC_LLSD_OBJECT;    assign(std::move
 // Scalar Assignment
 void LLSD::assign(Boolean v)            { safe(impl).assign(impl, v); }
 void LLSD::assign(Integer v)            { safe(impl).assign(impl, v); }
+void LLSD::assign(Integer64 v)          { safe(impl).assign(impl, v); }
 void LLSD::assign(Real v)               { safe(impl).assign(impl, v); }
 void LLSD::assign(const String& v)      { safe(impl).assign(impl, v); }
 void LLSD::assign(const UUID& v)        { safe(impl).assign(impl, v); }
@@ -1007,6 +1035,7 @@ void LLSD::assign(Binary&& v)           { safe(impl).assign(impl, std::move(v));
 // Scalar Accessors
 LLSD::Boolean   LLSD::asBoolean() const { return safe(impl).asBoolean(); }
 LLSD::Integer   LLSD::asInteger() const { return safe(impl).asInteger(); }
+LLSD::Integer64 LLSD::asInteger64() const { return safe(impl).asInteger64(); }
 LLSD::Real      LLSD::asReal() const    { return safe(impl).asReal(); }
 LLSD::String    LLSD::asString() const  { return safe(impl).asString(); }
 LLSD::UUID      LLSD::asUUID() const    { return safe(impl).asUUID(); }

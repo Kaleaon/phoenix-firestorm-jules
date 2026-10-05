@@ -144,7 +144,7 @@ void LLManip::getManipNormal(LLViewerObject* object, EManipPart manip, LLVector3
     }
     else
     {
-        normal.clearVec();
+        normal.clear();
     }
 }
 

@@ -376,7 +376,7 @@ void LLViewerPartGroup::updateParticles(const F32 lastdt)
         // Do color interpolation
         if (part->mFlags & LLPartData::LL_PART_INTERP_COLOR_MASK)
         {
-            part->mColor.setVec(part->mStartColor);
+            part->mColor.set(part->mStartColor);
             // note: LLColor4's v%k means multiply-alpha-only,
             //       LLColor4's v*k means multiply-rgb-only
             part->mColor *= 1.f - frac; // rgb*k
@@ -387,7 +387,7 @@ void LLViewerPartGroup::updateParticles(const F32 lastdt)
         // Do scale interpolation
         if (part->mFlags & LLPartData::LL_PART_INTERP_SCALE_MASK)
         {
-            part->mScale.setVec(part->mStartScale);
+            part->mScale.set(part->mStartScale);
             part->mScale *= 1.f - frac;
             part->mScale += frac*part->mEndScale;
         }

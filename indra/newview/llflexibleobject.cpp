@@ -161,7 +161,7 @@ void LLVolumeImplFlexible::remapSections(LLFlexibleObjectSection *source, S32 so
         {
             dest[section+1] = dest[section];
             dest[section+1].mPosition += dest[section].mDirection * section_length;
-            dest[section+1].mVelocity.setVec( LLVector3::zero );
+            dest[section+1].mVelocity.set( LLVector3::zero );
         }
     }
     else if (source_sections > dest_sections)
@@ -264,9 +264,9 @@ void LLVolumeImplFlexible::setAttributesOfAllSections(LLVector3* inScale)
     mSection[0].mPosition = getAnchorPosition();
     mSection[0].mDirection = LLVector3::z_axis * getFrameRotation();
     mSection[0].mdPosition = mSection[0].mDirection;
-    mSection[0].mScale.setVec(scale.mV[VX]*bottom_scale.mV[0], scale.mV[VY]*bottom_scale.mV[1]);
-    mSection[0].mVelocity.setVec(0,0,0);
-    mSection[0].mAxisRotation.setQuat(begin_rot,0,0,1);
+    mSection[0].mScale.set(scale.mV[VX]*bottom_scale.mV[0], scale.mV[VY]*bottom_scale.mV[1]);
+    mSection[0].mVelocity.set(0,0,0);
+    mSection[0].mAxisRotation.setAngleAxis(begin_rot,0,0,1);
 
     remapSections(mSection, mInitializedRes, mSection, mSimulateRes);
     mInitializedRes = mSimulateRes;
@@ -276,7 +276,7 @@ void LLVolumeImplFlexible::setAttributesOfAllSections(LLVector3* inScale)
 
     for ( int i=1; i<= num_sections; i++)
     {
-        mSection[i].mAxisRotation.setQuat(lerp(begin_rot,end_rot,t),0,0,1);
+        mSection[i].mAxisRotation.setAngleAxis(lerp(begin_rot,end_rot,t),0,0,1);
         mSection[i].mScale = LLVector2(
             scale.mV[VX] * lerp(bottom_scale.mV[0], top_scale.mV[0], t),
             scale.mV[VY] * lerp(bottom_scale.mV[1], top_scale.mV[1], t));
@@ -604,11 +604,11 @@ void LLVolumeImplFlexible::doFlexibleUpdate()
         if (angle > max_angle)
         {
             //angle = 0.5f*(angle+max_angle);
-            deltaRotation.setQuat(max_angle, axis);
+            deltaRotation.setAngleAxis(max_angle, axis);
         } else if (angle < -max_angle)
         {
             //angle = 0.5f*(angle-max_angle);
-            deltaRotation.setQuat(-max_angle, axis);
+            deltaRotation.setAngleAxis(-max_angle, axis);
         }
         LLQuaternion segment_rotation = parentSegmentRotation * deltaRotation;
         parentSegmentRotation = segment_rotation;

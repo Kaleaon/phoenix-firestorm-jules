@@ -638,7 +638,7 @@ LLVector2 LLHUDNameTag::updateScreenPos(LLVector2 &offset)
         LLViewerCamera::getInstance()->projectPosAgentToScreenEdge(world_pos, screen_pos);
     }
 
-    screen_pos_vec.setVec((F32)screen_pos.mX, (F32)screen_pos.mY);
+    screen_pos_vec.set((F32)screen_pos.mX, (F32)screen_pos.mY);
 
     LLRect world_rect = gViewerWindow->getWorldViewRectScaled();
     S32 bottom = world_rect.mBottom + STATUS_BAR_HEIGHT;
@@ -728,7 +728,7 @@ void LLHUDNameTag::updateAll()
     for (text_it = sTextObjects.begin(); text_it != sTextObjects.end(); ++text_it)
     {
         LLHUDNameTag* textp = (*text_it);
-        textp->mTargetPositionOffset.clearVec();
+        textp->mTargetPositionOffset.clear();
         textp->updateSize();
         textp->updateVisibility();
     }
@@ -801,7 +801,7 @@ void LLHUDNameTag::updateAll()
                     LLVector2 force = lerp(LLVector2(dst_center_x - intersect_center_x, dst_center_y - intersect_center_y),
                                         LLVector2(intersect_center_x - src_center_x, intersect_center_y - src_center_y),
                                         0.5f);
-                    force.setVec(dst_center_x - src_center_x, dst_center_y - src_center_y);
+                    force.set(dst_center_x - src_center_x, dst_center_y - src_center_y);
                     force.normVec();
 
                     LLVector2 src_force = -1.f * force;

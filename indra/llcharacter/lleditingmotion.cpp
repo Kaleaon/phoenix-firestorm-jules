@@ -219,7 +219,7 @@ bool LLEditingMotion::onUpdate(F32 time, U8* joint_mask)
         // Don't error out here, set a fail-safe target vector
         LL_WARNS() << "Non finite target in editing motion with target distance of " << target_dist <<
             " and focus point " << focus_pt << LL_ENDL;
-        target.setVec(1.f, 1.f, 1.f);
+        target.set(1.f, 1.f, 1.f);
     }
 
     // SL-315

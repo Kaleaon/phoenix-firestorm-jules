@@ -1591,6 +1591,88 @@ namespace tut
     }
 */
 
+    template<> template<>
+    void TestLLSDBinaryParsingObject::test<12>()
+    {
+        set_test_name("binary big-endian date roundtrip");
+        LLSD sd = LLDate(1.0);
+        std::stringstream str;
+        LLSDSerialize::toBinary(sd, str);
+        std::string bytes = str.str();
+        ensure_equals("binary date length", bytes.size(), 9);
+        ensure_equals("binary date tag", bytes[0], 'd');
+        // double 1.0 big-endian network byte order: 3F F0 00 00 00 00 00 00
+        ensure_equals("binary date byte 0", (U8)bytes[1], 0x3F);
+        ensure_equals("binary date byte 1", (U8)bytes[2], 0xF0);
+
+        LLSD back;
+        LLSDSerialize::fromBinary(back, str, LLSDSerialize::SIZE_UNLIMITED);
+        ensure_equals("date roundtrip", back.asDate().secondsSinceEpoch(), 1.0);
+    }
+
+    template<> template<>
+    void TestLLSDBinaryParsingObject::test<13>()
+    {
+        set_test_name("binary map key 's' tag support");
+        std::string binMap;
+        binMap.push_back('{');
+        U32 count = htonl(1);
+        binMap.append((char*)&count, 4);
+        binMap.push_back('s'); // tag 's'
+        U32 klen = htonl(3);
+        binMap.append((char*)&klen, 4);
+        binMap.append("foo");
+        binMap.push_back('i');
+        U32 val = htonl(42);
+        binMap.append((char*)&val, 4);
+        binMap.push_back('}');
+
+        std::stringstream istr(binMap);
+        LLSD back;
+        LLSDSerialize::fromBinary(back, istr, LLSDSerialize::SIZE_UNLIMITED);
+        ensure("map parsed", back.isMap());
+        ensure_equals("map value", back["foo"].asInteger(), 42);
+    }
+
+    template<> template<>
+    void TestLLSDBinaryParsingObject::test<14>()
+    {
+        set_test_name("LLSDInteger64 roundtrip in XML, Notation, and Binary");
+        S64 val64 = 0x123456789ABCDEF0LL;
+        LLSD sd = val64;
+        ensure("isInteger64", sd.isInteger64());
+        ensure_equals("asInteger64", sd.asInteger64(), val64);
+
+        // Binary
+        std::stringstream binStr;
+        LLSDSerialize::toBinary(sd, binStr);
+        std::string bytes = binStr.str();
+        ensure_equals("binary integer64 tag", bytes[0], 'I');
+        ensure_equals("binary integer64 length", bytes.size(), 9);
+
+        LLSD binBack;
+        LLSDSerialize::fromBinary(binBack, binStr, LLSDSerialize::SIZE_UNLIMITED);
+        ensure_equals("binary integer64 back", binBack.asInteger64(), val64);
+
+        // Notation
+        std::stringstream notStr;
+        LLSDSerialize::toNotation(sd, notStr);
+        ensure("notation prefix i64", notStr.str().rfind("i64", 0) == 0);
+
+        LLSD notBack;
+        LLSDSerialize::fromNotation(notBack, notStr, LLSDSerialize::SIZE_UNLIMITED);
+        ensure_equals("notation integer64 back", notBack.asInteger64(), val64);
+
+        // XML
+        std::stringstream xmlStr;
+        LLSDSerialize::toXML(sd, xmlStr);
+        ensure("xml tag integer64", xmlStr.str().find("<integer64>") != std::string::npos);
+
+        LLSD xmlBack;
+        LLSDSerialize::fromXML(xmlBack, xmlStr);
+        ensure_equals("xml integer64 back", xmlBack.asInteger64(), val64);
+    }
+
    /**
      * @class TestLLSDCrossCompatible
      * @brief Miscellaneous serialization and parsing tests

@@ -2608,7 +2608,7 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, bool hud_att
         if (sUnderWaterRender)
         {
             //camera is below water, cull above water
-            pnorm.setVec(0, 0, 1);
+            pnorm.set(0, 0, 1);
         }
         else
         {
@@ -2617,7 +2617,7 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, bool hud_att
         }
 
         LLPlane plane;
-        plane.setVec(LLVector3(0, 0, water_height), pnorm);
+        plane.set(LLVector3(0, 0, water_height), pnorm);
 
         camera.setUserClipPlane(plane);
     }
@@ -5961,11 +5961,11 @@ void LLPipeline::setupHWLights()
         LLVector4 sun_dir(environment.getSunDirection(), 0.0f);
         LLVector4 moon_dir(environment.getMoonDirection(), 0.0f);
 
-        mSunDir.setVec(sun_dir);
-        mMoonDir.setVec(moon_dir);
+        mSunDir.set(sun_dir);
+        mMoonDir.set(moon_dir);
 
-        mSunDiffuse.setVec(psky->getSunlightColor());
-        mMoonDiffuse.setVec(psky->getMoonlightColor());
+        mSunDiffuse.set(psky->getSunlightColor());
+        mMoonDiffuse.set(psky->getMoonlightColor());
 
         F32 max_color = llmax(mSunDiffuse.mV[0], mSunDiffuse.mV[1], mSunDiffuse.mV[2]);
         if (max_color > 1.f)
@@ -5984,10 +5984,10 @@ void LLPipeline::setupHWLights()
         // prevent underlighting from having neither lightsource facing us
         if (!sun_up && !moon_up)
         {
-            mSunDiffuse.setVec(LLColor4(0.0, 0.0, 0.0, 1.0));
-            mMoonDiffuse.setVec(LLColor4(0.0, 0.0, 0.0, 1.0));
-            mSunDir.setVec(LLVector4(0.0, 1.0, 0.0, 0.0));
-            mMoonDir.setVec(LLVector4(0.0, 1.0, 0.0, 0.0));
+            mSunDiffuse.set(LLColor4(0.0, 0.0, 0.0, 1.0));
+            mMoonDiffuse.set(LLColor4(0.0, 0.0, 0.0, 1.0));
+            mSunDir.set(LLVector4(0.0, 1.0, 0.0, 0.0));
+            mMoonDir.set(LLVector4(0.0, 1.0, 0.0, 0.0));
         }
 
         LLVector4 light_dir = sun_up ? mSunDir : mMoonDir;
@@ -10467,7 +10467,7 @@ void LLPipeline::generateSunShadow(LLCamera& camera)
     {
         LLVector3 p = camera.getOrigin(); // gAgent.getPositionAgent();
         p += caster_dir * RenderFarClip*2.f;
-        shadow_near_clip.setVec(p, caster_dir);
+        shadow_near_clip.set(p, caster_dir);
     }
 
     LLVector3 lightDir = -caster_dir;
@@ -10777,7 +10777,7 @@ void LLPipeline::generateSunShadow(LLCamera& camera)
                 if (mShadowError.mV[j] > RenderShadowErrorCutoff)
                 { //just use ortho projection
                     mShadowFOV.mV[j] = -1.f;
-                    origin.clearVec();
+                    origin.clear();
                     proj[j] = glm::ortho(min.mV[0], max.mV[0],
                                         min.mV[1], max.mV[1],
                                         -max.mV[2], -min.mV[2]);
@@ -10785,7 +10785,7 @@ void LLPipeline::generateSunShadow(LLCamera& camera)
                 else
                 {
                     //origin is where line x = 0;
-                    origin.setVec(0,bfb,0);
+                    origin.set(0,bfb,0);
 
                     F32 fovz = 1.f;
                     F32 fovx = 1.f;
@@ -10867,7 +10867,7 @@ void LLPipeline::generateSunShadow(LLCamera& camera)
 
                     if (fovx > cutoff)
                     { //just use ortho projection
-                        origin.clearVec();
+                        origin.clear();
                         mShadowError.mV[j] = -1.f;
                         proj[j] = glm::ortho(min.mV[0], max.mV[0],
                                 min.mV[1], max.mV[1],

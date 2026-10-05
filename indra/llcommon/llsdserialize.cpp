@@ -610,6 +610,27 @@ S32 LLSDNotationParser::doParse(std::istream& istr, LLSD& data, S32 max_depth) c
     case 'i':
     {
         c = get(istr);
+        if (istr.peek() == '6')
+        {
+            get(istr);
+            if (istr.peek() == '4')
+            {
+                get(istr);
+                S64 integer64 = 0;
+                istr >> integer64;
+                data = integer64;
+                if(istr.fail())
+                {
+                    LL_INFOS() << "STREAM FAILURE reading integer64." << LL_ENDL;
+                    parse_count = PARSE_FAILURE;
+                }
+                break;
+            }
+            else
+            {
+                istr.unget();
+            }
+        }
         S32 integer = 0;
         istr >> integer;
         data = integer;
@@ -1043,6 +1064,18 @@ S32 LLSDBinaryParser::doParse(std::istream& istr, LLSD& data, S32 max_depth) con
         break;
     }
 
+    case 'I':
+    {
+        U64 value_nbo = 0;
+        read(istr, (char*)&value_nbo, sizeof(U64));  /*Flawfinder: ignore*/
+        data = (S64)ll_ntohll(value_nbo);
+        if(istr.fail())
+        {
+            LL_INFOS() << "STREAM FAILURE reading binary integer64." << LL_ENDL;
+        }
+        break;
+    }
+
     case 'r':
     {
         F64 real_nbo = 0.0;
@@ -1132,7 +1165,7 @@ S32 LLSDBinaryParser::doParse(std::istream& istr, LLSD& data, S32 max_depth) con
     {
         F64 real = 0.0;
         read(istr, (char*)&real, sizeof(F64));   /*Flawfinder: ignore*/
-        data = LLDate(real);
+        data = LLDate(ll_ntohd(real));
         if(istr.fail())
         {
             LL_INFOS() << "STREAM FAILURE reading binary date." << LL_ENDL;
@@ -1198,6 +1231,7 @@ S32 LLSDBinaryParser::parseMap(std::istream& istr, LLSD& map, S32 max_depth) con
         switch(c)
         {
         case 'k':
+        case 's':
             if(!parseString(istr, name))
             {
                 return PARSE_FAILURE;
@@ -1445,6 +1479,10 @@ S32 LLSDNotationFormatter::format_impl(const LLSD& data, std::ostream& ostr,
         ostr << "i" << data.asInteger();
         break;
 
+    case LLSD::TypeInteger64:
+        ostr << "i64" << data.asInteger64();
+        break;
+
     case LLSD::TypeReal:
         ostr << "r";
         if(mRealFormat.empty())
@@ -1593,6 +1631,14 @@ S32 LLSDBinaryFormatter::format_impl(const LLSD& data, std::ostream& ostr,
         break;
     }
 
+    case LLSD::TypeInteger64:
+    {
+        ostr.put('I');
+        U64 value_nbo = ll_htonll((U64)data.asInteger64());
+        ostr.write((const char*)(&value_nbo), sizeof(U64));
+        break;
+    }
+
     case LLSD::TypeReal:
     {
         ostr.put('r');
@@ -1617,8 +1663,8 @@ S32 LLSDBinaryFormatter::format_impl(const LLSD& data, std::ostream& ostr,
     case LLSD::TypeDate:
     {
         ostr.put('d');
-        F64 value = data.asReal();
-        ostr.write((const char*)(&value), sizeof(F64));
+        F64 value_nbo = ll_htond(data.asReal());
+        ostr.write((const char*)(&value_nbo), sizeof(F64));
         break;
     }
 

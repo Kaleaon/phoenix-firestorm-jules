@@ -24,6 +24,11 @@ permissions:
 
 env:
   AUTOBUILD_VARIABLES_FILE: ${{github.workspace}}/build-variables/variables
+  AUTOBUILD_INSTALLABLE_CACHE: ${{github.workspace}}/.autobuild-installables
+  CCACHE_DIR: ${{github.workspace}}/.ccache
+  CCACHE_MAXSIZE: 2G
+  SCCACHE_DIR: ${{github.workspace}}/.sccache
+  SCCACHE_CACHE_SIZE: 2G
   EXTRA_ARGS: -DUSE_FMODSTUDIO=ON -DUSE_KDU=ON --crashreporting
   build_secrets_checkout: ${{github.workspace}}/signing
   XZ_DEFAULTS: -T0
@@ -58,6 +63,7 @@ jobs:
           brew update
           brew install bash
           brew install gnu-sed
+          brew install ccache
 
           echo "/usr/local/bin" >> $GITHUB_PATH
           echo "$(brew --prefix)/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
@@ -139,6 +145,41 @@ jobs:
             --slave /usr/bin/g++ g++ /usr/bin/g++-13
           echo "CC=gcc-13"  >> $GITHUB_ENV
           echo "CXX=g++-13" >> $GITHUB_ENV
+
+      - name: Install sccache
+        if: runner.os == 'Windows'
+        run: |
+          choco install sccache -y
+        shell: pwsh
+
+      - name: Cache autobuild packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.autobuild-installables
+          key: autobuild-installables-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-${{ hashFiles('autobuild.xml') }}
+          restore-keys: |
+            autobuild-installables-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-
+            autobuild-installables-${{ runner.os }}-
+
+      - name: Cache ccache compiler artifacts
+        if: runner.os != 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.ccache
+          key: ccache-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-
+            ccache-${{ runner.os }}-${{ matrix.os }}-
+
+      - name: Cache sccache compiler artifacts
+        if: runner.os == 'Windows'
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.sccache
+          key: sccache-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-${{ github.sha }}
+          restore-keys: |
+            sccache-${{ runner.os }}-${{ matrix.os }}-${{ matrix.grid }}-${{ matrix.variant }}-
+            sccache-${{ runner.os }}-${{ matrix.os }}-
       - name: Setup rclone and download the folder
         uses: beqjanus/setup-rclone@main
         with:
@@ -245,7 +286,7 @@ jobs:
       - name: Install required Ubuntu packages and release some space.
         if: runner.os == 'Linux'
         run: |
-          dependencies=("python3-setuptools" "mesa-common-dev" "libgl1-mesa-dev" "libxinerama-dev" "libxrandr-dev" "libpulse-dev" "libglu1-mesa-dev" "libfreetype6-dev" "libfontconfig1-dev")
+          dependencies=("python3-setuptools" "mesa-common-dev" "libgl1-mesa-dev" "libxinerama-dev" "libxrandr-dev" "libpulse-dev" "libglu1-mesa-dev" "libfreetype6-dev" "libfontconfig1-dev" "ccache")
           sudo apt-get update
           sudo apt-get install -y "${dependencies[@]}"
           sudo apt-get install -y wget apt-transport-https software-properties-common
@@ -352,6 +393,18 @@ jobs:
         shell: bash
       - name: Clean up packages to give more space
         run: rm *${{ env.fallback_platform }}*bz2
+        shell: bash
+      - name: Configure compiler caching launcher
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            echo "EXTRA_ARGS=${{ env.EXTRA_ARGS }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
+            echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
+            echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
+          else
+            echo "EXTRA_ARGS=${{ env.EXTRA_ARGS }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+            echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+            echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+          fi
         shell: bash
       - name: Configure
         run: |
