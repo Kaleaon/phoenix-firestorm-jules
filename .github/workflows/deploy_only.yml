@@ -1,5 +1,8 @@
 name: Deploy Viewer
 
+permissions:
+  contents: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -22,9 +25,6 @@ on:
         description: 'Branch to deploy from'
         required: false
         default: 'master'
-
-permissions:
-  contents: read
 
 jobs:
   deploy:
