@@ -91,23 +91,13 @@ jobs:
         id: get_tag
         env:
           TAG_NAME: ${{ steps.get_inputs.outputs.tag_name }}
-        run: |
-          echo "Proposed Tag: $TAG_NAME"
-          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        run: python ./fsutils/manage_tags.py determine
 
       - name: Check if tag exists
         id: check_tag
         env:
           TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
-        run: |          
-          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Tag $TAG_NAME already exists."
-            echo "tag_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "Tag $TAG_NAME does not exist."
-            echo "tag_exists=false" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
+        run: python ./fsutils/manage_tags.py check
 
       # Create the Tag (Conditional)
       - name: Create tag
@@ -119,10 +109,8 @@ jobs:
           steps.check_tag.outputs.tag_exists == 'false'
         env:
           TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
-        run: |
-          echo "Creating tag: $TAG_NAME"
-          git tag "$TAG_NAME"
-        shell: bash
+          DRY_RUN: ${{ steps.get_inputs.outputs.dry_run }}
+        run: python ./fsutils/manage_tags.py create
 
       # Push the Tag to the Repository (Conditional)
       - name: Push tag
@@ -132,8 +120,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
-        run: |
-          git push origin "$TAG_NAME"
+          DRY_RUN: ${{ steps.get_inputs.outputs.dry_run }}
+        run: python ./fsutils/manage_tags.py push
 
       # Tagging Confirmation
       - name: Tagging Confirmation
@@ -141,12 +129,4 @@ jobs:
           DRY_RUN: ${{ steps.get_inputs.outputs.dry_run }}
           TAG_EXISTS: ${{ steps.check_tag.outputs.tag_exists }}
           TAG_NAME: ${{ steps.get_tag.outputs.tag_name }}
-        run: |
-          if [ "$DRY_RUN" == "true" ]; then
-            echo "Dry run mode enabled. Tag '$TAG_EXISTS' was not created or pushed."
-          elif [ "$TAG_EXISTS" == "true" ]; then
-            echo "Tag '$TAG_NAME' already exists. No new tag was created."
-          else
-            echo "Tag '$TAG_NAME' has been created and pushed successfully."
-          fi
-        shell: bash
+        run: python ./fsutils/manage_tags.py confirm

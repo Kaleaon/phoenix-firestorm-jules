@@ -40,18 +40,10 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
         run: python ./fsutils/parse_workflow_inputs.py tag
       - name: Update Tag
-        uses: actions/github-script@v7.0.1
-        with:
-          # use a real access token instead of GITHUB_TOKEN default.
-          # required so that the results of this tag creation can trigger the build workflow
-          # https://stackoverflow.com/a/71372524
-          # https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
-          # this token will need to be renewed anually in January
-          github-token: ${{ secrets.LL_TAG_RELEASE_TOKEN }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ env.VIEWER_CHANNEL }}#${{ env.TAG_ID }}",
-              sha: context.sha
-            })
+        env:
+          LL_TAG_RELEASE_TOKEN: ${{ secrets.LL_TAG_RELEASE_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          VIEWER_CHANNEL: ${{ env.VIEWER_CHANNEL }}
+          TAG_ID: ${{ env.TAG_ID }}
+        run: python ./fsutils/tag_release.py
