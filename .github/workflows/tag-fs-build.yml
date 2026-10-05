@@ -36,10 +36,12 @@ on:
         default: 'true'
 
 permissions:
-  contents: write  # Grants write access to repository contents
+  contents: read
 
 jobs:
   tag-build:
+    permissions:
+      contents: write
     # Run the job only if:
     # - The event is workflow_run **and** the conclusion is success
     # OR
@@ -68,7 +70,7 @@ jobs:
         with:
           workflow: build_viewer.yml
           run_number: ${{ steps.get_run_number.outputs.build_run_number }}
-          name: build_info
+          name: build_info-${{ steps.get_run_number.outputs.build_run_number }}
           skip_unpack: false
           path: build_info
 
