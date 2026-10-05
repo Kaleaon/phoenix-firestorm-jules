@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Connexion impossible</title>
 <link rel="stylesheet" type="text/css" href="../../common/css/viewer_a11y.css" />
@@ -16,8 +16,10 @@ a:hover {color:#ff7900;text-decoration:underline;}
 #infobox #submitbtn input.pressed {color:#888;border:none;background:url(../../btn_purplepill_bg.png) top right no-repeat;}
 </style>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
-<body> <div id="infobox"> <img src="../../unabletoconnect.png" alt="Erreur de connexion" /><br/>
-		<p> Second Life ne peut pas établir de connexion avec le serveur.
+<body> <div id="infobox" role="status" aria-live="polite"> <svg class="error-icon" aria-hidden="true" viewBox="0 0 64 64" width="64" height="64" style="margin-bottom: 12px; vertical-align: middle;">
+		<circle cx="32" cy="32" r="28" fill="#1e1e1e" stroke="#c12626" stroke-width="3"/>
+		<path d="M32 16 v20 M32 42 v4" stroke="#e9f1f8" stroke-width="4" stroke-linecap="round"/>
+	</svg><br/>		<p> Second Life ne peut pas établir de connexion avec le serveur.
 		</p>
 		<p> Vérifiez votre connexion Internet. Si votre ordinateur ou votre réseau est protégé par un.pare-feu ou un proxy, assurez-vous que Second Life a l'autorisation d'accéder au réseau.
 		</p> <div id="submitbtn">
