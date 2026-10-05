@@ -177,6 +177,7 @@ public:
     //@{
         typedef bool            Boolean;
         typedef S32             Integer;
+        typedef S64             Integer64;
         typedef F64             Real;
         typedef std::string     String;
         typedef LLUUID          UUID;
@@ -189,6 +190,7 @@ public:
     //@{
         LLSD(Boolean);
         LLSD(Integer);
+        LLSD(Integer64);
         LLSD(Real);
         LLSD(const String&);
         LLSD(const UUID&);
@@ -221,6 +223,7 @@ public:
     //@{
         void assign(Boolean);
         void assign(Integer);
+        void assign(Integer64);
         void assign(Real);
         void assign(const String&);
         void assign(const UUID&);
@@ -235,6 +238,7 @@ public:
 
         LLSD& operator=(Boolean v)          { assign(v); return *this; }
         LLSD& operator=(Integer v)          { assign(v); return *this; }
+        LLSD& operator=(Integer64 v)        { assign(v); return *this; }
         LLSD& operator=(Real v)             { assign(v); return *this; }
         LLSD& operator=(const String& v)    { assign(v); return *this; }
         LLSD& operator=(const UUID& v)      { assign(v); return *this; }
@@ -276,6 +280,7 @@ public:
     //@{
         Boolean asBoolean() const;
         Integer asInteger() const;
+        Integer64 asInteger64() const;
         Real    asReal() const;
         String  asString() const;
         UUID    asUUID() const;
@@ -292,6 +297,7 @@ public:
 
         operator Boolean() const    { return asBoolean(); }
         operator Integer() const    { return asInteger(); }
+        operator Integer64() const  { return asInteger64(); }
         operator Real() const       { return asReal(); }
         operator String() const     { return asString(); }
         operator UUID() const       { return asUUID(); }
@@ -401,6 +407,7 @@ public:
             TypeBinary,
             TypeMap,
             TypeArray,
+            TypeInteger64,
             TypeLLSDTypeEnd,
             TypeLLSDTypeBegin = TypeUndefined,
             TypeLLSDNumTypes = (TypeLLSDTypeEnd - TypeLLSDTypeBegin)
@@ -420,6 +427,7 @@ public:
         bool isBinary() const       { return type() == TypeBinary; }
         bool isMap() const          { return type() == TypeMap; }
         bool isArray() const        { return type() == TypeArray; }
+        bool isInteger64() const    { return type() == TypeInteger64; }
     //@}
 
     /** @name Automatic Cast Protection
