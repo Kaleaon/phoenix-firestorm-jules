@@ -44,6 +44,4 @@ jobs:
           LL_TAG_RELEASE_TOKEN: ${{ secrets.LL_TAG_RELEASE_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           COMMIT_SHA: ${{ github.sha }}
-          VIEWER_CHANNEL: ${{ env.VIEWER_CHANNEL }}
-          TAG_ID: ${{ env.TAG_ID }}
         run: python ./fsutils/tag_release.py

@@ -193,7 +193,6 @@ jobs:
         if: runner.os == 'Windows'
         env:
           RUNNER_OS: ${{ runner.os }}
-          FS_RELEASE_TYPE: ${{ env.FS_RELEASE_TYPE }}
         run: python ./fsutils/build_utils.py check_codesigning
     
       - name: Get the code
@@ -210,15 +209,16 @@ jobs:
       - name: Define platform variable(s)
         env:
           RUNNER_OS: ${{ runner.os }}
-          ADDRSIZE: ${{ env.addrsize }}
         run: python ./fsutils/build_utils.py define_platform
 
       - name: rclone the private 3p packages for this platform (both 64 & 32)
-        run: 'rclone copy fs_bundles: --filter "- Alpha/*" --filter "+ *${{ env.fallback_platform }}*bz2" .'
+        run: "rclone copy fs_bundles: --filter \"- Alpha/*\" --filter \"+ *${fallback_platform}*bz2\" ."
+        shell: bash
         
       - name: rclone any extra private 3p packages for Alpha (allows library updates not in the main repo)
         if: env.FS_RELEASE_TYPE == 'Alpha'
-        run: 'rclone copy fs_bundles:Alpha --include "*${{ env.fallback_platform }}*bz2" .'
+        run: "rclone copy fs_bundles:Alpha --include \"*${fallback_platform}*bz2\" ."
+        shell: bash
 
       - name: set VSVER for Windows builds
         if: runner.os == 'Windows'
@@ -276,48 +276,40 @@ jobs:
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
           RUNNER_OS: ${{ runner.os }}
-          PLATFORM: ${{ env.platform }}
-          FALLBACK_PLATFORM: ${{ env.fallback_platform }}
         run: python ./fsutils/build_utils.py edit_installables
 
       - name: Set expiration days and codesigning based on FS_RELEASE_TYPE
-        env:
-          FS_RELEASE_TYPE: ${{ env.FS_RELEASE_TYPE }}
-          EXTRA_ARGS: ${{ env.EXTRA_ARGS }}
         run: python ./fsutils/build_utils.py set_expiry_args
       - name: Add tracy builds for dev use if selected (manual builds only).
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.include_tracy == 'true' }}
-        env:
-          EXTRA_ARGS: ${{ env.EXTRA_ARGS }}
         run: echo "EXTRA_ARGS=${EXTRA_ARGS} --tracy" >> $GITHUB_ENV
+        shell: bash
       - name: Add flags for AVX2 builds
         if: ${{ matrix.variant == 'avx' }}
-        env:
-          EXTRA_ARGS: ${{ env.EXTRA_ARGS }}
         run: echo "EXTRA_ARGS=${EXTRA_ARGS} --avx2" >> $GITHUB_ENV
+        shell: bash
       - name: Add custom UA string if provided
         env:
           FS_PF_UA: ${{ secrets.FS_PF_UA }}
-          EXTRA_ARGS: ${{ env.EXTRA_ARGS }}
         run: python ./fsutils/build_utils.py add_custom_ua
       - name: Clean up packages to give more space
-        run: rm *${{ env.fallback_platform }}*bz2
+        run: rm *${fallback_platform}*bz2
         shell: bash
       - name: Configure compiler caching launcher
         run: |
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            echo "EXTRA_ARGS=${{ env.EXTRA_ARGS }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
+            echo "EXTRA_ARGS=${EXTRA_ARGS} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
             echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
             echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> $GITHUB_ENV
           else
-            echo "EXTRA_ARGS=${{ env.EXTRA_ARGS }} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
+            echo "EXTRA_ARGS=${EXTRA_ARGS} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
             echo "CMAKE_C_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
             echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" >> $GITHUB_ENV
           fi
         shell: bash
       - name: Configure
         run: |
-          autobuild configure -c ReleaseFS -A${addrsize} -- --package --chan ${{env.FS_RELEASE_CHAN}} ${{env.EXTRA_ARGS}} ${{env.FS_GRID}}
+          autobuild configure -c ReleaseFS -A${addrsize} -- --package --chan "${FS_RELEASE_CHAN}" ${EXTRA_ARGS} ${FS_GRID}
           echo "BUGSPLAT_DB=$BUGSPLAT_DB" >> $GITHUB_ENV
         shell: bash
       - name: Generate metadata.json
@@ -398,9 +390,6 @@ jobs:
         shell: bash
       - name: Extract version number
         id: version
-        env:
-          FS_RELEASE_CHAN: ${{ env.FS_RELEASE_CHAN }}
-          FS_RELEASE_TYPE: ${{ env.FS_RELEASE_TYPE }}
         run: python ./fsutils/build_utils.py extract_version
       
       - name: Unzip xcarchive.zip files
@@ -540,7 +529,7 @@ jobs:
           FS_VIEWER_BUILD: ${{ needs.build_matrix.outputs.viewer_build }}
           FS_VIEWER_RELEASE_TYPE: ${{ needs.build_matrix.outputs.viewer_release_type }}
           FS_VERSION_MGR_KEY: ${{ secrets.FS_VERSION_MGR_KEY }}
-        run: python ./fsutils/download_list.py ${{steps.download.outputs.download-path}} -w ${{ env.FS_BUILD_WEBHOOK_URL }}
+        run: python ./fsutils/download_list.py "${{steps.download.outputs.download-path}}" -w "$FS_BUILD_WEBHOOK_URL"
 
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@v1
@@ -553,5 +542,5 @@ jobs:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
       - name: Copy files to remote host
-        run: rclone copy ${{steps.download.outputs.download-path}}/${{ env.FS_RELEASE_FOLDER }} fs_r2_deploy:viewerdownloads/${{ env.FS_RELEASE_FOLDER }}
+        run: rclone copy "${{steps.download.outputs.download-path}}/$FS_RELEASE_FOLDER" "fs_r2_deploy:viewerdownloads/$FS_RELEASE_FOLDER"
 

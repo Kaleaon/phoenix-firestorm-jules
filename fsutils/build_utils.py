@@ -134,6 +134,8 @@ def find_channel(
 def check_codesigning(runner_os: str, release_type: str) -> None:
     runner_os_clean = runner_os.strip()
     release_type_clean = release_type.strip()
+    if not release_type_clean or release_type_clean == "Unknown":
+        release_type_clean = os.getenv("FS_RELEASE_TYPE", "Unknown").strip()
 
     enabled = (
         runner_os_clean.lower() == "windows"
@@ -149,6 +151,9 @@ def define_platform(runner_os: str, addrsize: str = "64") -> None:
     clean_os = runner_os.strip()
     if clean_os not in OS_MAP:
         raise ValueError(f"Unknown runner OS '{runner_os}'. Expected one of {list(OS_MAP.keys())}")
+
+    if not addrsize or addrsize == "${addrsize}":
+        addrsize = os.getenv("addrsize") or os.getenv("ADDRSIZE") or "64"
 
     fallback = OS_MAP[clean_os]
     platform = f"{fallback}{addrsize.strip()}"
@@ -197,6 +202,11 @@ def edit_installables(
     path_sep = "\\" if runner_os.strip().lower() == "windows" else "/"
     packages = ["fmodstudio", "llphysicsextensions_tpv", "kdu"]
 
+    if not platform or platform == "Unknown":
+        platform = os.getenv("platform") or os.getenv("PLATFORM") or ""
+    if not fallback_platform or fallback_platform in ("${platform}", "Unknown"):
+        fallback_platform = os.getenv("fallback_platform") or os.getenv("FALLBACK_PLATFORM") or ""
+
     for package in packages:
         package_file = find_most_recent_bundle(workspace, package, platform)
         chosen_platform = platform
@@ -227,6 +237,11 @@ def edit_installables(
 
 def set_expiry_args(release_type: str, current_extra_args: str) -> None:
     rel_type = release_type.strip()
+    if not rel_type or rel_type == "Unknown":
+        rel_type = os.getenv("FS_RELEASE_TYPE", "").strip()
+    if not current_extra_args:
+        current_extra_args = os.getenv("EXTRA_ARGS", "")
+
     expire_days = ""
 
     if rel_type in ("Nightly", "Manual", "Profiling", "Alpha"):
@@ -246,6 +261,11 @@ def set_expiry_args(release_type: str, current_extra_args: str) -> None:
 
 def add_custom_ua(custom_ua: str, current_extra_args: str) -> None:
     ua = custom_ua.strip()
+    if not ua:
+        ua = os.getenv("FS_PF_UA", "").strip()
+    if not current_extra_args:
+        current_extra_args = os.getenv("EXTRA_ARGS", "")
+
     if ua:
         print("Building with custom user-agent string.")
         new_extra = f'{current_extra_args.strip()} -DFS_PF_USER_AGENT="{ua}"'.strip()
@@ -261,6 +281,11 @@ def extract_version(
     release_chan: str = "",
     release_type: str = "",
 ) -> None:
+    if not release_chan or release_chan in ("${FS_RELEASE_TYPE}x64", "Unknownx64"):
+        release_chan = os.getenv("FS_RELEASE_CHAN", "")
+    if not release_type or release_type == "Unknown":
+        release_type = os.getenv("FS_RELEASE_TYPE", "")
+
     viewer_version = "0.0.0"
     if os.path.exists(version_file):
         with open(version_file, "r", encoding="utf-8") as f:
@@ -294,6 +319,8 @@ def resolve_deploy_env(
     manual_webhook: str = "",
 ) -> None:
     rel_type = release_type.strip()
+    if not rel_type or rel_type == "Unknown":
+        rel_type = (os.getenv("VIEWER_RELEASE_TYPE") or os.getenv("FS_RELEASE_TYPE") or "").strip()
     evt = event_name.strip()
 
     if rel_type == "Release":
@@ -326,6 +353,9 @@ def create_build_info(
     viewer_build: str,
     output_file: str = "build_info.json",
 ) -> None:
+    if not release_type or release_type == "Unknown":
+        release_type = os.getenv("VIEWER_RELEASE_TYPE") or os.getenv("FS_RELEASE_TYPE") or ""
+
     info = {
         "build_run_number": str(run_number).strip(),
         "release_type": str(release_type).strip(),
