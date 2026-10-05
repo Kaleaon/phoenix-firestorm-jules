@@ -203,7 +203,9 @@ jobs:
           # Surprise! GH Windows runner's MINGW6 is a $arch value we've never
           # seen before, so numerous tests don't know about it.
           [[ "$arch" == "MINGW6" ]] && arch=CYGWIN
-          export AUTOBUILD="$(which autobuild)"
+          ab_bin="$(which autobuild)"
+          [[ "$RUNNER_OS" == "Windows" && -f "${ab_bin}.exe" ]] && ab_bin="${ab_bin}.exe"
+          export AUTOBUILD="$ab_bin"
 
           # determine the viewer channel from the branch or tag name
           # trigger an EDU build by including "edu" in the tag
@@ -238,7 +240,9 @@ jobs:
           # as neither CMake's FindPython nor our custom Python.cmake module
           # will resolve the correct interpreter location.
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            export PYTHON="$(native_path "$(which python)")"
+            py_bin="$(which python)"
+            [[ -f "${py_bin}.exe" ]] && py_bin="${py_bin}.exe"
+            export PYTHON="$(native_path "$py_bin")"
             echo "Python location: $PYTHON"
             export PYTHON_COMMAND="$PYTHON"
           else
