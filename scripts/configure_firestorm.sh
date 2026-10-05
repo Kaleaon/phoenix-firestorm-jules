@@ -581,6 +581,11 @@ if [ $WANTS_CONFIG -eq $TRUE ] ; then
             echo "Found ccache"
             CACHE_OPT="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
         fi
+        if [ `which sccache 2>/dev/null` ]
+        then
+            echo "Found sccache"
+            CACHE_OPT="-DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+        fi
         if [ `which buildcache 2>/dev/null` ]
         then
             echo "Found buildcache"
