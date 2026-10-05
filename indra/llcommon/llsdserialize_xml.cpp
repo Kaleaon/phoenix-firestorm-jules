@@ -154,6 +154,10 @@ S32 LLSDXMLFormatter::format_impl(const LLSD& data, std::ostream& ostr,
         ostr << pre << "<integer>" << data.asInteger() << "</integer>" << post;
         break;
 
+    case LLSD::TypeInteger64:
+        ostr << pre << "<integer64>" << data.asInteger64() << "</integer64>" << post;
+        break;
+
     case LLSD::TypeReal:
         ostr << pre << "<real>";
         if(mRealFormat.empty())
@@ -293,6 +297,7 @@ private:
         ELEMENT_UNDEF,
         ELEMENT_BOOL,
         ELEMENT_INTEGER,
+        ELEMENT_INTEGER64,
         ELEMENT_REAL,
         ELEMENT_STRING,
         ELEMENT_UUID,
@@ -782,6 +787,20 @@ void LLSDXMLParser::Impl::endElementHandler(const XML_Char* name)
             }
             break;
 
+        case ELEMENT_INTEGER64:
+            {
+                S64 i;
+                if ( sscanf(mCurrentContent.c_str(), "%lld", &i ) == 1 )
+                {
+                    value = i;
+                }
+                else
+                {
+                    value = (S64)std::stoll(mCurrentContent);
+                }
+            }
+            break;
+
         case ELEMENT_REAL:
             {
                 value = LLSD(mCurrentContent).asReal();
@@ -912,6 +931,7 @@ LLSDXMLParser::Impl::Element LLSDXMLParser::Impl::readElement(const XML_Char* na
             break;
         case 'i':
             if (strcmp(name, "integer") == 0) { return ELEMENT_INTEGER; }
+            if (strcmp(name, "integer64") == 0 || strcmp(name, "i64") == 0) { return ELEMENT_INTEGER64; }
             break;
         case 'a':
             if (strcmp(name, "array") == 0) { return ELEMENT_ARRAY; }
