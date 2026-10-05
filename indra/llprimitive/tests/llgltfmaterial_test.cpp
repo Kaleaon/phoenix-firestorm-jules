@@ -438,4 +438,37 @@ namespace tut
         ENSURE_HASH_CHANGED(hash_mat, source_mat, mOverrideDoubleSided);
         ENSURE_HASH_CHANGED(hash_mat, source_mat, mOverrideAlphaMode);
     }
+
+    // Test LLGLTFMaterial::TextureTransform::getPacked and getPackedTight layout
+    template<> template<>
+    void llgltfmaterial_object_t::test<13>()
+    {
+        LLGLTFMaterial::TextureTransform transform;
+        transform.mScale.mV[VX] = 2.0f;
+        transform.mScale.mV[VY] = 3.0f;
+        transform.mRotation = 1.57f;
+        transform.mOffset.mV[VX] = 0.5f;
+        transform.mOffset.mV[VY] = 0.25f;
+
+        LLGLTFMaterial::TextureTransform::Pack packed;
+        transform.getPacked(packed);
+
+        ensure_equals("Packed scale X", packed[0], 2.0f);
+        ensure_equals("Packed scale Y", packed[1], 3.0f);
+        ensure_equals("Packed rotation", packed[2], 1.57f);
+        ensure_equals("Packed pad0", packed[3], 0.0f);
+        ensure_equals("Packed offset X", packed[4], 0.5f);
+        ensure_equals("Packed offset Y", packed[5], 0.25f);
+        ensure_equals("Packed pad1", packed[6], 0.0f);
+        ensure_equals("Packed pad2", packed[7], 0.0f);
+
+        LLGLTFMaterial::TextureTransform::PackTight packedTight;
+        transform.getPackedTight(packedTight);
+
+        ensure_equals("PackedTight scale X", packedTight[0], 2.0f);
+        ensure_equals("PackedTight scale Y", packedTight[1], 3.0f);
+        ensure_equals("PackedTight rotation", packedTight[2], 1.57f);
+        ensure_equals("PackedTight offset X", packedTight[3], 0.5f);
+        ensure_equals("PackedTight offset Y", packedTight[4], 0.25f);
+    }
 }
