@@ -54,7 +54,6 @@ class LLVector2
         // Clears LLVector2 to (0, 0).  DEPRECATED - prefer zeroVec.
         void    clear();
         void    setZero();
-        void    clearVec(); // deprecated
         void    zeroVec();  // deprecated
 
         void    set(F32 x, F32 y);          // Sets LLVector2 to (x, y)
@@ -63,10 +62,6 @@ class LLVector2
 
         LLSD    getValue() const;
         void    setValue(const LLSD& sd);
-
-        void    setVec(F32 x, F32 y);           // deprecated
-        void    setVec(const LLVector2 &vec);   // deprecated
-        void    setVec(const F32 *vec);         // deprecated
 
         inline bool isFinite() const; // checks to see if all values of LLVector2 are finite
 
@@ -161,12 +156,6 @@ inline void LLVector2::setZero()
 }
 
 // deprecated
-inline void LLVector2::clearVec()
-{
-    clear();
-}
-
-// deprecated
 inline void LLVector2::zeroVec()
 {
     clear();
@@ -186,25 +175,6 @@ inline void LLVector2::set(const LLVector2 &vec)
 inline void LLVector2::set(const F32 *vec)
 {
     set(vec[VX], vec[VY]);
-}
-
-
-// deprecated
-inline void LLVector2::setVec(F32 x, F32 y)
-{
-    set(x, y);
-}
-
-// deprecated
-inline void LLVector2::setVec(const LLVector2 &vec)
-{
-    set(vec);
-}
-
-// deprecated
-inline void LLVector2::setVec(const F32 *vec)
-{
-    set(vec);
 }
 
 

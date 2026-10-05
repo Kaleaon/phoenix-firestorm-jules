@@ -318,7 +318,7 @@ void LLHUDEffectLookAt::packData(LLMessageSystem *mesgsys)
     {
         //this mimicks "do nothing"
         target_type = LOOKAT_TARGET_AUTO_LISTEN;
-        target_offset_global.setVec(2.5, 0.0, 0.0);
+        target_offset_global.set(2.5, 0.0, 0.0);
         target_object = mSourceObject;
     }
     // Pack the default data
@@ -513,7 +513,7 @@ bool LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
     //    {
     //        LLVector3 headOffset = position - agentHeadPosition;
     //        headOffset *= limit_lookat_hints_distance / dist;
-    //        position.setVec(agentHeadPosition + headOffset);
+    //        position.set(agentHeadPosition + headOffset);
     //    }
     //}
     // </FS:Ansariel>
@@ -546,7 +546,7 @@ bool LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
     //  mTargetObject = object;
     //  if (object)
     //  {
-    //      mTargetOffsetGlobal.setVec(position);
+    //      mTargetOffsetGlobal.set(position);
     //  }
     //  else
     //  {
@@ -599,24 +599,24 @@ bool LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
                     if (auto avatar = static_cast<LLVOAvatar*>(object); !avatar->isSelf())
                     {
                         // Looking at another avatar, have to aim at its head here since calcTargetPosition() doesn't do it anymore because we clear mTargetObject
-                        mTargetOffsetGlobal.setVec(gAgent.getPosGlobalFromAgent(avatar->mHeadp->getWorldPosition()));
+                        mTargetOffsetGlobal.set(gAgent.getPosGlobalFromAgent(avatar->mHeadp->getWorldPosition()));
                         mTargetObject = nullptr;
                     }
                     else
                     {
                         // Continue normal when looking at ourself - lookat will be within the limit anyway
-                        mTargetOffsetGlobal.setVec(position);
+                        mTargetOffsetGlobal.set(position);
                     }
                 }
                 else
                 {
-                    mTargetOffsetGlobal.setVec(object->getPositionGlobal() + (LLVector3d)(position * object->getRotationRegion()));
+                    mTargetOffsetGlobal.set(object->getPositionGlobal() + (LLVector3d)(position * object->getRotationRegion()));
                     mTargetObject = nullptr;
                 }
             }
             else
             {
-                mTargetOffsetGlobal.setVec(position);
+                mTargetOffsetGlobal.set(position);
             }
         }
         else
@@ -635,7 +635,7 @@ bool LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
             {
                 LLVector3d vecDistFromObjectToHead = mTargetOffsetGlobal - headPosition;
                 vecDistFromObjectToHead *= s_Radius / distance;
-                mTargetOffsetGlobal.setVec(headPosition + vecDistFromObjectToHead);
+                mTargetOffsetGlobal.set(headPosition + vecDistFromObjectToHead);
             }
 
             //Do the changed calculation except this time for limited distances
@@ -670,7 +670,7 @@ bool LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
 void LLHUDEffectLookAt::clearLookAtTarget()
 {
     mTargetObject = NULL;
-    mTargetOffsetGlobal.clearVec();
+    mTargetOffsetGlobal.clear();
     mTargetType = LOOKAT_TARGET_NONE;
     if (mSourceObject.notNull())
     {
@@ -877,7 +877,7 @@ bool LLHUDEffectLookAt::calcTargetPosition()
 
     if (target_obj)
     {
-        local_offset.setVec(mTargetOffsetGlobal);
+        local_offset.set(mTargetOffsetGlobal);
     }
     else
     {
@@ -902,9 +902,9 @@ bool LLHUDEffectLookAt::calcTargetPosition()
             {
                 // <FS:Ansariel> 1m in front of the avatar should be enough; changed because of distance clamp
                 //sets the lookat point in front of the avatar
-                //mTargetOffsetGlobal.setVec(5.0, 0.0, 0.0);
-                mTargetOffsetGlobal.setVec(1.0, 0.0, 0.0);
-                local_offset.setVec(mTargetOffsetGlobal);
+                //mTargetOffsetGlobal.set(5.0, 0.0, 0.0);
+                mTargetOffsetGlobal.set(1.0, 0.0, 0.0);
+                local_offset.set(mTargetOffsetGlobal);
             }
 
             // look the other avatar in the eye. note: what happens if target is self? -MG

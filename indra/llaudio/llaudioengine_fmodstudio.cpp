@@ -537,7 +537,7 @@ void LLAudioEngine_FMODSTUDIO::updateWind(LLVector3 wind_vec, F32 camera_height_
         // need to convert this to the conventional orientation DS3D and OpenAL use
         // where +X = right, +Y = up, +Z = backwards
 
-        wind_vec.setVec(-wind_vec.mV[1], wind_vec.mV[2], -wind_vec.mV[0]);
+        wind_vec.set(-wind_vec.mV[1], wind_vec.mV[2], -wind_vec.mV[0]);
 
         // cerr << "Wind update" << endl;
 
@@ -678,7 +678,7 @@ void LLAudioChannelFMODSTUDIO::update3DPosition()
         set3DMode(true);
 
         LLVector3 float_pos;
-        float_pos.setVec(mCurrentSourcep->getPositionGlobal());
+        float_pos.set(mCurrentSourcep->getPositionGlobal());
         FMOD_RESULT result = mChannelp->set3DAttributes((FMOD_VECTOR*)float_pos.mV, (FMOD_VECTOR*)mCurrentSourcep->getVelocity().mV);
         Check_FMOD_Error(result, "FMOD::Channel::set3DAttributes");
     }

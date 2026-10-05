@@ -1674,7 +1674,7 @@ void renderOctree(LLSpatialGroup* group)
     if (group->mBuilt > 0.f)
     {
         group->mBuilt -= 2.f * gFrameIntervalSeconds.value();
-        col.setVec(0.1f,0.1f,1,0.1f);
+        col.set(0.1f,0.1f,1,0.1f);
 
         {
             LLGLDepthTest gl_depth(false, false);

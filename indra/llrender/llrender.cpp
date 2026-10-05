@@ -1376,8 +1376,8 @@ void LLRender::loadUIIdentity()
     {
         LL_ERRS() << "Need to push UI translation frame before clearing offset." << LL_ENDL;
     }
-    mUIOffset.back().setVec(0,0,0);
-    mUIScale.back().setVec(1,1,1);
+    mUIOffset.back().set(0,0,0);
+    mUIScale.back().set(1,1,1);
 }
 
 void LLRender::setColorMask(bool writeColor, bool writeAlpha)

@@ -82,10 +82,6 @@ public:
     const LLColor3& setToBlack(); // Clears LLColor3 to (0, 0, 0)
     const LLColor3& setToWhite(); // Zero LLColor3 to (0, 0, 0)
 
-    const LLColor3& setVec(F32 x, F32 y, F32 z); // deprecated
-    const LLColor3& setVec(const LLColor3& vec); // deprecated
-    const LLColor3& setVec(const F32* vec);      // deprecated
-
     const LLColor3& set(F32 x, F32 y, F32 z); // Sets LLColor3 to (x, y, z)
     const LLColor3& set(const LLColor3& vec); // Sets LLColor3 to vec
     const LLColor3& set(const F32* vec);      // Sets LLColor3 to vec
@@ -255,33 +251,6 @@ inline const LLColor3& LLColor3::set(const LLColor3& vec)
 }
 
 inline const LLColor3& LLColor3::set(const F32* vec)
-{
-    mV[VRED]   = vec[VRED];
-    mV[VGREEN] = vec[VGREEN];
-    mV[VBLUE]  = vec[VBLUE];
-    return (*this);
-}
-
-// deprecated
-inline const LLColor3& LLColor3::setVec(F32 r, F32 g, F32 b)
-{
-    mV[VRED]   = r;
-    mV[VGREEN] = g;
-    mV[VBLUE]  = b;
-    return (*this);
-}
-
-// deprecated
-inline const LLColor3& LLColor3::setVec(const LLColor3& vec)
-{
-    mV[VRED]   = vec.mV[VRED];
-    mV[VGREEN] = vec.mV[VGREEN];
-    mV[VBLUE]  = vec.mV[VBLUE];
-    return (*this);
-}
-
-// deprecated
-inline const LLColor3& LLColor3::setVec(const F32* vec)
 {
     mV[VRED]   = vec[VRED];
     mV[VGREEN] = vec[VGREEN];

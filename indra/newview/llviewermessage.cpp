@@ -2935,7 +2935,7 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
         //bool visible_in_chat_bubble = false;
         std::string verb;
 
-        color.setVec(1.f,1.f,1.f,1.f);
+        color.set(1.f,1.f,1.f,1.f);
         msg->getStringFast(_PREHASH_ChatData, _PREHASH_Message, mesg);
 
         // NaCl - Newline flood protection
@@ -3987,7 +3987,7 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 
     if (isAgentAvatarValid())
     {
-        gAgentAvatarp->mFootPlane.clearVec();
+        gAgentAvatarp->mFootPlane.clear();
     }
 
     // send walk-vs-run status

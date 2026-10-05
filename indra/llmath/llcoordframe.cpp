@@ -118,9 +118,9 @@ LLCoordFrame::LLCoordFrame(const LLQuaternion &q) :
     mOrigin(0.f, 0.f, 0.f)
 {
     LLMatrix3 rotation_matrix(q);
-    mXAxis.setVec(rotation_matrix.mMatrix[VX]);
-    mYAxis.setVec(rotation_matrix.mMatrix[VY]);
-    mZAxis.setVec(rotation_matrix.mMatrix[VZ]);
+    mXAxis.set(rotation_matrix.mMatrix[VX]);
+    mYAxis.set(rotation_matrix.mMatrix[VY]);
+    mZAxis.set(rotation_matrix.mMatrix[VZ]);
 
     CHECK_FINITE_OBJ();
 }
@@ -129,9 +129,9 @@ LLCoordFrame::LLCoordFrame(const LLVector3 &origin, const LLQuaternion &q) :
     mOrigin(origin)
 {
     LLMatrix3 rotation_matrix(q);
-    mXAxis.setVec(rotation_matrix.mMatrix[VX]);
-    mYAxis.setVec(rotation_matrix.mMatrix[VY]);
-    mZAxis.setVec(rotation_matrix.mMatrix[VZ]);
+    mXAxis.set(rotation_matrix.mMatrix[VX]);
+    mYAxis.set(rotation_matrix.mMatrix[VY]);
+    mZAxis.set(rotation_matrix.mMatrix[VZ]);
 
     CHECK_FINITE_OBJ();
 }
@@ -172,23 +172,23 @@ LLCoordFrame::LLCoordFrame(const F32 *origin_and_rotation) :
 
 void LLCoordFrame::reset()
 {
-    mOrigin.setVec(0.0f, 0.0f, 0.0f);
+    mOrigin.set(0.0f, 0.0f, 0.0f);
     resetAxes();
 }
 
 
 void LLCoordFrame::resetAxes()
 {
-    mXAxis.setVec(1.0f, 0.0f, 0.0f);
-    mYAxis.setVec(0.0f, 1.0f, 0.0f);
-    mZAxis.setVec(0.0f, 0.0f, 1.0f);
+    mXAxis.set(1.0f, 0.0f, 0.0f);
+    mYAxis.set(0.0f, 1.0f, 0.0f);
+    mZAxis.set(0.0f, 0.0f, 1.0f);
 }
 
 // setOrigin() member functions set mOrigin
 
 void LLCoordFrame::setOrigin(F32 x, F32 y, F32 z)
 {
-    mOrigin.setVec(x, y, z);
+    mOrigin.set(x, y, z);
 
     CHECK_FINITE(mOrigin);
 }
@@ -229,9 +229,9 @@ void LLCoordFrame::setAxes(const LLVector3 &x_axis,
 
 void LLCoordFrame::setAxes(const LLMatrix3 &rotation_matrix)
 {
-    mXAxis.setVec(rotation_matrix.mMatrix[VX]);
-    mYAxis.setVec(rotation_matrix.mMatrix[VY]);
-    mZAxis.setVec(rotation_matrix.mMatrix[VZ]);
+    mXAxis.set(rotation_matrix.mMatrix[VX]);
+    mYAxis.set(rotation_matrix.mMatrix[VY]);
+    mZAxis.set(rotation_matrix.mMatrix[VZ]);
     CHECK_FINITE_OBJ();
 }
 

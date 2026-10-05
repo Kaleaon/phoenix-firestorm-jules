@@ -187,12 +187,12 @@ void LLManipRotate::render()
                 LLColor4 color;
                 if (mManipPart == LL_ROT_ROLL || mHighlightedPart == LL_ROT_ROLL)
                 {
-                    color.setVec(0.8f, 0.8f, 0.8f, 0.8f);
+                    color.set(0.8f, 0.8f, 0.8f, 0.8f);
                     gGL.scalef(mManipulatorScales.mV[VW], mManipulatorScales.mV[VW], mManipulatorScales.mV[VW]);
                 }
                 else
                 {
-                    color.setVec( 0.7f, 0.7f, 0.7f, 0.6f );
+                    color.set( 0.7f, 0.7f, 0.7f, 0.6f );
                 }
                 gGL.diffuseColor4fv(color.mV);
                 gl_washer_2d(mRadiusMeters + width_meters, mRadiusMeters, CIRCLE_STEPS, color, color);
@@ -800,7 +800,7 @@ void LLManipRotate::renderSnapGuides()
     LLVector3 cam_at_axis;
     if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
     {
-        cam_at_axis.setVec(1.f, 0.f, 0.f);
+        cam_at_axis.set(1.f, 0.f, 0.f);
     }
     else
     {
@@ -1433,7 +1433,7 @@ LLQuaternion LLManipRotate::dragConstrained( S32 x, S32 y )
         LLVector3 cam_to_snap_plane;
         if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
         {
-            cam_to_snap_plane.setVec(1.f, 0.f, 0.f);
+            cam_to_snap_plane.set(1.f, 0.f, 0.f);
         }
         else
         {
@@ -1484,7 +1484,7 @@ LLQuaternion LLManipRotate::dragConstrained( S32 x, S32 y )
                 snap_plane_center = (center - (constraint_axis * mRadiusMeters * 0.5f));
                 if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
                 {
-                    cam_to_snap_plane.setVec(1.f, 0.f, 0.f);
+                    cam_to_snap_plane.set(1.f, 0.f, 0.f);
                 }
                 else
                 {
@@ -1531,7 +1531,7 @@ LLQuaternion LLManipRotate::dragConstrained( S32 x, S32 y )
                 LLVector3 cam_at_axis;
                 if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
                 {
-                    cam_at_axis.setVec(1.f, 0.f, 0.f);
+                    cam_at_axis.set(1.f, 0.f, 0.f);
                 }
                 else
                 {
@@ -1902,7 +1902,7 @@ S32 LLManipRotate::getObjectAxisClosestToMouse(LLVector3& object_axis)
 
     if (!first_object_node)
     {
-        object_axis.clearVec();
+        object_axis.clear();
         return -1;
     }
 

@@ -929,7 +929,7 @@ void LLImagePreviewAvatar::setPreviewTarget(const std::string& joint_name, const
     mCameraZoom = 1.f;
     mCameraPitch = 0.f;
     mCameraYaw = 0.f;
-    mCameraOffset.clearVec();
+    mCameraOffset.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -1094,7 +1094,7 @@ void LLImagePreviewSculpted::setPreviewTarget(LLImageRaw* imagep, F32 distance)
     mCameraZoom = 1.f;
     mCameraPitch = 0.f;
     mCameraYaw = 0.f;
-    mCameraOffset.clearVec();
+    mCameraOffset.clear();
 
     if (imagep)
     {

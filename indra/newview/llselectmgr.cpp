@@ -231,7 +231,7 @@ LLSelectMgr::LLSelectMgr()
 {
     mTEMode = false;
     mTextureChannel = LLRender::DIFFUSE_MAP;
-    mLastCameraPos.clearVec();
+    mLastCameraPos.clear();
 
     sHighlightThickness = gSavedSettings.getF32("SelectionHighlightThickness");
     sHighlightUScale    = gSavedSettings.getF32("SelectionHighlightUScale");
@@ -344,9 +344,9 @@ void LLSelectMgr::resetObjectOverrides(LLObjectSelectionHandle selected_handle)
                     }
                 }
             }
-            node->mLastPositionLocal.setVec(0, 0, 0);
+            node->mLastPositionLocal.set(0, 0, 0);
             node->mLastRotation = LLQuaternion();
-            node->mLastScale.setVec(0, 0, 0);
+            node->mLastScale.set(0, 0, 0);
             return true;
         }
     } func(mAllowSelectAvatar, this);
@@ -1537,7 +1537,7 @@ void LLSelectMgr::getGrid(LLVector3& origin, LLQuaternion &rotation, LLVector3 &
         const bool non_root_ok = true;
         LLViewerObject* first_object = mSelectedObjects->getFirstRootObject(non_root_ok);
 
-        mGridOrigin.clearVec();
+        mGridOrigin.clear();
         mGridRotation.loadIdentity();
 
         mSelectedObjects->mSelectType = getSelectTypeForObject( first_object );
@@ -5038,7 +5038,7 @@ void LLSelectMgr::deselectAll()
 
     removeAll();
 
-    mLastSentSelectionCenterGlobal.clearVec();
+    mLastSentSelectionCenterGlobal.clear();
 
     updatePointAt();
 }
@@ -5069,7 +5069,7 @@ void LLSelectMgr::deselectAllForStandingUp()
 
     removeAll();
 
-    mLastSentSelectionCenterGlobal.clearVec();
+    mLastSentSelectionCenterGlobal.clear();
 
     updatePointAt();
 }
@@ -7684,7 +7684,7 @@ void LLSelectMgr::updateSelectionCenter()
     {
         // nothing selected, probably grabbing
         // Ignore by setting to avatar origin.
-        mSelectionCenterGlobal.clearVec();
+        mSelectionCenterGlobal.clear();
         mShowSelection = false;
         mSelectionBBox = LLBBox();
         resetAgentHUDZoom();
@@ -7829,7 +7829,7 @@ void LLSelectMgr::updatePointAt()
             if (click_object && click_object->isSelected() && !was_hud)
             {
                 // clicked on another object in our selection group, use that as target
-                select_offset.setVec(pick.mObjectOffset);
+                select_offset.set(pick.mObjectOffset);
                 select_offset.rotVec(~click_object->getRenderRotation());
 
                 gAgentCamera.setPointAt(POINTAT_TARGET_SELECT, click_object, select_offset);
@@ -8961,7 +8961,7 @@ bool LLSelectMgr::selectionMove(const LLVector3& displ,
         // factor the distance into the displacement vector. This will get us
         // equally visible movements for both close and far away selections.
         F32 min_dist = sqrt((F32) sqrtf(min_dist_squared)) / 2;
-        displ_global.setVec(displ.mV[0] * min_dist,
+        displ_global.set(displ.mV[0] * min_dist,
                             displ.mV[1] * min_dist,
                             displ.mV[2] * min_dist);
 
@@ -8976,7 +8976,7 @@ bool LLSelectMgr::selectionMove(const LLVector3& displ,
         LLQuaternion qx(roll, LLViewerCamera::getInstance()->getAtAxis());
         LLQuaternion qy(pitch, LLViewerCamera::getInstance()->getLeftAxis());
         LLQuaternion qz(yaw, LLViewerCamera::getInstance()->getUpAxis());
-        new_rot.setQuat(qx * qy * qz);
+        new_rot.set(qx * qy * qz);
     }
 
     LLViewerObject *obj;

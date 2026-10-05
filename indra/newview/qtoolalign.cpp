@@ -155,7 +155,7 @@ bool QToolAlign::findSelectedManipulator(S32 x, S32 y)
             LLVector4 screen_center = manipulator_center * transform;
             screen_center /= screen_center.mV[VW];
 
-            manip2d.setVec(screen_center.mV[VX] * half_width, screen_center.mV[VY] * half_height);
+            manip2d.set(screen_center.mV[VX] * half_width, screen_center.mV[VY] * half_height);
 
             delta = manip2d - mousePos;
 

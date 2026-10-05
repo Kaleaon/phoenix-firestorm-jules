@@ -1355,7 +1355,7 @@ bool LLFace::getGeometryVolume(const LLVolume& volume,
     LLVector3 scale;
     if (global_volume)
     {
-        scale.setVec(1, 1, 1);
+        scale.set(1, 1, 1);
     }
     else
     {
@@ -2231,8 +2231,8 @@ bool LLFace::getGeometryVolume(const LLVolume& volume,
 
     if (rebuild_tcoord)
     {
-        mTexExtents[0].setVec(0,0);
-        mTexExtents[1].setVec(1,1);
+        mTexExtents[0].set(0,0);
+        mTexExtents[1].set(1,1);
         xform(mTexExtents[0], cos_ang, sin_ang, os, ot, ms, mt);
         xform(mTexExtents[1], cos_ang, sin_ang, os, ot, ms, mt);
 

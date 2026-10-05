@@ -1418,7 +1418,7 @@ LLCamera LLSpatialBridge::transformCamera(LLCamera& camera)
 
     if (!delta.isFinite())
     {
-        delta.clearVec();
+        delta.clear();
     }
 
     ret.setOrigin(delta);
