@@ -52,7 +52,7 @@ LLJointSolverRP3::LLJointSolverRP3()
     mJointGoal = NULL;
     mLengthAB = 1.0f;
     mLengthBC = 1.0f;
-    mPoleVector.setVec( 1.0f, 0.0f, 0.0f );
+    mPoleVector.set( 1.0f, 0.0f, 0.0f );
     mbUseBAxis = false;
     mTwist = 0.0f;
     mFirstTime = true;
@@ -354,7 +354,7 @@ void LLJointSolverRP3::solve()
         if (abcNorm * apgNorm < 0.0f)
         {
             // we must be PI radians off ==> rotate by PI around agVec
-            pRot.setQuat(F_PI, agVec);
+            pRot.setAngleAxis(F_PI, agVec);
         }
         else
         {

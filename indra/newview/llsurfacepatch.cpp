@@ -1091,7 +1091,7 @@ void LLSurfacePatch::setOriginGlobal(const LLVector3d &origin_global)
     mOriginGlobal = origin_global;
 
     LLVector3 origin_region;
-    origin_region.setVec(mOriginGlobal - mSurfacep->getOriginGlobal());
+    origin_region.set(mOriginGlobal - mSurfacep->getOriginGlobal());
 
     mOriginRegion = origin_region;
     mCenterRegion.mV[VX] = origin_region.mV[VX] + 0.5f*mSurfacep->getGridsPerPatchEdge()*mSurfacep->getMetersPerGrid();

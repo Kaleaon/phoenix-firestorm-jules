@@ -388,8 +388,8 @@ void LLEyeMotion::adjustEyeTarget(LLVector3* targetPos, LLJointState& left_eye_s
         has_eye_target = true;
         F32 lookAtDistance = eye_look_at.normVec();
 
-        left.setVec(skyward % eye_look_at);
-        up.setVec(eye_look_at % left);
+        left.set(skyward % eye_look_at);
+        up.set(eye_look_at % left);
 
         target_eye_rot = LLQuaternion(eye_look_at, left, up);
         // convert target rotation to head-local coordinates
@@ -397,7 +397,7 @@ void LLEyeMotion::adjustEyeTarget(LLVector3* targetPos, LLJointState& left_eye_s
         // eliminate any Euler roll - we're lucky that roll is applied last.
         F32 roll, pitch, yaw;
         target_eye_rot.getEulerAngles(&roll, &pitch, &yaw);
-        target_eye_rot.setQuat(0.0f, pitch, yaw);
+        target_eye_rot.setEulerAngles(0.0f, pitch, yaw);
         // constrain target orientation to be in front of avatar's face
         target_eye_rot.constrain(EYE_ROT_LIMIT_ANGLE);
 
@@ -425,7 +425,7 @@ void LLEyeMotion::adjustEyeTarget(LLVector3* targetPos, LLJointState& left_eye_s
     if (vergence > -0.05f)
     {
         //...go ahead and jitter
-        eye_jitter_rot.setQuat(0.f, mEyeJitterPitch + mEyeLookAwayPitch, mEyeJitterYaw + mEyeLookAwayYaw);
+        eye_jitter_rot.setEulerAngles(0.f, mEyeJitterPitch + mEyeLookAwayPitch, mEyeJitterYaw + mEyeLookAwayYaw);
     }
     else
     {
@@ -438,7 +438,7 @@ void LLEyeMotion::adjustEyeTarget(LLVector3* targetPos, LLJointState& left_eye_s
 
     if (has_eye_target)
     {
-        vergence_quat.setQuat(vergence, LLVector3(0.f, 0.f, 1.f));
+        vergence_quat.setAngleAxis(vergence, LLVector3(0.f, 0.f, 1.f));
     }
     else
     {

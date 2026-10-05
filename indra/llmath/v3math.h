@@ -94,7 +94,6 @@ class LLVector3
 
         inline void clear();                        // Clears LLVector3 to (0, 0, 0)
         inline void setZero();                      // Clears LLVector3 to (0, 0, 0)
-        inline void clearVec();                     // deprecated
         inline void zeroVec();                      // deprecated
 
         inline void set(F32 x, F32 y, F32 z);       // Sets LLVector3 to (x, y, z, 1)
@@ -104,13 +103,6 @@ class LLVector3
         const LLVector3& set(const LLVector3d &vec);// Sets LLVector3 to vec
         inline void set(const glm::vec4& vec); // Sets LLVector3 to vec
         inline void set(const glm::vec3& vec); // Sets LLVector3 to vec
-
-        inline void setVec(F32 x, F32 y, F32 z);    // deprecated
-        inline void setVec(const LLVector3 &vec);   // deprecated
-        inline void setVec(const F32 *vec);         // deprecated
-
-        const LLVector3& setVec(const LLVector4 &vec);  // deprecated
-        const LLVector3& setVec(const LLVector3d &vec); // deprecated
 
         F32 length() const;         // Returns magnitude of LLVector3
         F32 lengthSquared() const;  // Returns magnitude squared of LLVector3
@@ -240,11 +232,6 @@ inline void LLVector3::setZero()
     clear();
 }
 
-inline void LLVector3::clearVec()
-{
-    clear();
-}
-
 inline void LLVector3::zeroVec()
 {
     clear();
@@ -279,24 +266,6 @@ inline void LLVector3::set(const glm::vec3& vec)
     mV[VX] = vec.x;
     mV[VY] = vec.y;
     mV[VZ] = vec.z;
-}
-
-// deprecated
-inline void LLVector3::setVec(F32 x, F32 y, F32 z)
-{
-    set(x, y, z);
-}
-
-// deprecated
-inline void LLVector3::setVec(const LLVector3& vec)
-{
-    set(vec);
-}
-
-// deprecated
-inline void LLVector3::setVec(const F32* vec)
-{
-    set(vec);
 }
 
 inline F32 LLVector3::normalize()

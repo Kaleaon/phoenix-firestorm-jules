@@ -140,7 +140,7 @@ bool LLKeyframeStandMotion::onActivate()
     mIKRight.setBAxis( LLVector3(-0.05f, 1.0f, 0.0f));
 
     mLastGoodPelvisRotation.loadIdentity();
-    mLastGoodPosition.clearVec();
+    mLastGoodPosition.clear();
 
     mFrameNum = 0;
 

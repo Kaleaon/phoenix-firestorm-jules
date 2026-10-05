@@ -1790,7 +1790,7 @@ void cmdline_rezplat(bool use_saved_value, F32 visual_radius) //cmdline_rezplat(
     LLVolumeMessage::packVolumeParams(&volume_params, msg);
     LLVector3 rezpos = agentPos - LLVector3(0.0f, 0.0f, 2.5f);
     LLQuaternion rotation;
-    rotation.setQuat(0.f, LLVector3::y_axis);
+    rotation.setAngleAxis(0.f, LLVector3::y_axis);
 
     static LLCachedControl<F32> sFSCmdLinePlatformSize(gSavedSettings, "FSCmdLinePlatformSize");
 

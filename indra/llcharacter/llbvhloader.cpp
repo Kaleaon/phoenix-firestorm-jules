@@ -1442,7 +1442,7 @@ bool LLBVHLoader::serialize(LLDataPacker& dp)
             {
                 if ((frame == 0) && joint->mRelativePositionKey)
                 {
-                    relKey.setVec(key.mPos);
+                    relKey.set(key.mPos);
                 }
 
                 if (key.mIgnorePos)

@@ -205,14 +205,14 @@ LLPrimitive::LLPrimitive()
 
     mChanged  = UNCHANGED;
 
-    mPosition.setVec(0.f,0.f,0.f);
-    mVelocity.setVec(0.f,0.f,0.f);
-    mAcceleration.setVec(0.f,0.f,0.f);
+    mPosition.set(0.f,0.f,0.f);
+    mVelocity.set(0.f,0.f,0.f);
+    mAcceleration.set(0.f,0.f,0.f);
 
     mRotation.loadIdentity();
-    mAngularVelocity.setVec(0.f,0.f,0.f);
+    mAngularVelocity.set(0.f,0.f,0.f);
 
-    mScale.setVec(1.f,1.f,1.f);
+    mScale.set(1.f,1.f,1.f);
 }
 
 //===============================================================
@@ -1247,7 +1247,7 @@ bool LLPrimitive::packTEMessage(LLMessageSystem *mesgsys) const
             memcpy( &image_ids[ face_index*UUID_BYTES ], te.getID().mData, UUID_BYTES );    /* Flawfinder: ignore */
 
             // Cast LLColor4 to LLColor4U
-            coloru.setVec( te.getColor() );
+            coloru.set( te.getColor() );
 
             // Note:  This is an optimization to send common colors (1.f, 1.f, 1.f, 1.f)
             // as all zeros.  However, the subtraction and addition must be done in unsigned
@@ -1332,7 +1332,7 @@ bool LLPrimitive::packTEMessage(LLDataPacker &dp) const
             memcpy( &image_ids[ face_index*UUID_BYTES ], te.getID().mData, UUID_BYTES );    /* Flawfinder: ignore */
 
             // Cast LLColor4 to LLColor4U
-            coloru.setVec( te.getColor() );
+            coloru.set( te.getColor() );
 
             // Note:  This is an optimization to send common colors (1.f, 1.f, 1.f, 1.f)
             // as all zeros.  However, the subtraction and addition must be done in unsigned
@@ -2004,7 +2004,7 @@ bool LLFlexibleObjectData::unpack(LLDataPacker &dp)
     }
     else
     {
-        mUserForce.setVec(0.f, 0.f, 0.f);
+        mUserForce.set(0.f, 0.f, 0.f);
     }
     return true;
 }
@@ -2199,7 +2199,7 @@ void LLSculptParams::setSculptTexture(const LLUUID& texture_id, U8 sculpt_type)
 LLLightImageParams::LLLightImageParams()
 {
     mType = PARAMS_LIGHT_IMAGE;
-    mParams.setVec(F_PI*0.5f, 0.f, 0.f);
+    mParams.set(F_PI*0.5f, 0.f, 0.f);
 }
 
 bool LLLightImageParams::pack(LLDataPacker &dp) const

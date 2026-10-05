@@ -102,23 +102,23 @@ namespace tut
     {
         F64 x = 2.32f, y = 1.212f, z = -.12f;
         LLVector3d vec3D(x,y,z);
-        vec3D.clearVec();
-        ensure("1:clearVec:Fail to initialize ", ((0 == vec3D.mdV[VX]) && (0 == vec3D.mdV[VY]) && (0 == vec3D.mdV[VZ])));
-        vec3D.setVec(x,y,z);
-        ensure("2:setVec:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
+        vec3D.clear();
+        ensure("1:clear:Fail to initialize ", ((0 == vec3D.mdV[VX]) && (0 == vec3D.mdV[VY]) && (0 == vec3D.mdV[VZ])));
+        vec3D.set(x,y,z);
+        ensure("2:set:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
         vec3D.zeroVec();
         ensure("3:zeroVec:Fail to initialize ", ((0 == vec3D.mdV[VX]) && (0 == vec3D.mdV[VY]) && (0 == vec3D.mdV[VZ])));
-        vec3D.clearVec();
+        vec3D.clear();
         LLVector3 vec3((F32)x,(F32)y,(F32)z);
-        vec3D.setVec(vec3);
-        ensure("4:setVec:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
-        vec3D.clearVec();
+        vec3D.set(vec3);
+        ensure("4:set:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
+        vec3D.clear();
         const F64 vec[3] = {x,y,z};
-        vec3D.setVec(vec);
-        ensure("5:setVec:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
+        vec3D.set(vec);
+        ensure("5:set:Fail to initialize ", ((x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (z == vec3D.mdV[VZ])));
         LLVector3d vec3Da;
-        vec3Da.setVec(vec3D);
-        ensure_equals("6:setVec: Fail to initialize", vec3D, vec3Da);
+        vec3Da.set(vec3D);
+        ensure_equals("6:set: Fail to initialize", vec3D, vec3Da);
     }
 
     template<> template<>
@@ -129,13 +129,13 @@ namespace tut
         vec3D.abs();
         ensure("1:abs:Fail  ", ((-x == vec3D.mdV[VX]) && (y == vec3D.mdV[VY]) && (-z == vec3D.mdV[VZ])));
         ensure("2:isNull():Fail ", (false == vec3D.isNull()));
-        vec3D.clearVec();
+        vec3D.clear();
         x =.00000001, y = .000001001, z = .000001001;
-        vec3D.setVec(x,y,z);
+        vec3D.set(x,y,z);
         ensure("3:isNull():Fail ", (true == vec3D.isNull()));
         ensure("4:isExactlyZero():Fail ", (false == vec3D.isExactlyZero()));
         x =.0000000, y = .00000000, z = .00000000;
-        vec3D.setVec(x,y,z);
+        vec3D.set(x,y,z);
         ensure("5:isExactlyZero():Fail ", (true == vec3D.isExactlyZero()));
     }
 
@@ -148,9 +148,9 @@ namespace tut
         ensure("1:operator [] failed",( x ==  vec3D[0]));
         ensure("2:operator [] failed",( y ==  vec3D[1]));
         ensure("3:operator [] failed",( z ==  vec3D[2]));
-        vec3D.clearVec();
+        vec3D.clear();
         x = 23.23, y = -.2361, z = 3.25;
-        vec3D.setVec(x,y,z);
+        vec3D.set(x,y,z);
         F64 &ref1 = vec3D[0];
         ensure("4:operator [] failed",( ref1 ==  vec3D[0]));
         F64 &ref2 = vec3D[1];
@@ -178,9 +178,9 @@ namespace tut
         vec3Db = vec3Da+ vec3D;
         ensure("1:operator+:Fail to initialize ", ((x1+x2 == vec3Db.mdV[VX]) && (y1+y2 == vec3Db.mdV[VY]) && (z1+z2 == vec3Db.mdV[VZ])));
         x1 = -2.45, y1 = 2.1, z1 = 3.0;
-        vec3D.clearVec();
-        vec3Da.clearVec();
-        vec3D.setVec(x1,y1,z1);
+        vec3D.clear();
+        vec3Da.clear();
+        vec3D.set(x1,y1,z1);
         vec3Da += vec3D;
         ensure_equals("2:operator+=: Fail to initialize", vec3Da,vec3D);
         vec3Da += vec3D;
@@ -196,9 +196,9 @@ namespace tut
         vec3Db = vec3Da - vec3D;
         ensure("1:operator-:Fail to initialize ", ((x2-x1 == vec3Db.mdV[VX]) && (y2-y1 == vec3Db.mdV[VY]) && (z2-z1 == vec3Db.mdV[VZ])));
         x1 = -2.45, y1 = 2.1, z1 = 3.0;
-        vec3D.clearVec();
-        vec3Da.clearVec();
-        vec3D.setVec(x1,y1,z1);
+        vec3D.clear();
+        vec3Da.clear();
+        vec3D.set(x1,y1,z1);
         vec3Da -=vec3D;
         ensure("2:operator-=:Fail to initialize ", ((2.45 == vec3Da.mdV[VX]) && (-2.1 == vec3Da.mdV[VY]) && (-3.0 == vec3Da.mdV[VZ])));
         vec3Da -= vec3D;
@@ -216,7 +216,7 @@ namespace tut
             res,
             (x1*x2 + y1*y2 + z1*z2),
             8);
-        vec3Da.clearVec();
+        vec3Da.clear();
         F64 mulVal = 4.2;
         vec3Da = vec3D * mulVal;
         ensure_approximately_equals(
@@ -234,7 +234,7 @@ namespace tut
             vec3Da.mdV[VZ],
             z1*mulVal,
             8);
-        vec3Da.clearVec();
+        vec3Da.clear();
         vec3Da = mulVal * vec3D;
         ensure_approximately_equals(
             "3a:operator* failed",
@@ -311,9 +311,9 @@ namespace tut
             z1*t,
             8);
         x1 = 1.23, y1 = 4., z1 = -2.32;
-        vec3D.clearVec();
-        vec3Da.clearVec();
-        vec3D.setVec(x1,y1,z1);
+        vec3D.clear();
+        vec3Da.clear();
+        vec3D.set(x1,y1,z1);
         vec3Da = vec3D/div;
         ensure_approximately_equals(
             "2a:operator/ failed",
@@ -356,11 +356,11 @@ namespace tut
         ensure("1:operator!= failed",(true == (vec3D !=vec3Da)));
         vec3Da = vec3D;
         ensure("2:operator== failed",(vec3D ==vec3Da));
-        vec3D.clearVec();
-        vec3Da.clearVec();
+        vec3D.clear();
+        vec3Da.clear();
         x1 = .211, y1 = 21.111, z1 = 23.22;
-        vec3D.setVec(x1,y1,z1);
-        vec3Da.setVec(x1,y1,z1);
+        vec3D.set(x1,y1,z1);
+        vec3Da.set(x1,y1,z1);
         ensure("3:operator== failed",(vec3D ==vec3Da));
         ensure("4:operator!= failed",(false == (vec3D !=vec3Da)));
     }
@@ -372,7 +372,7 @@ namespace tut
         LLVector3d vec3D(x1,y1,z1), vec3Da;
         std::ostringstream stream1, stream2;
         stream1 << vec3D;
-        vec3Da.setVec(x1,y1,z1);
+        vec3Da.set(x1,y1,z1);
         stream2 << vec3Da;
         ensure("1:operator << failed",(stream1.str() == stream2.str()));
     }
@@ -430,8 +430,8 @@ namespace tut
             z * mag,
             8);
         x = 0.000000001, y = 0.000000001, z = 0.000000001;
-        vec3D.clearVec();
-        vec3D.setVec(x,y,z);
+        vec3D.clear();
+        vec3D.set(x,y,z);
         mag = vec3D.normVec();
         ensure_approximately_equals(
             "2a:normVec: Fail ",
@@ -484,7 +484,7 @@ namespace tut
         LLVector3d vec3d(x,y,z);
         ensure("1:clamp:Fail ", (true == (vec3d.clamp(min, max))));
         x = 0.000001f, z = 5.3f;
-        vec3d.setVec(x,y,z);
+        vec3d.set(x,y,z);
         ensure("2:clamp:Fail ", (true == (vec3d.clamp(min, max))));
     }
 
@@ -496,8 +496,8 @@ namespace tut
         LLVector3d vec3Da(x,y,z), vec3Db(x,y,z);
         ensure("1:are_parallel: Fail ", (true == are_parallel(vec3Da,vec3Db,epsilon)));
         F64 x1 = -12., y1 = -20., z1 = -100.;
-        vec3Db.clearVec();
-        vec3Db.setVec(x1,y1,z1);
+        vec3Db.clear();
+        vec3Db.set(x1,y1,z1);
         ensure("2:are_parallel: Fail ", (false == are_parallel(vec3Da,vec3Db,epsilon)));
     }
 
@@ -513,8 +513,8 @@ namespace tut
         angle1 = angle_between(vec3Da, vec3Db);
         ensure("1:angle_between: Fail ", (0 == angle1));
         F64 x1 = -1., y1 = -20., z1 = -1.;
-        vec3Da.clearVec();
-        vec3Da.setVec(x1,y1,z1);
+        vec3Da.clear();
+        vec3Da.set(x1,y1,z1);
         angle2 = angle_between(vec3Da, vec3Db);
         vec3Db.normVec();
         vec3Da.normVec();
