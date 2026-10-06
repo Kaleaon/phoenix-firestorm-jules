@@ -638,7 +638,7 @@ void LLHTTPResponder::markBad(
 {
     mState = STATE_SHORT_CIRCUIT;
     LLBufferStream out(channels, buffer.get());
-    out << HTTP_VERSION_STR << " 400 Bad Request\r\n\r\n<html>\n"
+    out << HTTP_VERSION_STR << " 400 Bad Request\r\n\r\n<html lang=\"en\">\n"
         << "<title>Bad Request</title>\n<body>\nBad Request.\n"
         << "</body>\n</html>\n";
 }
@@ -928,7 +928,7 @@ LLIOPipe::EStatus LLHTTPResponder::process_impl(
                 << mAbsPathAndQuery << LL_ENDL;
             LLBufferStream str(channels, buffer.get());
             mState = STATE_SHORT_CIRCUIT;
-            str << HTTP_VERSION_STR << " 404 Not Found\r\n\r\n<html>\n"
+            str << HTTP_VERSION_STR << " 404 Not Found\r\n\r\n<html lang=\"en\">\n"
                 << "<title>Not Found</title>\n<body>\nNode '" << mAbsPathAndQuery
                 << "' not found.\n</body>\n</html>\n";
         }
