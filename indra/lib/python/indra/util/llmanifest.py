@@ -555,8 +555,12 @@ class LLManifest(object, metaclass=LLManifestRegistry):
         print("Running command:", cmd_str)
         sys.stdout.flush()
         try:
-            return subprocess.check_output(command, **kwds, text=True)
-        except (subprocess.CalledProcessError, OSError) as err:
+            if 'text' not in kwds and 'universal_newlines' not in kwds:
+                kwds['text'] = True
+            if 'errors' not in kwds and kwds.get('text'):
+                kwds['errors'] = 'replace'
+            return subprocess.check_output(command, **kwds)
+        except (subprocess.CalledProcessError, OSError, Exception) as err:
             raise ManifestError( "Command %s returned non-zero status (%s)"
                                 % (command, getattr(err, 'returncode', err)) )
 
