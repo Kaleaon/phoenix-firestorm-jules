@@ -294,6 +294,12 @@ autobuild="$(shell_path "$AUTOBUILD")"
 if [ ! -x "$autobuild" ] && [ -x "${autobuild}.exe" ]; then
     autobuild="${autobuild}.exe"
 fi
+if [ ! -x "$autobuild" ] && [ -x "${autobuild}.cmd" ]; then
+    autobuild="${autobuild}.cmd"
+fi
+if [ ! -x "$autobuild" ] && [ -x "${autobuild}.bat" ]; then
+    autobuild="${autobuild}.bat"
+fi
 if [ ! -x "$autobuild" ]
 then
   record_failure "AUTOBUILD not executable: '$autobuild'"

@@ -205,11 +205,10 @@ jobs:
           export arch=$(uname | cut -b-6)
           # Surprise! GH Windows runner's MINGW6/MSYS_N is a $arch value we've never
           # seen before, so numerous tests don't know about it.
-          [[ "$RUNNER_OS" == "Windows" || "$arch" == "MINGW6" || "$arch" == "MSYS_N" || "$arch" == MINGW* || "$arch" == MSYS* ]] && arch=CYGWIN
-          export AUTOBUILD="$(which autobuild)"
-          if [[ "$RUNNER_OS" == "Windows" ]] && [[ ! -x "$AUTOBUILD" ]] && [[ -x "${AUTOBUILD}.exe" ]]; then
-            export AUTOBUILD="${AUTOBUILD}.exe"
-          fi
+          [[ "$arch" == "MINGW6" ]] && arch=CYGWIN
+          ab_bin="$(which autobuild)"
+          [[ "$RUNNER_OS" == "Windows" && -f "${ab_bin}.exe" ]] && ab_bin="${ab_bin}.exe"
+          export AUTOBUILD="$ab_bin"
 
           # determine the viewer channel from the branch or tag name
           # trigger an EDU build by including "edu" in the tag
