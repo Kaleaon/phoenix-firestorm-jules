@@ -93,6 +93,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -143,8 +144,8 @@ jobs:
           source "$BUILDSCRIPTS_SUPPORT_FUNCTIONS"
           if [[ "$OSTYPE" =~ cygwin|msys ]]
           then
-            native_path() { cygpath --windows "$1"; }
-            shell_path()  { cygpath --unix "$1"; }
+            native_path() { if [[ -z "$1" ]]; then echo ""; else cygpath --windows "$1"; fi; }
+            shell_path()  { if [[ -z "$1" ]]; then echo ""; else cygpath --unix "$1"; fi; }
           else
             native_path() { echo "$1"; }
             shell_path()  { echo "$1"; }
@@ -238,7 +239,11 @@ jobs:
           # as neither CMake's FindPython nor our custom Python.cmake module
           # will resolve the correct interpreter location.
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            export PYTHON="$(native_path "$(which python)")"
+            PY_PATH="${{ steps.setup-python.outputs.python-path }}"
+            if [[ -z "$PY_PATH" ]]; then
+              PY_PATH="$(command -v python || command -v python3 || command -v python.exe || echo python)"
+            fi
+            export PYTHON="$(native_path "$PY_PATH")"
             echo "Python location: $PYTHON"
             export PYTHON_COMMAND="$PYTHON"
           else
