@@ -93,6 +93,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -135,6 +136,8 @@ jobs:
         env:
           AUTOBUILD_VCS_BRANCH: ${{ steps.which-branch.outputs.branch }}
           RUNNER_OS: ${{ runner.os }}
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
         run: |
           # set up things the viewer's build.sh script expects
           set -x
@@ -143,8 +146,8 @@ jobs:
           source "$BUILDSCRIPTS_SUPPORT_FUNCTIONS"
           if [[ "$OSTYPE" =~ cygwin|msys ]]
           then
-            native_path() { cygpath --windows "$1"; }
-            shell_path()  { cygpath --unix "$1"; }
+            native_path() { if [[ -z "$1" ]]; then echo ""; else cygpath --windows "$1"; fi; }
+            shell_path()  { if [[ -z "$1" ]]; then echo ""; else cygpath --unix "$1"; fi; }
           else
             native_path() { echo "$1"; }
             shell_path()  { echo "$1"; }
@@ -200,15 +203,18 @@ jobs:
           ## Useful for diagnosing Windows LLProcess/LLLeap test failures
           ##export APR_LOG="${RUNNER_TEMP}/apr.log"
           export arch=$(uname | cut -b-6)
-          # Surprise! GH Windows runner's MINGW6 is a $arch value we've never
+          # Surprise! GH Windows runner's MINGW6/MSYS_N is a $arch value we've never
           # seen before, so numerous tests don't know about it.
-          [[ "$arch" == "MINGW6" ]] && arch=CYGWIN
+          [[ "$RUNNER_OS" == "Windows" || "$arch" == "MINGW6" || "$arch" == "MSYS_N" || "$arch" == MINGW* || "$arch" == MSYS* ]] && arch=CYGWIN
           export AUTOBUILD="$(which autobuild)"
+          if [[ "$RUNNER_OS" == "Windows" ]] && [[ ! -x "$AUTOBUILD" ]] && [[ -x "${AUTOBUILD}.exe" ]]; then
+            export AUTOBUILD="${AUTOBUILD}.exe"
+          fi
 
           # determine the viewer channel from the branch or tag name
           # trigger an EDU build by including "edu" in the tag
-          edu=${{ github.ref_type == 'tag' && contains(github.ref_name, 'edu') }}
-          echo "ref_type=${{ github.ref_type }}, ref_name=${{ github.ref_name }}, edu='$edu'"
+          edu=$([[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" == *edu* ]] && echo "true" || echo "false")
+          echo "ref_type=$GITHUB_REF_TYPE, ref_name=$GITHUB_REF_NAME, edu='$edu'"
           branch=$AUTOBUILD_VCS_BRANCH
           if [[ "$edu" == "true" ]]
           then
@@ -238,7 +244,11 @@ jobs:
           # as neither CMake's FindPython nor our custom Python.cmake module
           # will resolve the correct interpreter location.
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            export PYTHON="$(native_path "$(which python)")"
+            PY_PATH="${{ steps.setup-python.outputs.python-path }}"
+            if [[ -z "$PY_PATH" ]]; then
+              PY_PATH="$(command -v python || command -v python3 || command -v python.exe || echo python)"
+            fi
+            export PYTHON="$(native_path "$PY_PATH")"
             echo "Python location: $PYTHON"
             export PYTHON_COMMAND="$PYTHON"
           else
