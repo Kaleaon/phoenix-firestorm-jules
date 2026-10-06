@@ -1,0 +1,57 @@
+/* Centralized Accessibility Stylesheet for Viewer HTML Skins */
+
+:root {
+  --a11y-link-color: #93a9d5;
+  --a11y-link-hover: #ff7900;
+  --a11y-link-active: #a0c0ff;
+  --a11y-focus-ring-color: #00d0ff;
+  --a11y-overlay-bg: rgba(20, 20, 20, 0.85);
+  --a11y-overlay-text: #ffffff;
+}
+
+/* Hyperlinks */
+a {
+  color: #93a9d5;
+  color: var(--a11y-link-color, #93a9d5);
+}
+
+a:hover {
+  color: #ff7900;
+  color: var(--a11y-link-hover, #ff7900);
+  text-decoration: underline;
+}
+
+a:active {
+  color: #a0c0ff !important;
+  color: var(--a11y-link-active, #a0c0ff) !important;
+  text-decoration: underline;
+}
+
+a:focus,
+a:focus-visible {
+  outline: 2px solid #00d0ff !important;
+  outline: 2px solid var(--a11y-focus-ring-color, #00d0ff) !important;
+  outline-offset: 2px !important;
+}
+
+/* Interactive elements focus rings */
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+  outline: 2px solid #00d0ff !important;
+  outline: 2px solid var(--a11y-focus-ring-color, #00d0ff) !important;
+  outline-offset: 2px !important;
+}
+
+/* Preview Overlays */
+#quality_window {
+  background-color: rgba(20, 20, 20, 0.85) !important;
+  background-color: var(--a11y-overlay-bg, rgba(20, 20, 20, 0.85)) !important;
+  color: #ffffff !important;
+  color: var(--a11y-overlay-text, #ffffff) !important;
+}
