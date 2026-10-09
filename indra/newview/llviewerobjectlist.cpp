@@ -134,6 +134,9 @@ void LLViewerObjectList::destroy()
     mDeadObjects.clear();
     mMapObjects.clear();
     mUUIDObjectMap.clear();
+    mOrphanParents.clear();
+    mOrphanChildren.clear();
+    mNumOrphans = 0;
 }
 
 
@@ -1123,9 +1126,9 @@ void LLViewerObjectList::update(LLAgent &agent)
     /*
     // Debugging code for viewing orphans, and orphaned parents
     LLUUID id;
-    for (i = 0; i < mOrphanParents.size(); i++)
+    for (U64 parent_info : mOrphanParents)
     {
-        id = sIndexAndLocalIDToUUID[mOrphanParents[i]];
+        id = sIndexAndLocalIDToUUID[parent_info];
         LLViewerObject *objectp = findObject(id);
         if (objectp)
         {
@@ -1140,10 +1143,11 @@ void LLViewerObjectList::update(LLAgent &agent)
     }
 
     LLColor4 text_color;
-    for (i = 0; i < mOrphanChildren.size(); i++)
+    for (const auto& entry : mOrphanChildren)
     {
-        OrphanInfo oi = mOrphanChildren[i];
-        LLViewerObject *objectp = findObject(oi.mChildInfo);
+        U64 parent_info = entry.first;
+        LLUUID child_info = entry.second;
+        LLViewerObject *objectp = findObject(child_info);
         if (objectp)
         {
             std::string id_str;
@@ -1159,13 +1163,12 @@ void LLViewerObjectList::update(LLAgent &agent)
                 tmpstr = std::string("ChNoP:    ") + id_str;
                 text_color = LLColor4(1.f, 0.f, 0.f, 1.f);
             }
-            id = sIndexAndLocalIDToUUID[oi.mParentInfo];
+            id = sIndexAndLocalIDToUUID[parent_info];
             addDebugBeacon(objectp->getPositionAgent() + LLVector3(0.f, 0.f, -0.25f),
                             tmpstr,
                             LLColor4(0.25f,0.25f,0.25f,1.f),
                             text_color);
         }
-        i++;
     }
     */
 
@@ -2327,6 +2330,23 @@ std::vector<LLUUID> LLViewerObjectList::findMeshObjectsBySculptID(LLUUID target_
     return result;
 }
 
+void LLViewerObjectList::addOrphan(U64 parent_info, const LLUUID& child_id)
+{
+    mOrphanParents.insert(parent_info);
+
+    auto range = mOrphanChildren.equal_range(parent_info);
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        if (it->second == child_id)
+        {
+            return;
+        }
+    }
+
+    mOrphanChildren.insert({parent_info, child_id});
+    mNumOrphans++;
+}
+
 void LLViewerObjectList::orphanize(LLViewerObject *childp, U32 parent_id, U32 ip, U32 port)
 {
     LL_DEBUGS("ORPHANS") << "Orphaning object " << childp->getID() << " with parent " << parent_id << LL_ENDL;
@@ -2356,20 +2376,9 @@ void LLViewerObjectList::orphanize(LLViewerObject *childp, U32 parent_id, U32 ip
         }
     }
 
-    // Unknown parent, add to orpaned child list
+    // Unknown parent, add to orphaned child list
     U64 parent_info = getIndex(parent_id, ip, port);
-
-    if (std::find(mOrphanParents.begin(), mOrphanParents.end(), parent_info) == mOrphanParents.end())
-    {
-        mOrphanParents.push_back(parent_info);
-    }
-
-    LLViewerObjectList::OrphanInfo oi(parent_info, childp->mID);
-    if (std::find(mOrphanChildren.begin(), mOrphanChildren.end(), oi) == mOrphanChildren.end())
-    {
-        mOrphanChildren.push_back(oi);
-        mNumOrphans++;
-    }
+    addOrphan(parent_info, childp->mID);
 }
 
 
@@ -2391,38 +2400,51 @@ void LLViewerObjectList::findOrphans(LLViewerObject* objectp, U32 ip, U32 port)
     }
 
     // See if we are a parent of an orphan.
-    // Note:  This code is fairly inefficient but it should happen very rarely.
-    // It can be sped up if this is somehow a performance issue...
     if (mOrphanParents.empty())
     {
         // no known orphan parents
         return;
     }
-    if (std::find(mOrphanParents.begin(), mOrphanParents.end(), getIndex(objectp->mLocalID, ip, port)) == mOrphanParents.end())
+
+    U64 parent_info = getIndex(objectp->mLocalID, ip, port);
+    auto parent_iter = mOrphanParents.find(parent_info);
+    if (parent_iter == mOrphanParents.end())
     {
         // did not find objectp in OrphanParent list
         return;
     }
 
-    U64 parent_info = getIndex(objectp->mLocalID, ip, port);
-    bool orphans_found = false;
-    // Iterate through the orphan list, and set parents of matching children.
+    mOrphanParents.erase(parent_iter);
 
-    for (std::vector<OrphanInfo>::iterator iter = mOrphanChildren.begin(); iter != mOrphanChildren.end(); )
+    auto range = mOrphanChildren.equal_range(parent_info);
+    if (range.first == range.second)
     {
-        if (iter->mParentInfo != parent_info)
-        {
-            ++iter;
-            continue;
-        }
-        LLViewerObject *childp = findObject(iter->mChildInfo);
+        return;
+    }
+
+    std::vector<LLUUID> child_ids;
+    for (auto it = range.first; it != range.second; ++it)
+    {
+        child_ids.push_back(it->second);
+    }
+
+    mOrphanChildren.erase(parent_info);
+    mNumOrphans -= static_cast<S32>(child_ids.size());
+    if (mNumOrphans < 0)
+    {
+        mNumOrphans = 0;
+    }
+
+    bool orphans_found = false;
+    for (const LLUUID& child_id : child_ids)
+    {
+        LLViewerObject *childp = findObject(child_id);
         if (childp)
         {
             if (childp == objectp)
             {
                 LL_WARNS() << objectp->mID << " has self as parent, skipping!"
                     << LL_ENDL;
-                ++iter;
                 continue;
             }
 
@@ -2451,37 +2473,12 @@ void LLViewerObjectList::findOrphans(LLViewerObject* objectp, U32 ip, U32 port)
 
             objectp->addChild(childp);
             orphans_found = true;
-            ++iter;
         }
         else
         {
             // <FS:Beq> descope uninteresting spam we can do nothing about.
             // LL_INFOS() << "Missing orphan child, removing from list" << LL_ENDL;
             LL_DEBUGS() << "Missing orphan child, removing from list" << LL_ENDL;
-
-            iter = mOrphanChildren.erase(iter);
-        }
-    }
-
-    // Remove orphan parent and children from lists now that they've been found
-    {
-        std::vector<U64>::iterator iter = std::find(mOrphanParents.begin(), mOrphanParents.end(), parent_info);
-        if (iter != mOrphanParents.end())
-        {
-            mOrphanParents.erase(iter);
-        }
-    }
-
-    for (std::vector<OrphanInfo>::iterator iter = mOrphanChildren.begin(); iter != mOrphanChildren.end(); )
-    {
-        if (iter->mParentInfo == parent_info)
-        {
-            iter = mOrphanChildren.erase(iter);
-            mNumOrphans--;
-        }
-        else
-        {
-            ++iter;
         }
     }
 

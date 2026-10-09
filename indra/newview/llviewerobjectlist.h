@@ -29,6 +29,8 @@
 
 #include <map>
 #include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 // common includes
 #include "llstring.h"
@@ -162,6 +164,7 @@ public:
     S32 getOrphanParentCount() const { return (S32) mOrphanParents.size(); }
     S32 getOrphanCount() const { return mNumOrphans; }
     S32 getAvatarCount() const { return mNumAvatars; }
+    void addOrphan(U64 parent_info, const LLUUID& child_id);
     void orphanize(LLViewerObject *childp, U32 parent_id, U32 ip, U32 port);
     void findOrphans(LLViewerObject* objectp, U32 ip, U32 port);
 
@@ -206,8 +209,8 @@ public:
     S32 mNumDeadObjectUpdates;
     S32 mNumDeadObjects;
 protected:
-    std::vector<U64>    mOrphanParents; // LocalID/ip,port of orphaned objects
-    std::vector<OrphanInfo> mOrphanChildren;    // UUID's of orphaned objects
+    std::unordered_set<U64> mOrphanParents; // LocalID/ip,port of orphaned objects
+    std::unordered_multimap<U64, LLUUID> mOrphanChildren; // UUID's of orphaned objects
     S32 mNumOrphans;
     S32 mNumAvatars;
 
