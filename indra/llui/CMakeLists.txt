@@ -282,15 +282,16 @@ if(LL_TESTS)
   set(test_libs llmessage llcorehttp llxml llrender llcommon ll::hunspell)
 
   SET(llui_TEST_SOURCE_FILES
-      lluictrl.cpp
       llurlmatch.cpp
       )
   set_property( SOURCE ${llui_TEST_SOURCE_FILES} PROPERTY LL_TEST_ADDITIONAL_LIBRARIES ${test_libs})
   LL_ADD_PROJECT_UNIT_TESTS(llui "${llui_TEST_SOURCE_FILES}")
   # INTEGRATION TESTS
 
+  set(integration_test_libs llui llmessage llcorehttp llxml llrender llcommon ll::hunspell )
+  LL_ADD_INTEGRATION_TEST(lluictrl "" "${integration_test_libs}")
+
   if(NOT LINUX)
-    set(test_libs llui llmessage llcorehttp llxml llrender llcommon ll::hunspell )
-    LL_ADD_INTEGRATION_TEST(llurlentry llurlentry.cpp "${test_libs}")
+    LL_ADD_INTEGRATION_TEST(llurlentry llurlentry.cpp "${integration_test_libs}")
   endif(NOT LINUX)
 endif(LL_TESTS)
