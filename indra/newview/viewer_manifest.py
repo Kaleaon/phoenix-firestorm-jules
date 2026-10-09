@@ -231,6 +231,7 @@ class ViewerManifest(LLManifest,FSViewerManifest):
                     with self.prefix(src="*/html", dst="*/html"):
                         #self.path("*/*/*/*.js") # <FS:Ansariel> Copied outside packaging and from packages directory already
                         self.path("*/*/*.html")
+                        self.path("*/*/*.css")
 
             #build_data.json.  Standard with exception handling is fine.  If we can't open a new file for writing, we have worse problems
             #platform is computed above with other arg parsing
