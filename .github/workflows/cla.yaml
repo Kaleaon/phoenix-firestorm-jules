@@ -30,4 +30,4 @@ jobs:
           branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref_name }}
           path-to-document: https://github.com/secondlife/cla/blob/main/CLA.md
           path-to-signatures: signatures.json
-          allowlist: Kaleaon,*Kaleaon*,web-flow,*web-flow*,callum@mbp.localdomain,rye@lindenlab.com,*[bot]*,*google-labs*,*stitch*,*jules*,google-labs-stitch[bot],google-labs-jules[bot]
+          allowlist: Kaleaon,web-flow,callum@mbp.localdomain,rye@lindenlab.com,google-labs-jules[bot],google-labs-stitch[bot],google-labs-code,google-labs-jules,google-labs-stitch,jules-agent,github-actions[bot],coderabbitai[bot],161369871+google-labs-jules[bot]@users.noreply.github.com,315546542+google-labs-stitch[bot]@users.noreply.github.com,jules@example.com
