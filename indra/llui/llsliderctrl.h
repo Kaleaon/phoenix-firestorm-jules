@@ -107,6 +107,7 @@ public:
     F32             getMaxValue() const { return mSlider->getMaxValue(); }
 
     void            setLabel(const LLStringExplicit& label)     { if (mLabelBox) mLabelBox->setText(label); }
+    /*virtual*/ void setAccessibleName(const std::string& name) override;
     void            setLabelColor(const LLUIColor& c)            { mTextEnabledColor = c; }
     void            setDisabledLabelColor(const LLUIColor& c)    { mTextDisabledColor = c; }
 
