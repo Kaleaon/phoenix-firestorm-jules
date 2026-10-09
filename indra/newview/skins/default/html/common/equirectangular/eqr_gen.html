@@ -109,7 +109,11 @@
 
             // update the text that gets passed in from the C++ app for
             // the translucent overlay label that tells us what we are seeing
-            document.getElementById('quality_window').innerHTML = overlay_label;
+            if (document.getElementById('quality_text')) {
+                document.getElementById('quality_text').innerHTML = overlay_label;
+            } else {
+                document.getElementById('quality_window').innerHTML = overlay_label;
+            }
 
             animate();
         }
@@ -146,7 +150,13 @@
             renderer.render(scene, camera);
         }
     </script>
-    <div id="error_message">UNABLE TO LOAD EQR IMAGE</div>
-    <div id="quality_window">Preview Quality</div>
+    <main role="main" aria-label="Equirectangular Preview Canvas">
+      <h1 class="visually-hidden">Equirectangular Preview Generator</h1>
+      <div id="error_message" role="alert" aria-live="assertive">UNABLE TO LOAD EQR IMAGE</div>
+      <section id="quality_window" role="region" aria-label="Preview Quality Overview">
+        <h2 id="quality_heading" class="visually-hidden">Quality Status</h2>
+        <span id="quality_text">Preview Quality</span>
+      </section>
+    </main>
 </body>
 </html>

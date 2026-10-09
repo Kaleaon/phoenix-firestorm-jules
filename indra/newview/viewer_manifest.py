@@ -73,7 +73,7 @@ class ViewerManifest(LLManifest,FSViewerManifest):
         super(ViewerManifest, self).construct()
         self.path(src="../../scripts/messages/message_template.msg", dst="app_settings/message_template.msg")
         self.path(src="../../etc/message.xml", dst="app_settings/message.xml")
-        
+
         # <FS:LO> Copy dictionaries to a place where the viewer can find them if ran from visual studio
         pkgdir = os.path.join(self.args['build'], os.pardir, 'packages')
         with self.prefix(src=pkgdir, dst="app_settings"):
@@ -190,12 +190,12 @@ class ViewerManifest(LLManifest,FSViewerManifest):
                 self.path("*.ttf")
                 self.path("*.txt")
                 self.path("*.xml")
-                
+
             # <FS:AO> Include firestorm resources
             with self.prefix(src_dst="fs_resources"):
                 self.path("*.lsltxt")
                 self.path("*.dae") # <FS:Beq> FIRE-30963 - better physics defaults
-                
+
             # <FS:AR> Poser Presets
             with self.prefix(src_dst="poses/hand_presets"):
                 self.path("*.xml")
@@ -231,6 +231,7 @@ class ViewerManifest(LLManifest,FSViewerManifest):
                     with self.prefix(src="*/html", dst="*/html"):
                         #self.path("*/*/*/*.js") # <FS:Ansariel> Copied outside packaging and from packages directory already
                         self.path("*/*/*.html")
+                        self.path("*/*/*.css")
 
             #build_data.json.  Standard with exception handling is fine.  If we can't open a new file for writing, we have worse problems
             #platform is computed above with other arg parsing
@@ -959,7 +960,7 @@ class Windows_x86_64_Manifest(ViewerManifest):
             return 'https://www.firestormviewer.org/firestorm-nightly-build-downloads'
         else:
             return '<NO-URL>'
-        
+
 
     def package_finish(self):
         # a standard map of strings for replacing in the templates
@@ -981,7 +982,7 @@ class Windows_x86_64_Manifest(ViewerManifest):
         #installer_file = self.installer_base_name() + '_Setup.exe'
         installer_file = self.fs_installer_basename() + "_Setup.exe"
         # </FS:ND>
-        
+
         substitution_strings['installer_file'] = installer_file
         substitution_strings['is64bit'] = (1 if (self.address_size == 64) else 0)
         substitution_strings['isavx2'] = (1 if (self.fs_is_avx2()) else 0)
@@ -1168,7 +1169,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
                 # # yields a slightly smaller binary but makes crash
                 # # logs mostly useless. This may be desirable for the
                 # # final release. Or not.
-                # if ("package" in self.args['actions'] or 
+                # if ("package" in self.args['actions'] or
                     # "unpacked" in self.args['actions']):
                     # self.run_command(
                         # ['strip', '-S', executable])
@@ -1610,7 +1611,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
                         oldpath = os.path.join("@rpath", libfile)
                         print(f"debug: oldpath={oldpath} executable={executable} libfile={libfile}")
                         self.run_command(
-                            ['install_name_tool', '-change', 
+                            ['install_name_tool', '-change',
                              oldpath,
                              '@executable_path/../Resources/%s' % libfile, executable])
 
@@ -1809,7 +1810,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
         # annotated backtraces (i.e. function names in the crash log).  'strip' with no
         # arguments yields a slightly smaller binary but makes crash logs mostly useless.
         # This may be desirable for the final release.  Or not.
-        if ("package" in self.args['actions'] or 
+        if ("package" in self.args['actions'] or
             "unpacked" in self.args['actions']):
             self.run_command_shell('strip -S %(viewer_binary)r' %
                             { 'viewer_binary' : self.dst_path_of('Contents/MacOS/Firestorm')})
@@ -1822,11 +1823,11 @@ class Darwin_x86_64_Manifest(ViewerManifest):
 
         volname=CHANNEL_VENDOR_BASE+" Installer"  # DO NOT CHANGE without understanding comment above
 
-        # <FS:ND> Make sure all our package names look similar 
+        # <FS:ND> Make sure all our package names look similar
         #imagename = self.installer_base_name()
         imagename = self.fs_installer_basename()
         # </FS:ND>
-        
+
         sparsename = imagename + ".sparseimage"
         finalname = imagename + ".dmg"
         # make sure we don't have stale files laying about
@@ -1842,7 +1843,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
             hdi_output = subprocess.check_output(['hdiutil', 'attach', '-private', sparsename], text=True)
         except subprocess.CalledProcessError as err:
             sys.exit("failed to mount image at '%s'" % sparsename)
-            
+
         try:
             devfile = re.search(r"/dev/disk([0-9]+)[^s]", hdi_output).group(0).strip()
             volpath = re.search(r'HFS\s+(.+)', hdi_output).group(1).strip()
@@ -1911,8 +1912,8 @@ class Darwin_x86_64_Manifest(ViewerManifest):
             # Set the disk image root's custom icon bit
             self.run_command(['SetFile', '-a', 'C', volpath])
 
-            # Sign the app if requested; 
-            # do this in the copy that's in the .dmg so that the extended attributes used by 
+            # Sign the app if requested;
+            # do this in the copy that's in the .dmg so that the extended attributes used by
             # the signature are preserved; moving the files using python will leave them behind
             # and invalidate the signatures.
             if 'signature' in self.args:
@@ -1965,7 +1966,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
 
                     if not os.path.isfile( viewer_keychain ):
                         raise "No keychain named viewer found"
-                    
+
                     self.run_command(['security', 'unlock-keychain',
                                       '-p', keychain_pwd, viewer_keychain])
                     sign_retry_wait=15
@@ -2027,7 +2028,7 @@ class Darwin_x86_64_Manifest(ViewerManifest):
                     self.run_command([self.src_path_of("installers/darwin/apple-notarize.sh"), app_in_dmg])
 
         finally:
-            # Unmount the image even if exceptions from any of the above 
+            # Unmount the image even if exceptions from any of the above
             for tries in range(10):
                 try:
                     self.run_command(['hdiutil', 'detach', '-force', devfile])
@@ -2106,7 +2107,7 @@ class LinuxManifest(ViewerManifest):
             self.path("gstreamer10/libmedia_plugin_gstreamer10.so", "libmedia_plugin_gstreamer.so")
             self.path("cef/libmedia_plugin_cef.so", "libmedia_plugin_cef.so" )
 
-        # CEF files 
+        # CEF files
         with self.prefix(src=os.path.join(pkgdir, 'lib', 'release'), dst="lib"):
             self.path( "libcef.so" )
             self.path( "libEGL.so" )
@@ -2357,7 +2358,7 @@ class Linux_i686_Manifest(LinuxManifest):
             # <FS:ND> Linking this breaks voice as stock openal.so does not have alcGetMixedBuffer
             #self.path("libopenal.so", "libvivoxoal.so.1") # vivox's sdk expects this soname
             # </FS:ND>
-            
+
             # KLUDGE: As of 2012-04-11, the 'fontconfig' package installs
             # libfontconfig.so.1.4.4, along with symlinks libfontconfig.so.1
             # and libfontconfig.so. Before we added support for library-file
