@@ -2343,7 +2343,7 @@ void LLViewerObjectList::addOrphan(U64 parent_info, const LLUUID& child_id)
         }
     }
 
-    mOrphanChildren.insert({parent_info, child_id});
+    mOrphanChildren.emplace(parent_info, child_id);
     mNumOrphans++;
 }
 
