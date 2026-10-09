@@ -73,6 +73,8 @@ LLUICtrl::Params::Params()
     chrome("chrome", false),
     requests_front("requests_front", false),
     label("label"),
+    label_for("label_for"),
+    accessible_name("accessible_name"),
     initial_value("value"),
     init_callback("init_callback"),
     commit_callback("commit_callback"),
@@ -131,6 +133,14 @@ void LLUICtrl::initFromParams(const Params& p)
 
     setIsChrome(p.chrome);
     setControlName(p.control_name);
+    if (p.label_for.isProvided())
+    {
+        setLabelFor(p.label_for());
+    }
+    if (p.accessible_name.isProvided())
+    {
+        setAccessibleName(p.accessible_name());
+    }
     if(p.enabled_controls.isProvided())
     {
         if (p.enabled_controls.enabled.isChosen())

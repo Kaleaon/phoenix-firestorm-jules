@@ -153,6 +153,8 @@ public:
     void            updateDefaultBtn();
     void            setLabel(const LLStringExplicit& label) { mLabel = label; }
     std::string     getLabel() const { return mLabel; }
+    void            bindAccessibleLabels();
+    /*virtual*/ bool postBuild() override;
     void            setHelpTopic(const std::string& help_topic) { mHelpTopic = help_topic; }
     std::string     getHelpTopic() const { return mHelpTopic; }
 

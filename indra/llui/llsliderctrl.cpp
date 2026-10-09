@@ -487,3 +487,12 @@ void LLSliderCtrl::reportInvalidData()
     make_ui_sound("UISndBadKeystroke");
 }
 
+void LLSliderCtrl::setAccessibleName(const std::string& name)
+{
+    LLUICtrl::setAccessibleName(name);
+    if (mEditor)
+    {
+        mEditor->setAccessibleName(name);
+    }
+}
+

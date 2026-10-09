@@ -20,6 +20,19 @@ jobs:
               core.setFailed("❌ PR description is too short. Please provide at least 20 characters.");
             }
 
+  test-fsutils:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run fsutils unit tests
+        run: |
+          PYTHONPATH=. python3 -m unittest discover -s fsutils/tests -t . -v
+
   actionlint:
     runs-on: ubuntu-latest
     steps:

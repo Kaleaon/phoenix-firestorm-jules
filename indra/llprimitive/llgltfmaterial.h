@@ -203,6 +203,10 @@ public:
     // True if setBaseMaterial() was just called
     bool isClearedForBaseMaterial() const;
 
+    // Get packed texture transform (8-float padded or 5-float tight) for specified texture info
+    void getPacked(TextureTransform::Pack& packed, U32 texture_info = 0) const;
+    void getPackedTight(TextureTransform::PackTight& packed, U32 texture_info = 0) const;
+
     // For local materials, they have to keep track of where
     // they are assigned to for full updates
     virtual void addTextureEntry(LLTextureEntry* te) {};

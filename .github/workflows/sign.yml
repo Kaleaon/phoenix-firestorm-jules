@@ -54,16 +54,7 @@ jobs:
             path: artifacts
       - name: Get List of Setup.exe Files
         id: get-files
-        shell: bash
-        run: |
-            mkdir -p setup_exe_files
-            files=$(find artifacts -type f -name '*Setup.exe')
-            for file in $files; do
-                basename=$(basename "$file")
-                cp "$file" "setup_exe_files/$basename"
-            done            
-            files_json=$(ls setup_exe_files | jq -R . | jq -s -c .)
-            echo "setup_files=$files_json" >> $GITHUB_OUTPUT
+        run: python ./fsutils/sign_utils.py get_setup_files
       - name: Upload Setup.exe Files
         uses: actions/upload-artifact@v4
         with:
@@ -81,12 +72,11 @@ jobs:
         contents: read
     steps:
       - name: List Available Artifacts
-        run: |
-          echo "Available artifacts:"
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts
-        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: python ./fsutils/sign_utils.py list_run_artifacts
       
       - name: Download Setup.exe Files Artifact
         uses: actions/download-artifact@v5
@@ -94,10 +84,9 @@ jobs:
           name: setup-exe-files
           path: setup_exe_files
       - name: Prepare File for Signing
-        run: |
-          mkdir -p to_sign
-          cp "setup_exe_files/${{ matrix.file }}" to_sign/
-        shell: bash
+        env:
+          FILENAME: ${{ matrix.file }}
+        run: python ./fsutils/sign_utils.py prepare_file
       # - name: Upload unsigned artifact
       #   id: upload-unsigned-artifact
       #   uses: actions/upload-artifact@v4

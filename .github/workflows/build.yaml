@@ -67,6 +67,8 @@ jobs:
       # autobuild-package.xml.
       AUTOBUILD_VCS_INFO: "true"
       AUTOBUILD_VSVER: "170"
+      AUTOBUILD_WIN_CMAKE_GEN: "Visual Studio 17 2022"
+      AUTOBUILD_WIN_VSPLATFORM: "x64"
       DEVELOPER_DIR: "/Applications/Xcode_16.1.app/Contents/Developer"
       # Ensure that Linden viewer builds engage Bugsplat.
       BUGSPLAT_DB: ${{ needs.setup.outputs.bugsplat_db }}

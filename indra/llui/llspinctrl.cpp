@@ -476,6 +476,15 @@ void LLSpinCtrl::setLabel(const LLStringExplicit& label)
     updateLabelColor();
 }
 
+void LLSpinCtrl::setAccessibleName(const std::string& name)
+{
+    LLUICtrl::setAccessibleName(name);
+    if (mEditor)
+    {
+        mEditor->setAccessibleName(name);
+    }
+}
+
 // <FS:Ansariel> Allow setting an argument on the label
 bool LLSpinCtrl::setLabelArg(const std::string& key, const LLStringExplicit& text)
 {

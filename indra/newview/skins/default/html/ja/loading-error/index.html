@@ -75,11 +75,12 @@
     </style>
   </head>
   <body>
-    <div id="infobox" role="status" aria-live="polite">
+    <main id="infobox" class="viewer-main-landmark" tabindex="-1" role="main">
       <svg class="error-icon" aria-hidden="true" viewBox="0 0 64 64" width="64" height="64" style="margin-bottom: 12px; vertical-align: middle;">
         <circle cx="32" cy="32" r="28" fill="#1e1e1e" stroke="#c12626" stroke-width="3"/>
         <path d="M32 16 v20 M32 42 v4" stroke="#e9f1f8" stroke-width="4" stroke-linecap="round"/>
-      </svg>      <br />
+      </svg>
+      <h1 class="viewer-heading">接続できません</h1>
       <p>Second Lifeによるログインサーバーへの接続が確立できません。</p>
       <p>
         インターネット接続を確認してください。
@@ -97,6 +98,6 @@
           onmouseout="this.className='input_off';"
         />
       </div>
-    </div>
+    </main>
   </body>
 </html>

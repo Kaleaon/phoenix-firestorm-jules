@@ -295,6 +295,12 @@
         width="22">
         <button.commit_callback function="CameraPresets.Save" />
     </button>
+    <text
+        name="preset_combo_label"
+        label_for="preset_combo"
+        visible="false">
+        Camera Preset
+    </text>
     <combo_box
         follows="bottom|left|right"
         height="22"
