@@ -101,6 +101,30 @@ void LLGLTFMaterial::TextureTransform::getPackedTight(PackTight& packed) const
     packed[4] = mOffset.mV[VY];
 }
 
+void LLGLTFMaterial::getPacked(TextureTransform::Pack& packed, U32 texture_info) const
+{
+    if (texture_info < GLTF_TEXTURE_INFO_COUNT)
+    {
+        mTextureTransform[texture_info].getPacked(packed);
+    }
+    else
+    {
+        TextureTransform().getPacked(packed);
+    }
+}
+
+void LLGLTFMaterial::getPackedTight(TextureTransform::PackTight& packed, U32 texture_info) const
+{
+    if (texture_info < GLTF_TEXTURE_INFO_COUNT)
+    {
+        mTextureTransform[texture_info].getPackedTight(packed);
+    }
+    else
+    {
+        TextureTransform().getPackedTight(packed);
+    }
+}
+
 bool LLGLTFMaterial::TextureTransform::operator==(const TextureTransform& other) const
 {
     return mOffset == other.mOffset && mScale == other.mScale && mRotation == other.mRotation;

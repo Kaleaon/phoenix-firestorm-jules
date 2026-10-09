@@ -470,5 +470,18 @@ namespace tut
         ensure_equals("PackedTight rotation", packedTight[2], 1.57f);
         ensure_equals("PackedTight offset X", packedTight[3], 0.5f);
         ensure_equals("PackedTight offset Y", packedTight[4], 0.25f);
+
+        LLGLTFMaterial material;
+        material.mTextureTransform[LLGLTFMaterial::GLTF_TEXTURE_INFO_BASE_COLOR] = transform;
+
+        LLGLTFMaterial::TextureTransform::Pack matPacked;
+        material.getPacked(matPacked, LLGLTFMaterial::GLTF_TEXTURE_INFO_BASE_COLOR);
+        ensure_equals("Material getPacked scale X", matPacked[0], 2.0f);
+        ensure_equals("Material getPacked offset X", matPacked[4], 0.5f);
+
+        LLGLTFMaterial::TextureTransform::PackTight matPackedTight;
+        material.getPackedTight(matPackedTight, LLGLTFMaterial::GLTF_TEXTURE_INFO_BASE_COLOR);
+        ensure_equals("Material getPackedTight scale X", matPackedTight[0], 2.0f);
+        ensure_equals("Material getPackedTight offset X", matPackedTight[3], 0.5f);
     }
 }
