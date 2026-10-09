@@ -40,6 +40,7 @@
          height="12"
          layout="topleft"
          name="HoverTipText"
+         label_for="ShowHoverTips"
          width="100">
             Hover Tips:
         </text>
@@ -105,6 +106,7 @@
          layout="topleft"
          left="265"
          name="tooltip_textbox"
+         label_for="ToolTipDelay_slider"
          top="8"
          width="200">
            Hovertip Trigger Delays:
@@ -267,7 +269,8 @@
          follows="left|top"
          height="16"
          layout="topleft"
-         name="FSHudTextShowBackgroundLabel">
+         name="FSHudTextShowBackgroundLabel"
+         label_for="FSHudTextShowBackgroundDropdown">
             Show floating text background:
         </text>
 	<!-- Added combo box to control the background behavior for prims -->
@@ -367,7 +370,8 @@
        follows="left|top"
        height="16"
        layout="topleft"
-       name="ScriptDialogsPerObjectLabel">
+       name="ScriptDialogsPerObjectLabel"
+       label_for="ScriptDialogPerObjectDropdown">
         Script Dialogs per Object:
       </text>
       <combo_box
@@ -421,7 +425,8 @@
        follows="left|top"
        height="16"
        layout="topleft"
-       name="ScriptDialogsPositionLabel">
+       name="ScriptDialogsPositionLabel"
+       label_for="ScriptDialogsPositionDropdown">
         Script Dialogs Position:
       </text>
 
@@ -838,6 +843,7 @@
 		 height="16"
 		 layout="topleft"
 		 name="statusbar_timeformat_textbox"
+		 label_for="FSStatusBarTimeFormat"
 		 left="13"
 		 top_pad="8"
 		 width="75">
@@ -1675,6 +1681,7 @@
          layout="topleft"
          left="10"
          name="tooltip_textbox1"
+         label_for="Fontsettingsfile"
          top_pad="10"
          width="120">
            Font Scheme:
@@ -1830,6 +1837,7 @@ Default 0. Larger values may not work well.
          left="10"
          follows="left|top"
          name="text_box_notecard_font"
+         label_for="FSNotecardFontName"
          width="120">
           Notecard Editor Font:
         </text>

@@ -102,6 +102,8 @@ public:
     struct Params : public LLInitParam::Block<Params, LLView::Params>
     {
         Optional<std::string>           label;
+        Optional<std::string>           label_for;
+        Optional<std::string>           accessible_name;
         Optional<bool>                  tab_stop,
                                         chrome,
                                         requests_front;
@@ -194,6 +196,12 @@ public:
     LLControlVariable* getMakeVisibleControlVariable() { return mMakeVisibleControlVariable; }
     LLControlVariable* getMakeInvisibleControlVariable() { return mMakeInvisibleControlVariable; }
     // </FS:Ansariel>
+
+    void setLabelFor(const std::string& target) { mLabelForTarget = target; }
+    const std::string& getLabelFor() const { return mLabelForTarget; }
+
+    virtual void setAccessibleName(const std::string& name) { mAccessibleName = name; }
+    virtual const std::string& getAccessibleName() const { return mAccessibleName; }
 
     void setEnabledControlVariable(LLControlVariable* control);
     void setDisabledControlVariable(LLControlVariable* control);
@@ -337,6 +345,8 @@ protected:
     boost::signals2::connection mMakeInvisibleControlConnection;
 
     std::string mFunctionName;
+    std::string mLabelForTarget;
+    std::string mAccessibleName;
 
     static F32 sActiveControlTransparency;
     static F32 sInactiveControlTransparency;

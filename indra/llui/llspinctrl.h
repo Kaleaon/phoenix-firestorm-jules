@@ -80,6 +80,7 @@ public:
     virtual void    setPrecision(S32 precision);
 
     void            setLabel(const LLStringExplicit& label);
+    /*virtual*/ void setAccessibleName(const std::string& name) override;
     void            setLabelColor(const LLUIColor& c)            { mTextEnabledColor = c; updateLabelColor(); }
     void            setDisabledLabelColor(const LLUIColor& c)    { mTextDisabledColor = c; updateLabelColor();}
     void            setAllowEdit(bool allow_edit);

@@ -39,6 +39,7 @@
 #include "lltimer.h"
 
 #include "llbutton.h"
+#include "llcheckboxctrl.h"
 #include "llmenugl.h"
 #include "llui.h"
 #include "llkeyboard.h"
@@ -563,12 +564,132 @@ bool LLPanel::initPanelXML(LLXMLNodePtr node, LLView *parent, LLXMLNodePtr outpu
             parent->addChild(this, tab_group);
         }
 
+        bindAccessibleLabels();
+
         {
             LL_RECORD_BLOCK_TIME(FTM_PANEL_POSTBUILD);
             postBuild();
         }
     }
     return true;
+}
+
+bool LLPanel::postBuild()
+{
+    bindAccessibleLabels();
+    return LLUICtrl::postBuild();
+}
+
+void LLPanel::bindAccessibleLabels()
+{
+    const child_list_t* child_list = getChildList();
+    if (!child_list) return;
+
+    // Pass 1: Explicit label_for bindings
+    for (LLView* child_view : *child_list)
+    {
+        LLUICtrl* ctrl = dynamic_cast<LLUICtrl*>(child_view);
+        if (!ctrl) continue;
+
+        const std::string& targetName = ctrl->getLabelFor();
+        if (!targetName.empty())
+        {
+            LLUICtrl* targetControl = getChild<LLUICtrl>(targetName, true);
+            if (targetControl)
+            {
+                std::string labelText;
+                LLTextBase* textBase = dynamic_cast<LLTextBase*>(ctrl);
+                if (textBase)
+                {
+                    labelText = textBase->getText();
+                }
+                else
+                {
+                    labelText = ctrl->getValue().asString();
+                }
+
+                if (!labelText.empty())
+                {
+                    targetControl->setAccessibleName(labelText);
+                }
+            }
+        }
+    }
+
+    // Pass 2: Proximity Fallback bindings
+    std::vector<LLTextBase*> candidateLabels;
+    for (LLView* child_view : *child_list)
+    {
+        LLTextBase* textBase = dynamic_cast<LLTextBase*>(child_view);
+        if (textBase && !textBase->getText().empty())
+        {
+            candidateLabels.push_back(textBase);
+        }
+    }
+
+    for (LLView* child_view : *child_list)
+    {
+        LLUICtrl* ctrl = dynamic_cast<LLUICtrl*>(child_view);
+        if (!ctrl) continue;
+
+        // Skip static text boxes themselves
+        if (dynamic_cast<LLTextBase*>(ctrl) != nullptr) continue;
+
+        // Skip controls that already have an accessible name
+        if (!ctrl->getAccessibleName().empty()) continue;
+
+        // Check if control has explicit label property (e.g. checkbox label)
+        LLCheckBoxControl* checkCtrl = dynamic_cast<LLCheckBoxControl*>(ctrl);
+        if (checkCtrl && !checkCtrl->getLabel().empty())
+        {
+            ctrl->setAccessibleName(checkCtrl->getLabel());
+            continue;
+        }
+
+        // Search candidate text controls for best proximity match within this panel
+        LLTextBase* bestLabel = nullptr;
+        S32 bestScore = 10000;
+
+        LLRect inputRect = ctrl->getRect();
+        S32 inputCenterY = inputRect.getCenterY();
+        S32 inputLeft = inputRect.mLeft;
+
+        for (LLTextBase* textCtrl : candidateLabels)
+        {
+            if (!textCtrl->getLabelFor().empty()) continue;
+
+            LLRect textRect = textCtrl->getRect();
+            S32 textCenterY = textRect.getCenterY();
+            S32 textRight = textRect.mRight;
+            S32 textLeft = textRect.mLeft;
+
+            bool sameRow = (std::abs(inputCenterY - textCenterY) <= 15) ||
+                           (textRect.mBottom < inputRect.mTop && textRect.mTop > inputRect.mBottom);
+
+            S32 score = 10000;
+            if (sameRow && textLeft <= inputLeft)
+            {
+                S32 horizontalGap = inputLeft - textRight;
+                if (horizontalGap < 0) horizontalGap = std::abs(horizontalGap);
+                score = horizontalGap;
+            }
+            else if (textLeft <= inputLeft && std::abs(inputCenterY - textCenterY) <= 40)
+            {
+                score = std::abs(inputLeft - textRight) + 2 * std::abs(inputCenterY - textCenterY) + 500;
+            }
+
+            if (score < bestScore)
+            {
+                bestScore = score;
+                bestLabel = textCtrl;
+            }
+        }
+
+        if (bestLabel && bestScore < 1000)
+        {
+            ctrl->setAccessibleName(bestLabel->getText());
+        }
+    }
 }
 
 bool LLPanel::hasString(std::string_view name) const
