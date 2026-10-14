@@ -90,25 +90,25 @@ jobs:
       variants: ${{ matrix.configuration }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
 
       - name: Checkout build variables
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           repository: secondlife/build-variables
           ref: master
           path: .build-variables
 
       - name: Checkout master-message-template
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           repository: secondlife/master-message-template
           path: .master-message-template
@@ -118,7 +118,7 @@ jobs:
 
       - name: Cache autobuild packages
         id: cache-installables
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: .autobuild-installables
           key: ${{ runner.os }}-64-${{ matrix.configuration }}-${{ hashFiles('autobuild.xml') }}
@@ -128,7 +128,7 @@ jobs:
 
       - name: Determine source branch
         id: which-branch
-        uses: secondlife/viewer-build-util/which-branch@v2
+        uses: secondlife/viewer-build-util/which-branch@36f3a9e70e1ebdbe58e04def2145869b53b51f4f # v2
         with:
           token: ${{ github.token }}
 
@@ -279,7 +279,7 @@ jobs:
 
       - name: Upload executable
         if: steps.build.outputs.viewer_app
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: "${{ steps.build.outputs.artifact }}-app"
           path: |
@@ -289,13 +289,13 @@ jobs:
       # artifact for that too.
       - name: Upload symbol file
         if: steps.build.outputs.symbolfile
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: "${{ steps.build.outputs.artifact }}-symbols"
           path: ${{ steps.build.outputs.symbolfile }}
 
       - name: Upload metadata
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: "${{ steps.build.outputs.artifact }}-metadata"
           # emitted by build.sh, possibly multiple lines
@@ -303,7 +303,7 @@ jobs:
             ${{ steps.build.outputs.metadata }}
 
       - name: Upload physics package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         # should only be set for viewer-private
         if: matrix.configuration == 'Release' && steps.build.outputs.physicstpv
         with:
@@ -324,7 +324,7 @@ jobs:
     steps:
       - name: Sign and package Windows viewer
         if: env.AZURE_KEY_VAULT_URI && env.AZURE_CERT_NAME && env.AZURE_CLIENT_ID && env.AZURE_CLIENT_SECRET && env.AZURE_TENANT_ID
-        uses: secondlife/viewer-build-util/sign-pkg-windows@v2
+        uses: secondlife/viewer-build-util/sign-pkg-windows@36f3a9e70e1ebdbe58e04def2145869b53b51f4f # v2
         with:
           vault_uri: "${{ env.AZURE_KEY_VAULT_URI }}"
           cert_name: "${{ env.AZURE_CERT_NAME }}"
@@ -363,7 +363,7 @@ jobs:
 
       - name: Sign and package Mac viewer
         if: env.SIGNING_CERT_MACOS && env.SIGNING_CERT_MACOS_IDENTITY && env.SIGNING_CERT_MACOS_PASSWORD && steps.note-creds.outputs.note_user && steps.note-creds.outputs.note_pass && steps.note-creds.outputs.note_team
-        uses: secondlife/viewer-build-util/sign-pkg-mac@v2
+        uses: secondlife/viewer-build-util/sign-pkg-mac@36f3a9e70e1ebdbe58e04def2145869b53b51f4f # v2
         with:
           channel: ${{ needs.build.outputs.viewer_channel }}
           imagename: ${{ needs.build.outputs.imagename }}
@@ -383,13 +383,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download viewer exe
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: Windows-app
           path: _artifacts
       - name: Download Windows Symbols
         if: env.BUGSPLAT_USER && env.BUGSPLAT_PASS
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: Windows-symbols
       - name: Extract viewer pdb
@@ -399,7 +399,7 @@ jobs:
           tar -xJf "${{ needs.build.outputs.viewer_channel }}.sym.tar.xz" -C _artifacts
       - name: Post Windows symbols
         if: env.BUGSPLAT_USER && env.BUGSPLAT_PASS
-        uses: secondlife-3p/symbol-upload@v10
+        uses: secondlife-3p/symbol-upload@9382f3c6e7f17d871a683cd81b90ee2c34251303 # v10
         with:
           username: ${{ env.BUGSPLAT_USER }}
           password: ${{ env.BUGSPLAT_PASS }}
@@ -419,12 +419,12 @@ jobs:
     steps:
       - name: Download Mac Symbols
         if: env.BUGSPLAT_USER && env.BUGSPLAT_PASS
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: macOS-symbols
       - name: Post Mac symbols
         if: env.BUGSPLAT_USER && env.BUGSPLAT_PASS
-        uses: secondlife-3p/symbol-upload@v10
+        uses: secondlife-3p/symbol-upload@9382f3c6e7f17d871a683cd81b90ee2c34251303 # v10
         with:
           username: ${{ env.BUGSPLAT_USER }}
           password: ${{ env.BUGSPLAT_PASS }}
@@ -441,11 +441,11 @@ jobs:
       contents: write
     if: needs.setup.outputs.release_run
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           pattern: "*-installer"
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           pattern: "*-metadata"
 
@@ -459,7 +459,7 @@ jobs:
       # forked from softprops/action-gh-release
       - name: Create GitHub release
         id: release
-        uses: secondlife-3p/action-gh-release@v1
+        uses: secondlife-3p/action-gh-release@3771562db90a564a4a2b9bde6849225e115581df # v1
         with:
           # name the release page for the branch
           name: "${{ needs.build.outputs.viewer_branch }}"

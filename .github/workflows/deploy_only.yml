@@ -36,7 +36,7 @@ jobs:
       attestations: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           sparse-checkout: |
             fsutils/download_list.py
@@ -51,7 +51,7 @@ jobs:
         run: pip install discord-webhook
 
       - name: Download Build Artifacts
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         id: download
         with:
           workflow: build_viewer.yml
@@ -85,12 +85,12 @@ jobs:
         run: python ./fsutils/download_list.py ./to_deploy -w "$FS_BUILD_WEBHOOK_URL"
 
       - name: Attest Build Provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v1
         with:
           subject-path: 'to_deploy/${{ env.FS_RELEASE_FOLDER }}/**/*'
 
       - name: Setup rclone and download the folder
-        uses: beqjanus/setup-rclone@main
+        uses: beqjanus/setup-rclone@1fd82f794d71014fef3fb281d5ba23489c66ebf3 # main
         with:
           rclone_config: ${{ secrets.RCLONE_CONFIG }}
 
