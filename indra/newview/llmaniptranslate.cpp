@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file llmaniptranslate.cpp
  * @brief LLManipTranslate class implementation
  *
@@ -345,6 +345,7 @@ bool LLManipTranslate::handleMouseDownOnPart( S32 x, S32 y, MASK mask )
     LLSelectMgr::getInstance()->saveSelectedObjectTransform(SELECT_ACTION_TYPE_MOVE);
 
     mManipPart = (EManipPart)hit_part;
+    mInitialXYZ = getPivotPoint();
     mMouseDownX = x;
     mMouseDownY = y;
     mMouseOutsideSlop = false;
@@ -1786,10 +1787,12 @@ void LLManipTranslate::highlightIntersection(LLVector3 normal,
 
 void LLManipTranslate::renderText()
 {
+    bool show_delta = (mManipPart != LL_NO_PART);
     if (mObjectSelection->getRootObjectCount() && !mObjectSelection->isAttachment())
     {
         LLVector3 pos = getPivotPoint();
-        renderXYZ(pos);
+        LLVector3 delta = show_delta ? (pos - mInitialXYZ) : LLVector3::zero;
+        renderXYZ(pos, delta, show_delta, "dPos");
     }
     else
     {
@@ -1797,7 +1800,9 @@ void LLManipTranslate::renderText()
         LLViewerObject* objectp = mObjectSelection->getFirstRootObject(children_ok);
         if (objectp)
         {
-            renderXYZ(objectp->getPositionEdit());
+            LLVector3 pos = objectp->getPositionEdit();
+            LLVector3 delta = show_delta ? (pos - mInitialXYZ) : LLVector3::zero;
+            renderXYZ(pos, delta, show_delta, "dPos");
         }
     }
 }
