@@ -581,7 +581,7 @@ bool LLView::focusNext(LLView::child_list_t & result)
     while (count < total)
     {
         LLView* view = *next;
-        if (view && view->getVisible() && view->getEnabled() && view->isCtrl())
+        if (view && view->isInVisibleChain() && view->isInEnabledChain() && view->isCtrl())
         {
             LLUICtrl* ctrl = static_cast<LLUICtrl*>(view);
             if (ctrl->hasTabStop())
@@ -640,7 +640,7 @@ bool LLView::focusPrev(LLView::child_list_t & result)
     while (count < total)
     {
         LLView* view = *next;
-        if (view && view->getVisible() && view->getEnabled() && view->isCtrl())
+        if (view && view->isInVisibleChain() && view->isInEnabledChain() && view->isCtrl())
         {
             LLUICtrl* ctrl = static_cast<LLUICtrl*>(view);
             if (ctrl->hasTabStop())
