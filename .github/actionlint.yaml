@@ -11,6 +11,7 @@ paths:
   .github/workflows/stale.yaml:
     ignore:
       - 'cannot be filtered by object filtering'
+      - 'elements of object at receiver of object filtering'
   .github/workflows/*.yml:
     ignore:
       - 'shellcheck reported issue in this script'

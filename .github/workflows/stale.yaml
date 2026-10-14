@@ -22,4 +22,4 @@ jobs:
           exempt-pr-labels: blocked,must,should,keep
           stale-pr-label: stale
       - name: Print outputs
-        run: echo ${{ join(steps.stale.outputs.*, ',') }}
+        run: echo "${{ toJSON(steps.stale.outputs) }}"
