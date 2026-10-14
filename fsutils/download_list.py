@@ -433,7 +433,7 @@ def generate_sha256_manifest(build_info):
         if "symbols" in root.split(os.sep):
             continue
         for file in files:
-            if file == "SHA256SUMS":
+            if file in ("SHA256SUMS", "SHA256SUMS.txt"):
                 continue
             full_file = os.path.join(root, file)
             rel_path = os.path.relpath(full_file, build_type_dir).replace('\\', '/')
@@ -454,19 +454,22 @@ def generate_sha256_manifest(build_info):
                         pass
 
     sha256_entries.sort(key=lambda x: x[1])
-    with open(sha256sums_path, "w", encoding="utf-8") as f:
-        for sha256_val, rel_path in sha256_entries:
-            f.write(f"{sha256_val}  {rel_path}\n")
-    print(f"Generated SHA256SUMS at {sha256sums_path}")
+    for manifest_name in ("SHA256SUMS.txt", "SHA256SUMS"):
+        out_path = os.path.join(build_type_dir, manifest_name)
+        with open(out_path, "w", encoding="utf-8") as f:
+            for sha256_val, rel_path in sha256_entries:
+                f.write(f"{sha256_val}  {rel_path}\n")
+    print(f"Generated SHA256SUMS and SHA256SUMS.txt at {build_type_dir}")
 
     for platform_folder, p_entries in platform_manifests.items():
         if p_entries:
             p_entries.sort(key=lambda x: x[1])
-            p_sha256sums_path = os.path.join(build_type_dir, platform_folder, "SHA256SUMS")
-            with open(p_sha256sums_path, "w", encoding="utf-8") as f:
-                for sha256_val, file_rel in p_entries:
-                    f.write(f"{sha256_val}  {file_rel}\n")
-            print(f"Generated platform SHA256SUMS at {p_sha256sums_path}")
+            for manifest_name in ("SHA256SUMS.txt", "SHA256SUMS"):
+                p_out_path = os.path.join(build_type_dir, platform_folder, manifest_name)
+                with open(p_out_path, "w", encoding="utf-8") as f:
+                    for sha256_val, file_rel in p_entries:
+                        f.write(f"{sha256_val}  {file_rel}\n")
+            print(f"Generated platform SHA256SUMS and SHA256SUMS.txt at {os.path.join(build_type_dir, platform_folder)}")
 
 def create_discord_message(build_info, config):
 # Start with a header line
