@@ -361,7 +361,7 @@ void LLManipRotate::render()
 
     bool show_delta = (mManipPart != LL_NO_PART);
     LLVector3 delta = show_delta ? (euler_angles - mInitialXYZ) : LLVector3::zero;
-    renderXYZ(euler_angles, delta, show_delta, "\xCE\x94" "Rot");
+    renderXYZ(euler_angles, delta, show_delta, "dRot");
 }
 
 bool LLManipRotate::handleMouseDown(S32 x, S32 y, MASK mask)
