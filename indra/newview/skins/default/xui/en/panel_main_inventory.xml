@@ -126,7 +126,6 @@
        name="collapse_btn"
        label="Collapse"
        width="80"
-       height="16"
        left="0"
        top="0"
        follows="top|left"
@@ -136,7 +135,6 @@
        name="expand_btn"
        label="Expand"
        width="80"
-       height="16"
        left_pad="4"
        follows="top|left"
        layout="topleft" />
@@ -214,8 +212,8 @@
    name="default_inventory_panel"
    top_pad="4">
     <tab_container
-       bg_alpha_color="DkGray"
-       bg_opaque_color="DkGray"
+       bg_alpha_color="PanelDefaultBackgroundColor"
+       bg_opaque_color="PanelFocusBackgroundColor"
        background_visible="false"
        background_opaque="false"
        follows="all"

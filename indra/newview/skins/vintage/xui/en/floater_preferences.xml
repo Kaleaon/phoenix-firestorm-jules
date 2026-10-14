@@ -73,7 +73,6 @@ https://accounts.secondlife.com/change_email/
 		  rect.bottom="-1" />
 	</search_editor>
 	<button
-		height="18"
 		image_overlay="Copy"
 		layout="topleft"
 		left_pad="2"
