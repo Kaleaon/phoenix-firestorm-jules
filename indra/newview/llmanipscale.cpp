@@ -327,7 +327,10 @@ void LLManipScale::render()
         }
         gGL.popMatrix();
 
-        renderXYZ(bbox.getExtentLocal());
+        bool show_delta = (mManipPart != LL_NO_PART);
+        LLVector3 current_extent = bbox.getExtentLocal();
+        LLVector3 delta = show_delta ? (current_extent - mInitialXYZ) : LLVector3::zero;
+        renderXYZ(current_extent, delta, show_delta, "ΔScale");
     }
 }
 
@@ -359,6 +362,7 @@ bool LLManipScale::handleMouseDownOnPart( S32 x, S32 y, MASK mask )
     mManipPart = (EManipPart)hit_part;
 
     LLBBox bbox = LLSelectMgr::getInstance()->getBBoxOfSelection();
+    mInitialXYZ = bbox.getExtentLocal();
     LLVector3 box_center_agent = bbox.getCenterAgent();
     LLVector3 box_corner_agent = bbox.localToAgent( unitVectorToLocalBBoxExtent( partToUnitVector( mManipPart ), bbox ) );
 

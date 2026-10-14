@@ -359,7 +359,9 @@ void LLManipRotate::render()
     euler_angles.mV[VY] = ll_round(fmodf(euler_angles.mV[VY] + 360.f, 360.f), 0.05f);
     euler_angles.mV[VZ] = ll_round(fmodf(euler_angles.mV[VZ] + 360.f, 360.f), 0.05f);
 
-    renderXYZ(euler_angles);
+    bool show_delta = (mManipPart != LL_NO_PART);
+    LLVector3 delta = show_delta ? (euler_angles - mInitialXYZ) : LLVector3::zero;
+    renderXYZ(euler_angles, delta, show_delta, "ΔRot");
 }
 
 bool LLManipRotate::handleMouseDown(S32 x, S32 y, MASK mask)
@@ -391,6 +393,17 @@ bool LLManipRotate::handleMouseDownOnPart( S32 x, S32 y, MASK mask )
     S32 hit_part = mHighlightedPart;
     // we just started a drag, so save initial object positions
     LLSelectMgr::getInstance()->saveSelectedObjectTransform(SELECT_ACTION_TYPE_ROTATE);
+
+    LLViewerObject* first_obj_init = mObjectSelection->getFirstMoveableObject(true);
+    if (first_obj_init)
+    {
+        LLQuaternion init_rot = first_obj_init->getRotationEdit();
+        init_rot.getEulerAngles(&(mInitialXYZ.mV[VX]), &(mInitialXYZ.mV[VY]), &(mInitialXYZ.mV[VZ]));
+        mInitialXYZ *= RAD_TO_DEG;
+        mInitialXYZ.mV[VX] = ll_round(fmodf(mInitialXYZ.mV[VX] + 360.f, 360.f), 0.05f);
+        mInitialXYZ.mV[VY] = ll_round(fmodf(mInitialXYZ.mV[VY] + 360.f, 360.f), 0.05f);
+        mInitialXYZ.mV[VZ] = ll_round(fmodf(mInitialXYZ.mV[VZ] + 360.f, 360.f), 0.05f);
+    }
 
     // save selection center
     mRotationCenter = gAgent.getPosGlobalFromAgent( getPivotPoint() ); //LLSelectMgr::getInstance()->getSelectionCenterGlobal();
