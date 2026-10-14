@@ -14,6 +14,9 @@
 #include "../llaudiodecodemgr.h"
 #include "lluuid.h"
 
+class LLAudioEngine;
+LLAudioEngine *gAudiop = nullptr;
+
 namespace tut
 {
     struct audio_decode_mgr_data
