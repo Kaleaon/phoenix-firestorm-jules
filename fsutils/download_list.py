@@ -39,7 +39,10 @@ from discord_webhook import DiscordWebhook
 from pathlib import Path
 from typing import Tuple
 
-from build_config import BuildConfig
+try:
+    from fsutils.build_config import BuildConfig
+except ModuleNotFoundError:
+    from build_config import BuildConfig
 
 def get_current_date_str():
     now = datetime.now(pytz.timezone('UTC'))

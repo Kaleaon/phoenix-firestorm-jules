@@ -1,9 +1,15 @@
 # build_config.py
 
 import json
+import os
 
 class BuildConfig:
-    def __init__(self, config_file='./fsutils/build_config.json'):
+    def __init__(self, config_file=None):
+        if config_file is None:
+            if os.path.exists('./fsutils/build_config.json'):
+                config_file = './fsutils/build_config.json'
+            else:
+                config_file = os.path.join(os.path.dirname(__file__), 'build_config.json')
         with open(config_file, 'r') as f:
             config_data = json.load(f)
 
