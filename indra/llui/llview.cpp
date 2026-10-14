@@ -546,6 +546,11 @@ bool LLView::focusPrevRoot()
 // static
 bool LLView::focusNext(LLView::child_list_t & result)
 {
+    if (result.empty())
+    {
+        return false;
+    }
+
     LLView::child_list_reverse_iter_t focused = result.rend();
     for(LLView::child_list_reverse_iter_t iter = result.rbegin();
         iter != result.rend();
@@ -558,23 +563,41 @@ bool LLView::focusNext(LLView::child_list_t & result)
         }
     }
     LLView::child_list_reverse_iter_t next = focused;
-    next = (next == result.rend()) ? result.rbegin() : ++next;
-    while(next != focused)
+    if (next == result.rend())
     {
-        // wrap around to beginning if necessary
-        if(next == result.rend())
+        next = result.rbegin();
+    }
+    else
+    {
+        ++next;
+        if (next == result.rend())
         {
             next = result.rbegin();
         }
-        if ((*next)->isCtrl() && ((LLUICtrl*)*next)->hasTabStop())
+    }
+
+    size_t count = 0;
+    size_t total = result.size();
+    while (count < total)
+    {
+        LLView* view = *next;
+        if (view && view->getVisible() && view->getEnabled() && view->isCtrl())
         {
-            LLUICtrl * ctrl = static_cast<LLUICtrl*>(*next);
-            ctrl->setFocus(true);
-            ctrl->onTabInto();
-            gFocusMgr.triggerFocusFlash();
-            return true;
+            LLUICtrl* ctrl = static_cast<LLUICtrl*>(view);
+            if (ctrl->hasTabStop())
+            {
+                ctrl->setFocus(true);
+                ctrl->onTabInto();
+                gFocusMgr.triggerFocusFlash();
+                return true;
+            }
         }
         ++next;
+        if (next == result.rend())
+        {
+            next = result.rbegin();
+        }
+        ++count;
     }
     return false;
 }
@@ -582,6 +605,11 @@ bool LLView::focusNext(LLView::child_list_t & result)
 // static
 bool LLView::focusPrev(LLView::child_list_t & result)
 {
+    if (result.empty())
+    {
+        return false;
+    }
+
     LLView::child_list_iter_t focused = result.end();
     for(LLView::child_list_iter_t iter = result.begin();
         iter != result.end();
@@ -594,26 +622,41 @@ bool LLView::focusPrev(LLView::child_list_t & result)
         }
     }
     LLView::child_list_iter_t next = focused;
-    next = (next == result.end()) ? result.begin() : ++next;
-    while(next != focused)
+    if (next == result.end())
     {
-        // wrap around to beginning if necessary
-        if(next == result.end())
+        next = result.begin();
+    }
+    else
+    {
+        ++next;
+        if (next == result.end())
         {
             next = result.begin();
         }
-        if((*next)->isCtrl())
+    }
+
+    size_t count = 0;
+    size_t total = result.size();
+    while (count < total)
+    {
+        LLView* view = *next;
+        if (view && view->getVisible() && view->getEnabled() && view->isCtrl())
         {
-            LLUICtrl * ctrl = static_cast<LLUICtrl*>(*next);
-            if (!ctrl->hasFocus())
+            LLUICtrl* ctrl = static_cast<LLUICtrl*>(view);
+            if (ctrl->hasTabStop())
             {
                 ctrl->setFocus(true);
                 ctrl->onTabInto();
                 gFocusMgr.triggerFocusFlash();
+                return true;
             }
-            return true;
         }
         ++next;
+        if (next == result.end())
+        {
+            next = result.begin();
+        }
+        ++count;
     }
     return false;
 }
