@@ -118,14 +118,13 @@
      bevel_style="in"
      user_resize="false"
      auto_resize="false"
-     height="16"
+     height="23"
      width="168"
      name="collapse_expand_buttons">
       <button
        name="collapse_btn"
        label="Collapse"
        width="80"
-       height="16"
        left="0"
        top="0"
        follows="top|left"
@@ -135,7 +134,6 @@
        name="expand_btn"
        label="Expand"
        width="80"
-       height="16"
        left_pad="4"
        follows="top|left"
        layout="topleft" />

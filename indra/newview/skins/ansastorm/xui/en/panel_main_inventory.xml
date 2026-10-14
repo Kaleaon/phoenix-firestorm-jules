@@ -672,7 +672,7 @@
      bevel_style="in"
      user_resize="false"
      auto_resize="false"
-     height="18"
+     height="23"
      width="38"
      name="collapse_expand_buttons">
 
@@ -680,7 +680,6 @@
        name="collapse_btn"
        image_overlay="MinusItem_Off"
        width="18"
-       height="18"
        left="0"
        top="0"
        follows="top|left"
@@ -690,7 +689,6 @@
        name="expand_btn"
        image_overlay="AddItem_Off"
        width="18"
-       height="18"
        left_pad="2"
        follows="top|left"
        layout="topleft" />
@@ -792,8 +790,8 @@
    name="default_inventory_panel"
    top_pad="4">
     <tab_container
-       bg_alpha_color="DkGray"
-       bg_opaque_color="DkGray"
+       bg_alpha_color="PanelDefaultBackgroundColor"
+       bg_opaque_color="PanelFocusBackgroundColor"
        background_visible="false"
        background_opaque="false"
        follows="all"
