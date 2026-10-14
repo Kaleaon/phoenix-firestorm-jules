@@ -114,7 +114,7 @@ jobs:
           path: .master-message-template
 
       - name: Install autobuild and python dependencies
-        run: pip3 install autobuild llsd
+        run: pip3 install -r requirements.txt
 
       - name: Cache autobuild packages
         id: cache-installables
@@ -439,6 +439,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     if: needs.setup.outputs.release_run
     steps:
       - uses: actions/download-artifact@v5
@@ -455,6 +457,26 @@ jobs:
           cp Windows-metadata/newview/viewer_version.txt Windows-viewer_version.txt
           cp macOS-metadata/autobuild-package.xml macOS-autobuild-package.xml
           cp macOS-metadata/newview/viewer_version.txt macOS-viewer_version.txt
+
+      - name: Generate SHA-256 checksums
+        run: |
+          shopt -s nullglob globstar
+          files=(macOS-installer/*.dmg Windows-installer/*.exe *-autobuild-package.xml *-viewer_version.txt)
+          if [ ${#files[@]} -gt 0 ]; then
+            sha256sum "${files[@]}" > SHA256SUMS.txt
+          else
+            touch SHA256SUMS.txt
+          fi
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: |
+            macOS-installer/*.dmg
+            Windows-installer/*.exe
+            *-autobuild-package.xml
+            *-viewer_version.txt
+            SHA256SUMS.txt
 
       # forked from softprops/action-gh-release
       - name: Create GitHub release
@@ -480,6 +502,7 @@ jobs:
             Windows-installer/*.exe
             *-autobuild-package.xml
             *-viewer_version.txt
+            SHA256SUMS.txt
 
       - name: post release URL
         run: |
