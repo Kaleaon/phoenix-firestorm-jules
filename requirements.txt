@@ -1,3 +1,6 @@
 llbase
 autobuild
 llsd
+requests
+discord-webhook
+pytz
