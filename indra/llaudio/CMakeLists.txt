@@ -74,8 +74,9 @@ endif()
 if (LL_TESTS)
   include(LLAddBuildTest)
   set(llaudio_TEST_SOURCE_FILES
-    tests/llaudiodecodemgr_test.cpp
+    llaudiodecodemgr.cpp
     )
   set(test_libs llaudio llfilesystem llmessage llmath llcommon)
+  set_property( SOURCE ${llaudio_TEST_SOURCE_FILES} PROPERTY LL_TEST_ADDITIONAL_LIBRARIES ${test_libs})
   LL_ADD_PROJECT_UNIT_TESTS(llaudio "${llaudio_TEST_SOURCE_FILES}")
 endif ()
