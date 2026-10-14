@@ -1792,7 +1792,7 @@ void LLManipTranslate::renderText()
     {
         LLVector3 pos = getPivotPoint();
         LLVector3 delta = show_delta ? (pos - mInitialXYZ) : LLVector3::zero;
-        renderXYZ(pos, delta, show_delta, "ΔPos");
+        renderXYZ(pos, delta, show_delta, "\xCE\x94" "Pos");
     }
     else
     {
@@ -1802,7 +1802,7 @@ void LLManipTranslate::renderText()
         {
             LLVector3 pos = objectp->getPositionEdit();
             LLVector3 delta = show_delta ? (pos - mInitialXYZ) : LLVector3::zero;
-            renderXYZ(pos, delta, show_delta, "ΔPos");
+            renderXYZ(pos, delta, show_delta, "\xCE\x94" "Pos");
         }
     }
 }

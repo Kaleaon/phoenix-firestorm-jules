@@ -330,7 +330,7 @@ void LLManipScale::render()
         bool show_delta = (mManipPart != LL_NO_PART);
         LLVector3 current_extent = bbox.getExtentLocal();
         LLVector3 delta = show_delta ? (current_extent - mInitialXYZ) : LLVector3::zero;
-        renderXYZ(current_extent, delta, show_delta, "ΔScale");
+        renderXYZ(current_extent, delta, show_delta, "\xCE\x94" "Scale");
     }
 }
 

@@ -501,15 +501,15 @@ void LLManip::renderXYZ(const LLVector3 &vec, const LLVector3 &delta, bool show_
     {
         if (!prefix.empty())
         {
-            feedback_string_x = llformat("X: %.3f (%s ΔX: %+.3f)", vec.mV[VX], prefix.c_str(), delta.mV[VX]);
-            feedback_string_y = llformat("Y: %.3f (%s ΔY: %+.3f)", vec.mV[VY], prefix.c_str(), delta.mV[VY]);
-            feedback_string_z = llformat("Z: %.3f (%s ΔZ: %+.3f)", vec.mV[VZ], prefix.c_str(), delta.mV[VZ]);
+            feedback_string_x = llformat("X: %.3f (%s \xCE\x94" "X: %+.3f)", vec.mV[VX], prefix.c_str(), delta.mV[VX]);
+            feedback_string_y = llformat("Y: %.3f (%s \xCE\x94" "Y: %+.3f)", vec.mV[VY], prefix.c_str(), delta.mV[VY]);
+            feedback_string_z = llformat("Z: %.3f (%s \xCE\x94" "Z: %+.3f)", vec.mV[VZ], prefix.c_str(), delta.mV[VZ]);
         }
         else
         {
-            feedback_string_x = llformat("X: %.3f (ΔX: %+.3f)", vec.mV[VX], delta.mV[VX]);
-            feedback_string_y = llformat("Y: %.3f (ΔY: %+.3f)", vec.mV[VY], delta.mV[VY]);
-            feedback_string_z = llformat("Z: %.3f (ΔZ: %+.3f)", vec.mV[VZ], delta.mV[VZ]);
+            feedback_string_x = llformat("X: %.3f (\xCE\x94" "X: %+.3f)", vec.mV[VX], delta.mV[VX]);
+            feedback_string_y = llformat("Y: %.3f (\xCE\x94" "Y: %+.3f)", vec.mV[VY], delta.mV[VY]);
+            feedback_string_z = llformat("Z: %.3f (\xCE\x94" "Z: %+.3f)", vec.mV[VZ], delta.mV[VZ]);
         }
     }
     else
