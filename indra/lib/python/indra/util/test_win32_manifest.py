@@ -28,6 +28,8 @@ import sys, os
 import tempfile
 from xml.dom.minidom import parse
 
+__test__ = False
+
 class AssemblyTestException(Exception):
     pass
 
@@ -64,14 +66,14 @@ def find_vc_dir():
                       (product, version))
             try:
                 return get_HKLM_registry_value(key_str, value_str)
-            except WindowsError as err:
+            except Exception as err:
                 x64_key_str = (r'SOFTWARE\Wow6432Node\Microsoft\%s\%s\Setup\VC' % (product, version))
                 try:
                     return get_HKLM_registry_value(x64_key_str, value_str)
                 except:
                     print("Didn't find MS %s version %s " % (product,version), file=sys.stderr)
         
-    raise
+    raise NoManifestException("Visual Studio directory not found in registry")
 
 def find_mt_path():
     vc_dir = find_vc_dir()
