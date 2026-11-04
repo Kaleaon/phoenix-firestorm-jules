@@ -490,14 +490,43 @@ void LLManip::renderGuidelines(bool draw_x, bool draw_y, bool draw_z)
     gGL.popMatrix();
 }
 
-void LLManip::renderXYZ(const LLVector3 &vec)
+void LLManip::renderXYZ(const LLVector3 &vec, const LLVector3 &delta, bool show_delta, const std::string& prefix)
 {
     const S32 PAD = 10;
-    std::string feedback_string;
+    std::string feedback_string_x;
+    std::string feedback_string_y;
+    std::string feedback_string_z;
+
+    if (show_delta)
+    {
+        if (!prefix.empty())
+        {
+            feedback_string_x = llformat("X: %.3f (%s dX: %+.3f)", vec.mV[VX], prefix.c_str(), delta.mV[VX]);
+            feedback_string_y = llformat("Y: %.3f (%s dY: %+.3f)", vec.mV[VY], prefix.c_str(), delta.mV[VY]);
+            feedback_string_z = llformat("Z: %.3f (%s dZ: %+.3f)", vec.mV[VZ], prefix.c_str(), delta.mV[VZ]);
+        }
+        else
+        {
+            feedback_string_x = llformat("X: %.3f (dX: %+.3f)", vec.mV[VX], delta.mV[VX]);
+            feedback_string_y = llformat("Y: %.3f (dY: %+.3f)", vec.mV[VY], delta.mV[VY]);
+            feedback_string_z = llformat("Z: %.3f (dZ: %+.3f)", vec.mV[VZ], delta.mV[VZ]);
+        }
+    }
+    else
+    {
+        feedback_string_x = llformat("X: %.3f", vec.mV[VX]);
+        feedback_string_y = llformat("Y: %.3f", vec.mV[VY]);
+        feedback_string_z = llformat("Z: %.3f", vec.mV[VZ]);
+    }
+
     S32 window_center_x = gViewerWindow->getWorldViewRectScaled().getWidth() / 2;
     S32 window_center_y = gViewerWindow->getWorldViewRectScaled().getHeight() / 2;
     S32 vertical_offset = window_center_y - VERTICAL_OFFSET;
 
+    S32 box_width = show_delta ? 480 : 235;
+    F32 x_pos_x = show_delta ? (F32)window_center_x - 225.f : (F32)window_center_x - 102.f;
+    F32 y_pos_x = show_delta ? (F32)window_center_x - 65.f : (F32)window_center_x - 27.f;
+    F32 z_pos_x = show_delta ? (F32)window_center_x + 95.f : (F32)window_center_x + 48.f;
 
     gGL.pushMatrix();
     {
@@ -507,9 +536,9 @@ void LLManip::renderXYZ(const LLVector3 &vec)
         gGL.color4f(0.f, 0.f, 0.f, 0.7f);
 
         imagep->draw(
-            (S32)((window_center_x - 115) * display_scale.mV[VX]),
+            (S32)((window_center_x - box_width / 2) * display_scale.mV[VX]),
             (S32)((window_center_y + vertical_offset - PAD) * display_scale.mV[VY]),
-            (S32)(235 * display_scale.mV[VX]),
+            (S32)(box_width * display_scale.mV[VX]),
             (S32)((PAD * 2 + 10) * display_scale.mV[VY]),
             LLColor4(0.f, 0.f, 0.f, 0.7f) );
         LLFontGL* font = LLFontGL::getFontSansSerif();
@@ -518,34 +547,28 @@ void LLManip::renderXYZ(const LLVector3 &vec)
 
         // render drop shadowed text (manually because of bigger 'distance')
         F32 right_x;
-        feedback_string = llformat("X: %.3f", vec.mV[VX]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x - 102.f + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
+        font->render(utf8str_to_wstring(feedback_string_x), 0, x_pos_x + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
 
-        feedback_string = llformat("Y: %.3f", vec.mV[VY]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x - 27.f + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
+        font->render(utf8str_to_wstring(feedback_string_y), 0, y_pos_x + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
 
-        feedback_string = llformat("Z: %.3f", vec.mV[VZ]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x + 48.f + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
+        font->render(utf8str_to_wstring(feedback_string_z), 0, z_pos_x + 1.f, (F32)(window_center_y + vertical_offset) - 2.f, LLColor4::black,
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
 
         // render text on top
-        feedback_string = llformat("X: %.3f", vec.mV[VX]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x - 102.f, (F32)(window_center_y + vertical_offset), LLColor4(1.f, 0.5f, 0.5f, 1.f),
+        font->render(utf8str_to_wstring(feedback_string_x), 0, x_pos_x, (F32)(window_center_y + vertical_offset), LLColor4(1.f, 0.5f, 0.5f, 1.f),
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
 
-        feedback_string = llformat("Y: %.3f", vec.mV[VY]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x - 27.f, (F32)(window_center_y + vertical_offset), LLColor4(0.5f, 1.f, 0.5f, 1.f),
+        font->render(utf8str_to_wstring(feedback_string_y), 0, y_pos_x, (F32)(window_center_y + vertical_offset), LLColor4(0.5f, 1.f, 0.5f, 1.f),
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
 
-        feedback_string = llformat("Z: %.3f", vec.mV[VZ]);
-        font->render(utf8str_to_wstring(feedback_string), 0, window_center_x + 48.f, (F32)(window_center_y + vertical_offset), LLColor4(0.5f, 0.5f, 1.f, 1.f),
+        font->render(utf8str_to_wstring(feedback_string_z), 0, z_pos_x, (F32)(window_center_y + vertical_offset), LLColor4(0.5f, 0.5f, 1.f, 1.f),
             LLFontGL::LEFT, LLFontGL::BASELINE,
             LLFontGL::NORMAL, LLFontGL::NO_SHADOW, S32_MAX, 1000, &right_x);
     }

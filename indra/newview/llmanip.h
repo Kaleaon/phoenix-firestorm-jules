@@ -119,7 +119,7 @@ public:
 
     virtual bool        handleMouseDownOnPart(S32 x, S32 y, MASK mask) = 0;
     void                renderGuidelines(bool draw_x = true, bool draw_y = true, bool draw_z = true);
-    static void         renderXYZ(const LLVector3 &vec);
+    static void         renderXYZ(const LLVector3 &vec, const LLVector3 &delta = LLVector3::zero, bool show_delta = false, const std::string& prefix = "");
 
     /*virtual*/ bool    handleMouseUp(S32 x, S32 y, MASK mask);
     /*virtual*/ bool    handleHover(S32 x, S32 y, MASK mask);
@@ -151,6 +151,7 @@ protected:
     LLSafeHandle<LLObjectSelection> mObjectSelection;
     EManipPart          mHighlightedPart;
     EManipPart          mManipPart;
+    LLVector3           mInitialXYZ;
 
     static F32          sHelpTextVisibleTime;
     static F32          sHelpTextFadeTime;
