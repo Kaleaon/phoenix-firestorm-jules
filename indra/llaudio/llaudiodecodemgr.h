@@ -46,6 +46,9 @@ public:
     bool addDecodeRequest(const LLUUID &uuid);
     void addAudioRequest(const LLUUID &uuid);
 
+    size_t getQueueSize() const;
+    bool isQueued(const LLUUID &uuid) const;
+
 protected:
     class Impl;
     Impl* mImpl;

@@ -70,3 +70,13 @@ endif()
 if( TARGET ll::fmodstudio )
     target_link_libraries( llaudio ll::fmodstudio )
 endif()
+
+if (LL_TESTS)
+  include(LLAddBuildTest)
+  set(llaudio_TEST_SOURCE_FILES
+    llaudiodecodemgr.cpp
+    )
+  set(test_libs llfilesystem llmessage llmath llcommon ll::vorbis)
+  set_property( SOURCE ${llaudio_TEST_SOURCE_FILES} PROPERTY LL_TEST_ADDITIONAL_LIBRARIES ${test_libs})
+  LL_ADD_PROJECT_UNIT_TESTS(llaudio "${llaudio_TEST_SOURCE_FILES}")
+endif ()

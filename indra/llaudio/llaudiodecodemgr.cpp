@@ -44,6 +44,7 @@
 #include "vorbis/vorbisfile.h"
 #include <iterator>
 #include <deque>
+#include <unordered_set>
 
 extern LLAudioEngine *gAudiop;
 
@@ -549,6 +550,7 @@ class LLAudioDecodeMgr::Impl
 
   protected:
     std::deque<LLUUID> mDecodeQueue;
+    std::unordered_set<LLUUID> mDecodeQueueSet;
     std::map<LLUUID, LLPointer<LLVorbisDecodeState>> mDecodes;
 };
 
@@ -599,6 +601,7 @@ void LLAudioDecodeMgr::Impl::startMoreDecodes()
     {
         const LLUUID decode_id = mDecodeQueue.front();
         mDecodeQueue.pop_front();
+        mDecodeQueueSet.erase(decode_id);
 
         // Don't decode the same file twice
         if (mDecodes.find(decode_id) != mDecodes.end())
@@ -790,6 +793,16 @@ void LLAudioDecodeMgr::processQueue()
     mImpl->processQueue();
 }
 
+size_t LLAudioDecodeMgr::getQueueSize() const
+{
+    return mImpl ? mImpl->mDecodeQueue.size() : 0;
+}
+
+bool LLAudioDecodeMgr::isQueued(const LLUUID &uuid) const
+{
+    return mImpl ? (mImpl->mDecodeQueueSet.find(uuid) != mImpl->mDecodeQueueSet.end()) : false;
+}
+
 bool LLAudioDecodeMgr::addDecodeRequest(const LLUUID &uuid)
 {
     // <FS:ND> Protect against corrupted sounds. Just do a quit exit instead of trying to decode over and over.
@@ -804,11 +817,11 @@ bool LLAudioDecodeMgr::addDecodeRequest(const LLUUID &uuid)
         return true;
     }
 
-    if (gAssetStorage->hasLocalAsset(uuid, LLAssetType::AT_SOUND))
+    if (gAssetStorage && gAssetStorage->hasLocalAsset(uuid, LLAssetType::AT_SOUND))
     {
         // Just put it on the decode queue it if it's not already in the queue
         LL_DEBUGS("AudioEngine") << "addDecodeRequest for " << uuid << " has local asset file already" << LL_ENDL;
-        if (std::find(mImpl->mDecodeQueue.begin(), mImpl->mDecodeQueue.end(), uuid) == mImpl->mDecodeQueue.end())
+        if (mImpl->mDecodeQueueSet.insert(uuid).second)
         {
             mImpl->mDecodeQueue.emplace_back(uuid);
         }
