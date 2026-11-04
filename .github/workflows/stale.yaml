@@ -12,7 +12,7 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
         id: stale
         with:
           stale-pr-message: This pull request is stale because it has been open 30 days with no activity. Remove stale label or comment or it will be closed in 7 days
@@ -22,4 +22,4 @@ jobs:
           exempt-pr-labels: blocked,must,should,keep
           stale-pr-label: stale
       - name: Print outputs
-        run: echo ${{ join(steps.stale.outputs.*, ',') }}
+        run: echo "${{ toJSON(steps.stale.outputs) }}"

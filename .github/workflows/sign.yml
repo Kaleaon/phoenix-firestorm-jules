@@ -44,7 +44,7 @@ jobs:
         setup_files: ${{ steps.get-files.outputs.setup_files }}
     steps:        
       - name: Download Build Artifacts
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         id: download
         with:
             workflow: build_viewer.yml
@@ -56,7 +56,7 @@ jobs:
         id: get-files
         run: python ./fsutils/sign_utils.py get_setup_files
       - name: Upload Setup.exe Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: setup-exe-files
           path: setup_exe_files/
@@ -79,7 +79,7 @@ jobs:
         run: python ./fsutils/sign_utils.py list_run_artifacts
       
       - name: Download Setup.exe Files Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: setup-exe-files
           path: setup_exe_files
@@ -107,7 +107,7 @@ jobs:
         #   wait-for-completion: true
         #   output-artifact-directory: 'application-signed'
       - name: Azure Trusted Signing
-        uses: azure/trusted-signing-action@v0.5.9
+        uses: azure/trusted-signing-action@bb15ca63eb5548cc306f4f335c5617bb414abcad # v0.5.9
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -128,7 +128,7 @@ jobs:
             # - name: Upload unsigned artifact
       - name: Upload signed artifact
         id: upload-unsigned-artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unsigned-artifact-${{ matrix.file }}
           path: to_sign\${{ matrix.file }}          

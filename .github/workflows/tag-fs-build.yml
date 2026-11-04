@@ -52,7 +52,7 @@ jobs:
     steps:
       # Checkout the Repository
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0  # Necessary to fetch all history for tagging
 
@@ -65,7 +65,7 @@ jobs:
         run: python ./fsutils/parse_workflow_inputs.py run_number
 
       - name: Download Build Artifacts
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@ac66b43f0e6a346234dd65d4d0c8fbb31cb316e5 # v11
         id: download_build_info
         with:
           workflow: build_viewer.yml
