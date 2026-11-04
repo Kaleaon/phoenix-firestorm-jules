@@ -114,7 +114,7 @@ jobs:
           path: .master-message-template
 
       - name: Install autobuild and python dependencies
-        run: pip3 install autobuild llsd
+        run: pip3 install -r requirements.txt
 
       - name: Cache autobuild packages
         id: cache-installables
@@ -460,7 +460,13 @@ jobs:
 
       - name: Generate SHA-256 checksums
         run: |
-          sha256sum macOS-installer/*.dmg Windows-installer/*.exe > SHA256SUMS.txt
+          shopt -s nullglob globstar
+          files=(macOS-installer/*.dmg Windows-installer/*.exe *-autobuild-package.xml *-viewer_version.txt)
+          if [ ${#files[@]} -gt 0 ]; then
+            sha256sum "${files[@]}" > SHA256SUMS.txt
+          else
+            touch SHA256SUMS.txt
+          fi
 
       - name: Attest Build Provenance
         uses: actions/attest-build-provenance@v1
